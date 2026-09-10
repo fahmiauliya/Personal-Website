@@ -20,6 +20,8 @@ npm run preview
 
 ## Organization
 
+For GitHub-connected hosting, see [Hostinger deployment setup](HOSTINGER.md).
+
 - `src/App.jsx`: announcement content.
 - `src/components/PageShell.jsx`: semantic header, main, and footer.
 - `src/styles/tokens.css`: centralized colors, typography, spacing, radius, and motion.

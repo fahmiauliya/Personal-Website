@@ -36,20 +36,19 @@ p, h1 { margin: 0; }
 }
 
 .site-header, .site-footer {
-  padding-block: var(--space-region);
   min-width: 0;
 }
 
-.wordmark { font-size: var(--font-logo); line-height: 1.5; letter-spacing: 0.025em; }
+.site-header { padding-block: 20px; }
+.wordmark { font-size: var(--font-logo); line-height: 1.4; letter-spacing: -0.02em; }
 
-main { display: grid; place-items: center; min-width: 0; padding-block: clamp(3rem, 8vh, 6rem); }
-.announcement { width: min(100%, var(--content-width)); overflow-wrap: anywhere; }
-.eyebrow { color: var(--color-secondary); font-size: var(--font-eyebrow); line-height: 1.6; letter-spacing: 0.065em; margin-bottom: var(--space-small); animation-delay: 120ms; }
-.headline { font-size: var(--font-headline); font-weight: var(--font-weight); line-height: 1.12; letter-spacing: -0.05em; text-wrap: balance; animation-delay: 240ms; }
-.headline span { display: block; }
-.supporting-text { max-width: 31rem; margin: var(--space-large) auto 0; color: var(--color-secondary); font-size: var(--font-body); line-height: 1.7; text-wrap: pretty; animation-delay: 380ms; }
-.site-footer { color: var(--color-secondary); animation-delay: 560ms; }
-.site-footer small { font-size: var(--font-footer); line-height: 1.6; letter-spacing: 0.015em; }
+main { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-large); min-width: 0; padding-block: 32px; }
+.visual-panel { width: min(342px, 100%); aspect-ratio: 342 / 292; flex-shrink: 0; background: var(--color-panel); }
+.announcement { width: min(100%, var(--content-width)); padding-bottom: 80px; overflow-wrap: anywhere; }
+.eyebrow { color: var(--color-secondary); font-size: var(--font-eyebrow); line-height: 1.4; letter-spacing: -0.01em; margin-bottom: var(--space-small); animation-delay: 120ms; }
+.headline { font-size: var(--font-headline); font-weight: var(--font-weight); line-height: 1.2; letter-spacing: -0.02em; text-wrap: balance; animation-delay: 240ms; }
+.site-footer { padding-top: 47.5px; padding-bottom: 45.09px; color: var(--color-secondary); animation-delay: 560ms; }
+.site-footer small { display: block; font-size: var(--font-footer); line-height: 17.6px; letter-spacing: 0.165px; }
 .entrance { animation-name: enter; animation-duration: var(--motion-duration); animation-timing-function: var(--motion-ease); animation-fill-mode: both; }
 .site-header, .site-footer { --motion-distance: 0rem; }
 
