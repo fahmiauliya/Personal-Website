@@ -9,7 +9,7 @@
   --font-weight: 400;
   --font-logo: 1.125rem;
   --font-eyebrow: 0.875rem;
-  --font-headline: 1.5rem;
+  --font-headline: 20px;
   --font-footer: 0.75rem;
   --space-edge: clamp(1.25rem, 4vw, 4rem);
   --space-small: 0.25rem;

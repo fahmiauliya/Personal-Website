@@ -1,0 +1,149 @@
+{
+  "schemaVersion": 1,
+  "id": "v1",
+  "name": "Sequential Ring",
+  "provenance": {
+    "source": "source/settings-2026-09-10T14-45-56-175Z.json",
+    "capturedAt": "2026-09-10T14:45:56.175Z",
+    "browserTuning": true,
+    "revisions": [
+      "Removed Sequential Ring pointer-follow and hover behavior; drag remains enabled."
+    ]
+  },
+  "settings": {
+    "formation": {
+      "imageCount": 10,
+      "spreadPercent": 100,
+      "horizontalSpread": 100,
+      "verticalSpread": 100,
+      "cardSize": 12,
+      "imageRoundness": 21,
+      "sizeVariation": 0,
+      "depth": 0.6,
+      "perspective": 0,
+      "layout": "sphere"
+    },
+    "playback": {
+      "speed": 1
+    },
+    "opening": {
+      "enabled": true,
+      "staggerPercent": 50,
+      "bounceStrength": 25,
+      "bounceDuration": 1.15,
+      "gooeyStrength": 70,
+      "stackImage": "7"
+    },
+    "floating": {
+      "rotationSpeed": 0.2,
+      "direction": "clockwise",
+      "tilt": -0.12
+    },
+    "interaction": {
+      "dragStrength": 4,
+      "response": 5
+    }
+  },
+  "timeline": {
+    "reveal": {
+      "at": 0.45,
+      "duration": 0.92,
+      "transition": {
+        "type": "easing",
+        "ease": [
+          0,
+          0,
+          0.05,
+          0.85
+        ],
+        "duration": 0.92
+      },
+      "from": {
+        "progress": 0
+      },
+      "to": {
+        "progress": 1
+      }
+    },
+    "ring": {
+      "at": 0,
+      "duration": 3.23,
+      "transition": {
+        "type": "easing",
+        "ease": [
+          0.57,
+          -0.01,
+          0.53,
+          0.94
+        ],
+        "duration": 3.23
+      },
+      "from": {
+        "angle": 0
+      },
+      "to": {
+        "angle": 1.592
+      }
+    },
+    "gather": {
+      "at": 2.45,
+      "duration": 1.35,
+      "transition": {
+        "type": "easing",
+        "duration": 1.35,
+        "ease": [
+          0.54,
+          0.14,
+          0.5,
+          1
+        ]
+      },
+      "from": {
+        "progress": 0
+      },
+      "to": {
+        "progress": 1
+      }
+    },
+    "unfold": {
+      "at": 4.14,
+      "duration": 1.92,
+      "transition": {
+        "type": "easing",
+        "ease": [
+          0.34,
+          0,
+          0.2,
+          0.97
+        ],
+        "duration": 1.92
+      },
+      "from": {
+        "progress": 0
+      },
+      "to": {
+        "progress": 1
+      }
+    },
+    "floating": {
+      "at": 4.13,
+      "duration": 4.65,
+      "transition": {
+        "type": "easing",
+        "ease": [
+          1,
+          -0.03,
+          1,
+          1.05
+        ],
+        "duration": 4.65
+      },
+      "from": {
+        "angle": 0
+      },
+      "to": {
+        "angle": 1.569
+      }
+    }
+  }
+}

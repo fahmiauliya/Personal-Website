@@ -27,7 +27,7 @@ p, h1 { margin: 0; }
   min-height: 100vh;
   min-height: 100dvh;
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: 1fr auto;
   padding-top: env(safe-area-inset-top, 0px);
   padding-right: max(var(--space-edge), env(safe-area-inset-right, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -35,22 +35,21 @@ p, h1 { margin: 0; }
   text-align: center;
 }
 
-.site-header, .site-footer {
+.site-footer {
   min-width: 0;
 }
 
-.site-header { padding-block: 20px; }
-.wordmark { font-size: var(--font-logo); line-height: 1.4; letter-spacing: -0.02em; }
 
 main { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-large); min-width: 0; padding-block: 32px; }
-.visual-panel { width: min(342px, 100%); aspect-ratio: 342 / 292; flex-shrink: 0; background: var(--color-panel); }
+.visual-panel { width: min(560px, 100%); flex-shrink: 0; }
+.visual-panel .website-motion, .motion-placeholder { width: 100%; aspect-ratio: 342 / 292; }
 .announcement { width: min(100%, var(--content-width)); padding-bottom: 80px; overflow-wrap: anywhere; }
 .eyebrow { color: var(--color-secondary); font-size: var(--font-eyebrow); line-height: 1.4; letter-spacing: -0.01em; margin-bottom: var(--space-small); animation-delay: 120ms; }
 .headline { font-size: var(--font-headline); font-weight: var(--font-weight); line-height: 1.2; letter-spacing: -0.02em; text-wrap: balance; animation-delay: 240ms; }
-.site-footer { padding-top: 47.5px; padding-bottom: 45.09px; color: var(--color-secondary); animation-delay: 560ms; }
+.site-footer { padding-block: 20px; color: var(--color-secondary); animation-delay: 560ms; }
 .site-footer small { display: block; font-size: var(--font-footer); line-height: 17.6px; letter-spacing: 0.165px; }
 .entrance { animation-name: enter; animation-duration: var(--motion-duration); animation-timing-function: var(--motion-ease); animation-fill-mode: both; }
-.site-header, .site-footer { --motion-distance: 0rem; }
+.site-footer { --motion-distance: 0rem; }
 
 @keyframes enter {
   from { opacity: 0; transform: translateY(var(--motion-distance)); }
