@@ -23,6 +23,8 @@ npm run preview
 For GitHub-connected hosting, see [Hostinger deployment setup](HOSTINGER.md).
 
 - `src/App.jsx`: announcement content.
+- `src/index.html`: editable HTML entry for development and builds.
+- `index.html`, `assets/`, `favicon.svg`: generated production files committed on `main` for Hostinger. Run `npm run build` before committing site changes; do not edit these files directly.
 - `src/components/PageShell.jsx`: semantic header, main, and footer.
 - `src/styles/tokens.css`: centralized colors, typography, spacing, radius, and motion.
 - `src/styles/global.css`: fluid layout, typography, entrance sequence, and reduced-motion support.

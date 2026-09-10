@@ -1,50 +1,37 @@
-# Deploy main directly to Hostinger
+# Hostinger: deploy main to public_html
 
-Use **Deploy Web App → Import Git Repository** to let Hostinger build this
-React/Vite project directly from `main`. No additional branch or GitHub
-Actions workflow is required.
+The repository root contains production-ready `index.html`, `favicon.svg`,
+and `assets/`. These generated files are committed alongside the source on
+`main`, so standard Hostinger Git deployment works without building on the server.
 
-## Build settings
+## Hostinger settings
 
-| Setting | Value |
-| --- | --- |
-| Repository | `fahmiauliya/Personal-Website` |
-| Branch | `main` |
-| Framework | Vite (React) |
-| Project root | Repository root (`.`) |
-| Node.js | 22 (22.12 or newer) |
-| Install command, if shown | `npm ci` |
-| Build command | `npm run build` |
-| Output directory | `dist` |
-| Environment variables | None required |
+- Repository: `fahmiauliya/Personal-Website`
+- Branch: `main`
+- Destination: `public_html`
+- Deployment flow: website Dashboard → Advanced → Git
 
-The existing `package.json`, `package-lock.json`, and `.nvmrc` provide the
-build script, locked dependencies, and Node version. Keep generated `dist/`
-and `node_modules/` out of Git; Hostinger generates the production files.
-This static frontend does not need a custom server entry file.
+Redeploy the latest commit after pushing. The live HTML must load
+`/assets/index-*.js`, not `/src/main.jsx`. If old HTML persists after a
+successful deployment, clear the Hostinger website cache and refresh.
 
-## Connect and deploy
+## Editing and publishing
 
-1. Push the latest local changes to `main`.
-2. In hPanel, choose **Add Website → Deploy Web App → Import Git Repository**.
-3. Authorize Hostinger to access the private repository and select it.
-4. Confirm the build settings above, then deploy.
-5. Connect the intended domain and verify HTTPS, the homepage, and its assets.
-6. Enable automatic deployments from `main` for future updates.
+1. Edit `src/` or `public/`. The editable HTML entry is `src/index.html`.
+2. Run `npm ci` when installing dependencies, then `npm run build`.
+3. Commit both source changes and the generated root `index.html`,
+   `favicon.svg`, and `assets/` files, then push to `main`.
+4. Wait for Hostinger auto-deployment or click Redeploy.
 
-This build-enabled flow is available on Hostinger Business and Cloud plans.
-The standard **Advanced → Git** flow for custom PHP/HTML sites is a different
-deployment setup: copying this repository to `public_html` does not produce
-the Vite build. If your panel only offers that flow, confirm the available
-hosting features before connecting `main` to the live web root.
+`npm run build` generates `dist/` and copies the production page and assets
+into the repository root. Older hashed assets are retained for cached pages.
+Do not edit generated files manually. `dist/` and `node_modules/` stay ignored.
+`npm run dev` uses the source entry, so localhost editing still works.
 
 ## Verification
 
-Run `npm run build` locally before pushing. After deployment, confirm the
-Hostinger deployment reports the intended `main` commit, and check the page,
-JavaScript, CSS, font, and favicon over HTTPS. Check the design on desktop
-and mobile. A local build alone does not verify the live deployment.
+Check the live homepage, bundled JavaScript, CSS, font, and favicon for HTTP
+200 responses and correct content types. Verify the visible page on desktop
+and mobile. Local build success alone does not confirm Hostinger deployment.
 
-References:
-- https://www.hostinger.com/support/how-to-deploy-a-nodejs-website-in-hostinger/
-- https://www.hostinger.com/support/1583302-how-to-deploy-a-git-repository-in-hostinger/
+Reference: https://www.hostinger.com/support/1583302-how-to-deploy-a-git-repository-in-hostinger/
