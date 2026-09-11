@@ -31,8 +31,9 @@ export default function MotionScene({ paused = false, speed = 1, replayKey = 0, 
   useEffect(() => { phaseCallback.current = onPhaseChange; }, [onPhaseChange]);
   useLayoutEffect(() => {
     previewRef.current = preview;
-    renderRef.current?.(performance.now());
-  }, [preview]);
+    // Live playback already has a frame loop; preview changes only update its sample.
+    if (!live || paused || reduced) renderRef.current?.(performance.now());
+  }, [preview, live, paused, reduced]);
 
   useEffect(() => {
     const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -61,7 +62,12 @@ export default function MotionScene({ paused = false, speed = 1, replayKey = 0, 
     const stage = stageRef.current;
     let frameId;
     let last = performance.now();
-    let radii = variant.radii(stage.clientWidth, stage.clientHeight, settings);
+    let width = stage.clientWidth;
+    let radii = variant.radii(width, stage.clientHeight, settings);
+    let previousGooey;
+    let previousBlur;
+    let previousMarkOpacity;
+    const painted = [];
     let previousPhase;
     function render(now) {
       const delta = Math.max(0, Math.min((now - last) / 1000, 0.05));
@@ -92,38 +98,51 @@ export default function MotionScene({ paused = false, speed = 1, replayKey = 0, 
       const gooey = cards[0]?.gooey ?? 0;
       // Threshold only the softened silhouette; composite the sharp artwork on top.
       // Turn the filter off completely once the images have separated.
-      clusterRef.current.style.filter = gooey > .001 ? `url("#${gooFilterId}")` : 'none';
-      gooBlurRef.current.setAttribute('stdDeviation', String(stage.clientWidth * settings.formation.cardSize / 100 * .11 * gooey));
-      clusterRef.current.style.setProperty('--goo-radius', `${gooey * 42}%`);
+      if ((gooey > .001) !== (previousGooey > .001) || previousGooey === undefined) {
+        clusterRef.current.style.filter = gooey > .001 ? `url("#${gooFilterId}")` : 'none';
+      }
+      const blur = width * settings.formation.cardSize / 100 * .11 * gooey;
+      if (blur !== previousBlur) {
+        gooBlurRef.current.setAttribute('stdDeviation', String(blur));
+        previousBlur = blur;
+      }
+      if (gooey !== previousGooey) {
+        clusterRef.current.style.setProperty('--goo-radius', `${gooey * 42}%`);
+        previousGooey = gooey;
+      }
       if (variant.id === 'v1') {
-        layerOrder.current = sequentialLayers(cards, layerOrder.current, stage.clientWidth, radii, settings.formation.cardSize);
+        layerOrder.current = sequentialLayers(cards, layerOrder.current, width, radii, settings.formation.cardSize);
         layerOrder.current.forEach((index, rank) => { cards[index].zIndex = rank + 1; });
       }
       for (let index = 0; index < count; index++) {
         const element = cardRefs.current[index];
         if (!element) continue;
         const card = cards[index];
-        element.style.transform = `translate3d(${card.x * radii.x}px, ${card.y * radii.y}px, 0) translate(-50%, -50%) scale(${card.scale})`;
+        let transform = `translate3d(${card.x * radii.x}px, ${card.y * radii.y}px, 0) translate(-50%, -50%) scale(${card.scale})`;
         if (card.scaleX !== undefined) {
-          element.style.transform += ` skewX(${card.skew}deg) scale(${card.scaleX}, ${card.scaleY})`;
+          transform += ` skewX(${card.skew}deg) scale(${card.scaleX}, ${card.scaleY})`;
         }
         if (card.rotateX !== undefined) {
-          element.style.transform += ` perspective(700px) rotateX(${card.rotateX}deg) rotateY(${card.rotateY}deg) rotateZ(${card.rotateZ}deg)`;
+          transform += ` perspective(700px) rotateX(${card.rotateX}deg) rotateY(${card.rotateY}deg) rotateZ(${card.rotateZ}deg)`;
         }
-        element.style.opacity = card.opacity;
-        element.style.zIndex = card.zIndex;
+        const previous = painted[index] ?? {};
+        if (transform !== previous.transform) element.style.transform = transform;
+        if (card.opacity !== previous.opacity) element.style.opacity = card.opacity;
+        if (card.zIndex !== previous.zIndex) element.style.zIndex = card.zIndex;
+        painted[index] = { transform, opacity: card.opacity, zIndex: card.zIndex };
       }
-      markRef.current.style.opacity = complete || variant.id !== 'v1' ? 0 : Math.min(1, sample.time / 0.35) * Math.max(0, 1 - sample.gather.current.progress * 6);
+      const markOpacity = complete || variant.id !== 'v1' ? 0 : Math.min(1, sample.time / 0.35) * Math.max(0, 1 - sample.gather.current.progress * 6);
+      if (markOpacity !== previousMarkOpacity) { markRef.current.style.opacity = markOpacity; previousMarkOpacity = markOpacity; }
       const phase = reduced ? 'Reduced motion' : finished ? 'Floating' : variantPhase(variant, sample);
-      if (phase !== previousPhase) { phaseCallback.current?.(phase); previousPhase = phase; }
-      stage.dataset.phase = phase;
+      if (phase !== previousPhase) { phaseCallback.current?.(phase); previousPhase = phase; stage.dataset.phase = phase; }
     }
     function tick(now) {
       render(now);
       if (live && !paused && !reduced && !document.hidden) frameId = requestAnimationFrame(tick);
     }
     const observer = new ResizeObserver(() => {
-      radii = variant.radii(stage.clientWidth, stage.clientHeight, settings);
+      width = stage.clientWidth;
+      radii = variant.radii(width, stage.clientHeight, settings);
       render(performance.now());
     });
     observer.observe(stage);

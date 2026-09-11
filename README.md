@@ -33,7 +33,7 @@ For GitHub-connected hosting, see [Hostinger deployment setup](HOSTINGER.md).
 - `src/assets/`: self-hosted Inter Regular Latin WOFF2, its license, and the material study image atlas.
 - `public/favicon.svg`: lightweight initial favicon.
 
-The layout uses two grid rows and dynamic viewport height. Content grows naturally on short screens. The image collection plays its entrance automatically, then floats continuously. Visitors can drag in both axes. Sequential Ring has no hover response. Reduced-motion preferences show the completed formation.
+The layout uses two grid rows and a fixed dynamic viewport height. Page scrolling, overscroll, and text dragging are disabled. The animation scales to the available height on short screens so the announcement and footer remain visible. The image collection plays its entrance automatically, then floats continuously. Visitors can drag in both axes. Sequential Ring has no hover response. Reduced-motion preferences show the completed formation.
 
 The animation loads in a separate JavaScript chunk while the announcement renders immediately. The reserved visual area keeps the layout stable during loading. The website does not mount the Motion Lab editor or read its browser-saved tuning; it uses `src/components/sequential-ring/preset.json`. Both `motion lab/` and `animation-demo/` remain separate development projects.
 
@@ -41,7 +41,7 @@ The animation loads in a separate JavaScript chunk while the announcement render
 
 - Production build passes.
 - Production Chrome checks at 320×568, 390×844, 768×1024, 1366×768, 1440×900, and 812×375.
-- No horizontal overflow or overlap between animation, announcement, and footer.
+- No page scrolling or overlap between animation, announcement, and footer; wheel, keyboard, and outside touch gestures keep the page still. Mouse and touch dragging remain active inside the animation.
 - Saved image count and rounding, full entrance, continuous floating, and drag capture checked.
 - Reduced motion checked both on a fresh visit and when the preference changes during playback.
 - No tuning editor appears on the website; no runtime errors or failed asset requests in the browser check.

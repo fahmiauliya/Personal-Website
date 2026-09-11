@@ -18,21 +18,25 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
-body { margin: 0; }
+html, body, #root { width: 100%; height: 100%; overflow: clip; overscroll-behavior: none; }
+body { margin: 0; touch-action: pinch-zoom; }
 p, h1 { margin: 0; }
 ::selection { background: #dce0d7; color: var(--color-primary); }
 :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 5px; border-radius: var(--radius-small); }
 
 .page-shell {
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   padding-top: env(safe-area-inset-top, 0px);
   padding-right: max(var(--space-edge), env(safe-area-inset-right, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
   padding-left: max(var(--space-edge), env(safe-area-inset-left, 0px));
   text-align: center;
+  overflow: clip;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .site-footer {
@@ -40,10 +44,10 @@ p, h1 { margin: 0; }
 }
 
 
-main { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-large); min-width: 0; padding-block: 32px; }
-.visual-panel { width: min(560px, 100%); flex-shrink: 0; }
-.visual-panel .website-motion, .motion-placeholder { width: 100%; aspect-ratio: 342 / 292; }
-.announcement { width: min(100%, var(--content-width)); padding-bottom: 80px; overflow-wrap: anywhere; }
+main { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: clamp(16px, 4dvh, var(--space-large)); min-width: 0; min-height: 0; padding-block: clamp(12px, 3.5dvh, 32px); }
+.visual-panel { width: min(560px, 100%); flex: 1; min-height: 0; max-height: calc(560px * 292 / 342); container-type: size; display: grid; place-items: center; }
+.visual-panel .website-motion, .motion-placeholder { width: min(100%, calc(100cqh * 342 / 292)); aspect-ratio: 342 / 292; }
+.announcement { width: min(100%, var(--content-width)); flex-shrink: 0; padding-bottom: clamp(0px, calc(20dvh - 100px), 80px); overflow-wrap: anywhere; }
 .eyebrow { color: var(--color-secondary); font-size: var(--font-eyebrow); line-height: 1.4; letter-spacing: -0.01em; margin-bottom: var(--space-small); animation-delay: 120ms; }
 .headline { font-size: var(--font-headline); font-weight: var(--font-weight); line-height: 1.2; letter-spacing: -0.02em; text-wrap: balance; animation-delay: 240ms; }
 .site-footer { padding-block: 20px; color: var(--color-secondary); animation-delay: 560ms; }
