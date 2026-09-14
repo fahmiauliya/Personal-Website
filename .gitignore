@@ -5,3 +5,7 @@ dist/
 .env.*
 !.env.example
 *.log
+
+# Local motion studies; these are separate development projects.
+/animation-demo/
+/motion lab/

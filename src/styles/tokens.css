@@ -1,22 +1,15 @@
 :root {
   color-scheme: light;
-  --color-background: #f4f4f2;
-  --color-panel: #fff;
-  --color-primary: #343633;
-  --color-secondary: #6b6e68;
-  --color-focus: #474d43;
-  --font-family: 'Inter', Arial, sans-serif;
-  --font-weight: 400;
-  --font-logo: 1.125rem;
-  --font-eyebrow: 0.875rem;
-  --font-headline: 20px;
-  --font-footer: 0.75rem;
-  --space-edge: clamp(1.25rem, 4vw, 4rem);
-  --space-small: 0.25rem;
-  --space-large: 2.5rem;
-  --content-width: 64rem;
-  --radius-small: 0.25rem;
-  --motion-duration: 1000ms;
-  --motion-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --motion-distance: 0.625rem;
+  --color-canvas: #fafafa;
+  --color-ink: #1b1b1b;
+  --color-muted: rgba(27, 27, 27, 0.7);
+  --color-project: #ebebeb;
+  --color-control: #656565;
+  --color-control-stroke-top: rgba(255, 255, 255, 0.2);
+  --color-control-stroke-bottom: rgba(153, 153, 153, 0.2);
+  --font-family: 'Geist', Arial, sans-serif;
+  --content-width: 587px;
+  --page-gutter: 16px;
+  --radius-control: 999px;
+  --radius-project: 12px;
 }

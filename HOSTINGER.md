@@ -6,7 +6,7 @@ and `assets/`. These generated files are committed alongside the source on
 
 ## Hostinger settings
 
-- Repository: `fahmiauliya/Personal-Website`
+- Repository: `fahmiauliya/Web-porto-project`
 - Branch: `main`
 - Destination: `public_html`
 - Deployment flow: website Dashboard → Advanced → Git
