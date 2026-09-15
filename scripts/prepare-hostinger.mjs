@@ -1,8 +1,8 @@
-import { copyFile, cp, readFile } from 'node:fs/promises';
+import { copyFile, cp, mkdir, readFile } from 'node:fs/promises';
 
 const root = new URL('../', import.meta.url);
 const html = await readFile(new URL('dist/index.html', root), 'utf8');
-if (html.includes('.jsx') || !html.includes('/assets/')) {
+if (html.includes('.jsx') || html.includes('.tsx') || !html.includes('/assets/')) {
   throw new Error('Expected a production HTML file referencing bundled assets.');
 }
 
@@ -10,4 +10,6 @@ if (html.includes('.jsx') || !html.includes('/assets/')) {
 await cp(new URL('dist/assets/', root), new URL('assets/', root), { recursive: true });
 await copyFile(new URL('dist/favicon.svg', root), new URL('favicon.svg', root));
 await copyFile(new URL('dist/index.html', root), new URL('index.html', root));
+await mkdir(new URL('about/', root), { recursive: true });
+await copyFile(new URL('dist/index.html', root), new URL('about/index.html', root));
 console.log('Production index.html, favicon.svg, and assets/ prepared for main.');

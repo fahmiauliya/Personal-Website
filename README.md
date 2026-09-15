@@ -1,6 +1,6 @@
 # Fahmi Auliya
 
-A minimal under-construction page built with React and Vite.
+A personal portfolio built with React, Vite, and TypeScript.
 
 ## Run locally
 
@@ -22,16 +22,17 @@ npm run preview
 
 For GitHub-connected hosting, see [Hostinger deployment setup](HOSTINGER.md).
 
-- `src/App.jsx`: announcement content.
+- `src/App.tsx`: lightweight page routing and homepage content.
 - `src/index.html`: editable HTML entry for development and builds.
 - `index.html`, `assets/`, `favicon.svg`: generated production files committed on `main` for Hostinger. Run `npm run build` before committing site changes; do not edit these files directly.
-- `src/components/PageShell.jsx`: semantic header, main, and footer.
+- `src/components/`: shared navigation, page shell, contact CTA, and social links.
+- `src/pages/About/`: About page, editable content data, and page-specific styling.
 - `src/styles/tokens.css`: centralized colors, typography, spacing, radius, and motion.
 - `src/styles/global.css`: fluid layout, typography, entrance sequence, and reduced-motion support.
 - `src/assets/`: self-hosted Inter Regular Latin WOFF2 and its license.
 - `public/favicon.svg`: lightweight initial favicon.
 
-The layout uses three grid rows and dynamic viewport height. Content grows naturally on short screens. There are no interactive controls; focus-visible styling is available for future controls.
+The homepage layout uses three grid rows and dynamic viewport height. The About page is available at `/about` and includes responsive desktop, tablet, and mobile layouts.
 
 ## Verification
 
