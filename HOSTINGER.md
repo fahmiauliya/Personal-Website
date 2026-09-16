@@ -3,6 +3,7 @@
 The repository root contains production-ready `index.html`, `favicon.svg`,
 and `assets/`. These generated files are committed alongside the source on
 `main`, so standard Hostinger Git deployment works without building on the server.
+The generated `about/index.html` entry serves the About page at `/about/`.
 
 ## Hostinger settings
 
@@ -20,7 +21,7 @@ successful deployment, clear the Hostinger website cache and refresh.
 1. Edit `src/` or `public/`. The editable HTML entry is `src/index.html`.
 2. Run `npm ci` when installing dependencies, then `npm run build`.
 3. Commit both source changes and the generated root `index.html`,
-   `favicon.svg`, and `assets/` files, then push to `main`.
+   `about/index.html`, `favicon.svg`, and `assets/` files, then push to `main`.
 4. Wait for Hostinger auto-deployment or click Redeploy.
 
 `npm run build` generates `dist/` and copies the production page and assets

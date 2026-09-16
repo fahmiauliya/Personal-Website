@@ -9,7 +9,7 @@ export default function Works() {
         {projects.map((project) => (
           <article className={`project-card project-card--${project.id}`} key={project.id}>
             <header className="project-meta">
-              <h3>{project.title}</h3>
+              <h3>{project.href ? <a className="project-card-link" href={project.href}>{project.title}</a> : project.title}</h3>
               <div>
                 <p>{project.description}</p>
                 <time>{project.date}</time>

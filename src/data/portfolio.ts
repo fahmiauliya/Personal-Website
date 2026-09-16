@@ -4,6 +4,7 @@ export interface Project {
   description: string;
   date: string;
   imageLabel: string;
+  href?: string;
 }
 
 export interface SocialLink {
@@ -24,10 +25,11 @@ export const projects: Project[] = Array.from({ length: 8 }, (_, index) => {
 
   return {
     id: projectNumber,
-    title: `Project ${projectNumber}`,
-    description: `Description ${projectNumber}`,
-    date: '00/00',
-    imageLabel: `IMG-${projectNumber}`,
+    title: projectNumber === 1 ? 'Beam' : `Project ${projectNumber}`,
+    description: projectNumber === 1 ? 'Website, Web app' : `Description ${projectNumber}`,
+    date: projectNumber === 1 ? '2022' : '00/00',
+    imageLabel: projectNumber === 1 ? 'Cover' : `IMG-${projectNumber}`,
+    href: projectNumber === 1 ? '/projects/beam/' : undefined,
   };
 });
 

@@ -29,6 +29,7 @@ npm run preview
 - `src/components/Works.tsx`: staggered eight-project layout.
 - `src/components/ContactFooter.tsx`: contact panel and footer in the Works layer.
 - `src/components/SocialLinks.tsx`: shared social navigation.
+- `src/pages/About/`: the standalone About page available at `/about/`.
 - `src/data/portfolio.ts`: editable project, contact, and social data.
 - `src/styles/tokens.css`: design constants taken from Figma.
 - `src/styles/global.css`: layout, component styling, layering, and responsive rules.
@@ -40,4 +41,4 @@ Geist Regular is self-hosted with its SIL Open Font License. The site has no run
 
 ## Publishing
 
-For GitHub-connected Hostinger deployment, see [HOSTINGER.md](HOSTINGER.md). `npm run build` creates `dist/` and refreshes the production entry and hashed assets committed at the repository root. Do not edit those generated files directly.
+For GitHub-connected Hostinger deployment, see [HOSTINGER.md](HOSTINGER.md). `npm run build` creates `dist/` and refreshes the production entry, `/about/` entry, and hashed assets committed at the repository root. Do not edit those generated files directly.
