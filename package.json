@@ -10,7 +10,12 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build && node scripts/prepare-hostinger.mjs",
     "preview": "vite preview --host 127.0.0.1",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "sync:motion-01": "node scripts/sync-beam-motion.mjs 01",
+    "sync:motion-02": "node scripts/sync-beam-motion.mjs 02",
+    "sync:motion-03": "node scripts/sync-beam-motion.mjs 03",
+    "sync:motion-05": "node scripts/sync-beam-motion.mjs 05",
+    "sync:motion-06": "node scripts/sync-beam-motion.mjs 06"
   },
   "dependencies": {
     "react": "^19.1.0",

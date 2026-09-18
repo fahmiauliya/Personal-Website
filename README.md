@@ -30,6 +30,7 @@ npm run preview
 - `src/components/ContactFooter.tsx`: contact panel and footer in the Works layer.
 - `src/components/SocialLinks.tsx`: shared social navigation.
 - `src/pages/About/`: the standalone About page available at `/about/`.
+- `src/pages/Beam/`: the Beam case study. Its gallery frames 01, 02, 03, 05, and 06 embed those Motion Lab scenes from the sibling `Motion Lab` project. Run `npm run sync:motion-01`, `npm run sync:motion-02`, `npm run sync:motion-03`, `npm run sync:motion-05`, or `npm run sync:motion-06` after changing a motion to refresh its checked-in standalone export in the matching `public/motion-XX/` folder.
 - `src/data/portfolio.ts`: editable project, contact, and social data.
 - `src/styles/tokens.css`: design constants taken from Figma.
 - `src/styles/global.css`: layout, component styling, layering, and responsive rules.
