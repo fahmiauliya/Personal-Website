@@ -5,6 +5,9 @@ import lightHorizontal from '../../assets/projects/beam/guide-light-horizontal.s
 import lightVertical from '../../assets/projects/beam/guide-light-vertical.svg';
 import { beamVisuals, type BeamVisual } from './beamData';
 import BeamMotionPreview from './BeamMotionPreview';
+import SceneFit from '../../components/SceneFit';
+// Motion 14 (upload progress loop), copied as source from Motion Lab beam-content/motion-14.
+import UploadProgressLoop from './motion-14';
 
 function Visual({ visual }: { visual: BeamVisual }) {
   const { preview } = visual;
@@ -18,12 +21,17 @@ function Visual({ visual }: { visual: BeamVisual }) {
       {visual.horizontalGuides?.map(y => (
         <img key={`y-${y}`} className="beam-guide beam-guide--horizontal" src={visual.dark ? darkHorizontal : lightHorizontal} alt="" style={{ top: `${y / visual.height * 100}%` }} />
       ))}
+      {visual.id === 14 && (
+        <div className="beam-motion-14">
+          <SceneFit width={visual.width} height={visual.height}><div className="beam-motion-14-frame"><UploadProgressLoop className="beam-motion-14-bar" /></div></SceneFit>
+        </div>
+      )}
       {preview && (
         <div className="beam-visual-preview" style={{ left: `${preview.x / visual.width * 100}%`, top: `${preview.y / visual.height * 100}%`, width: `${preview.width / visual.width * 100}%`, height: `${preview.height / visual.height * 100}%`, background: preview.background }}>
           {visual.id === 1 || visual.id === 2 || visual.id === 3 || visual.id === 5 || visual.id === 6 ? <BeamMotionPreview motion={visual.id} /> : preview.src && <img src={preview.src} alt={preview.alt ?? ''} loading="lazy" width={preview.width} height={preview.height} />}
         </div>
       )}
-      {visual.id !== 1 && visual.id !== 2 && visual.id !== 3 && visual.id !== 5 && visual.id !== 6 && !visual.artwork && <figcaption className="beam-visual-label" style={labelStyle}>img {visual.id}</figcaption>}
+      {visual.id !== 1 && visual.id !== 2 && visual.id !== 3 && visual.id !== 5 && visual.id !== 6 && visual.id !== 14 && !visual.artwork && <figcaption className="beam-visual-label" style={labelStyle}>img {visual.id}</figcaption>}
       {visual.overlappingLabel && <span className="beam-visual-label beam-visual-label--overlap" style={labelStyle} aria-hidden="true">{visual.overlappingLabel}</span>}
     </figure>
   );

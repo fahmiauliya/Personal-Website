@@ -47,7 +47,58 @@ p, h1, h2, h3 { margin: 0; }
   background: var(--color-canvas);
 }
 
+/* Project detail layer (src/components/projectTransition.ts). The detail page opens
+   over the home page, which stays mounted and locked at its scroll position. */
+.project-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-canvas);
+}
+
+html.project-open { overflow: hidden; }
+
+/* Shared-element morph between the grid card and the detail cover. Only the
+   destination snapshot is shown, so it is one object changing position and size, not
+   two images crossfading. The rest of the page fades: the old view out quickly, the new
+   one in during and after the expansion. */
+::view-transition-group(project-cover) {
+  animation-duration: 560ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(project-cover) {
+  animation: none;
+  opacity: 0;
+}
+
+::view-transition-new(project-cover) {
+  width: 100%;
+  height: 100%;
+  animation: none;
+  object-fit: cover;
+}
+
+::view-transition-old(root) {
+  animation: project-view-out 220ms ease both;
+}
+
+::view-transition-new(root) {
+  animation: project-view-in 380ms 160ms ease both;
+}
+
+@keyframes project-view-out { to { opacity: 0; } }
+@keyframes project-view-in { from { opacity: 0; } }
+
+/* As the Works surface covers it, the intro recedes slightly: its content column moves
+   up and shrinks, and the full-width layer dims. Only the column is scaled, so the
+   layer's full-bleed background never pulls in from the viewport edges.
+   --intro-cover (0 → 1) is written by src/components/introCoverMotion.ts. */
 .intro-layer {
+  --intro-cover: 0;
   position: fixed;
   inset: 0;
   z-index: 0;
@@ -60,6 +111,24 @@ p, h1, h2, h3 { margin: 0; }
   overflow: hidden;
   background: var(--color-canvas);
   backface-visibility: hidden;
+}
+
+/* The hero also falls out of focus as Works covers it: blur follows the same cover
+   progress, 0 → 8px, and reverses on the way back up. Works and the nav stay sharp. */
+.intro-layer > .intro-panel {
+  filter: blur(calc(var(--intro-cover) * 8px));
+  transform: translate3d(0, calc(var(--intro-cover) * -16px), 0) scale(calc(1 - var(--intro-cover) * 0.02));
+  transform-origin: 50% 0;
+  will-change: transform, filter;
+}
+
+.intro-layer::after {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  content: '';
+  opacity: calc(var(--intro-cover) * 0.05);
+  pointer-events: none;
 }
 
 .intro-panel {
@@ -106,10 +175,6 @@ p, h1, h2, h3 { margin: 0; }
 
 .nav-inner-highlight {
   z-index: 2;
-}
-
-.site-nav[data-material-hidden='true'] .nav-material {
-  visibility: hidden;
 }
 
 .nav-surface {
@@ -185,14 +250,11 @@ p, h1, h2, h3 { margin: 0; }
   border-radius: var(--radius-control);
 }
 
-.nav-segments.nav-surface {
+/* The pill keeps the resting border geometry at all times, so its content never shifts
+   by a subpixel when the morph starts or settles. */
+.nav-segments {
   --navigation-border-space: 1px;
-}
-
-.nav-segments.nav-surface::after,
-.nav-about.nav-surface::after {
-  /* The persistent SVG owns the white inset throughout the morph. */
-  box-shadow: inset 0 -1.5px 1px rgba(0, 0, 0, 0.15);
+  border: 0.5px solid transparent;
 }
 
 .nav-segments-content {
@@ -230,11 +292,20 @@ p, h1, h2, h3 { margin: 0; }
   background: transparent;
 }
 
+/* The intro row (Works) sat 1.5px below the pill's centre, while About is centred, so
+   Works' icon and label looked low. Raise it to centre on the pill like About, and move
+   it 1.5px left so its chip meets the pill's left end at the same 2.5px gap as the top
+   and bottom. */
+.nav-segments-content--intro {
+  top: -0.5px;
+  left: 1.5px;
+}
+
 .nav-segments-content--works .nav-project-tab {
   position: relative;
   z-index: 1;
-  width: 120px;
-  flex-basis: 120px;
+  width: var(--nav-tab-width);
+  flex-basis: var(--nav-tab-width);
   height: 23px;
   padding: 3px 10px;
   opacity: 1;
@@ -242,10 +313,14 @@ p, h1, h2, h3 { margin: 0; }
   transition: opacity 160ms ease;
 }
 
+/* Two 121px tabs fill the 242px inside the settled pill, leaving the same 2.5px gap at
+   both ends as at the top and bottom (at 120px the right end had 4.5px). The track
+   width is also the scroll morph's clip width in Header.tsx (TAB_TRACK_WIDTH). */
 .nav-segments-content--works {
+  --nav-tab-width: 121px;
   top: 50%;
   left: calc(2.5px - var(--navigation-border-space, 0px));
-  width: 240px;
+  width: calc(2 * var(--nav-tab-width));
   height: 23px;
   transform: translateY(-50%);
 }
@@ -254,7 +329,7 @@ p, h1, h2, h3 { margin: 0; }
   position: absolute;
   top: 0;
   left: 0;
-  width: 120px;
+  width: var(--nav-tab-width);
   height: 100%;
   border-radius: var(--radius-control);
   background: rgba(255, 255, 255, 0.2);
@@ -268,7 +343,7 @@ p, h1, h2, h3 { margin: 0; }
 }
 
 .nav-segments-content--works[data-active='exploration'] .nav-tab-indicator {
-  transform: translateX(120px);
+  transform: translateX(var(--nav-tab-width));
 }
 
 .nav-segments-content--works .nav-project-tab[aria-selected='true'] {
@@ -295,6 +370,136 @@ p, h1, h2, h3 { margin: 0; }
 .nav-about:focus-visible {
   outline: 2px solid #1b1b1b;
   outline-offset: 3px;
+}
+
+/* Navigation button states, skeuomorphic, per control. Standalone surfaces (the round
+   home and email buttons, and About once it is its own circle) brighten on hover and
+   darken on press, with the highlight turning into an inner top shadow. Segments that
+   share a track (Works and About at the top of the page, and the project tabs) get
+   their own chip instead, so only the hovered segment reacts. Each state keeps the same
+   shadow layers so it animates smoothly, and nothing uses transform, which the scroll
+   morph sets inline. */
+.nav-surface {
+  transition: box-shadow 180ms ease, filter 180ms ease;
+}
+
+.nav-surface::after {
+  transition: box-shadow 180ms ease;
+}
+
+button.nav-circle { cursor: pointer; }
+
+.nav-circle.nav-surface:hover {
+  filter: brightness(1.12);
+}
+
+.nav-circle.nav-surface:hover::after {
+  box-shadow:
+    inset 0 2px 1px rgba(255, 255, 255, 0.28),
+    inset 0 -1.5px 1px rgba(0, 0, 0, 0.15);
+}
+
+.nav-circle.nav-surface:active {
+  box-shadow:
+    0 1px 1.5px 0 rgba(0, 0, 0, 0.08),
+    0 0.5px 0.5px rgba(0, 0, 0, 0.2),
+    0 0 0 0.5px rgba(0, 0, 0, 0.55);
+  filter: brightness(0.86);
+}
+
+.nav-circle.nav-surface:active::after {
+  box-shadow:
+    inset 0 1.5px 2px rgba(0, 0, 0, 0.35),
+    inset 0 -1px 1px rgba(255, 255, 255, 0.06);
+}
+
+
+/* Segment chips. The unselected project tab, Works or About while they share the pill
+   at the top of the page, and the About bubble once scrolled, lift faintly on hover and
+   press into the track on click (their surface is the SVG material, so the chip is the
+   state layer).
+   The selected tab keeps its sliding indicator. Works and About draw the chip on a
+   ::before inset to the tabs' 23px height; same two shadow layers in every state. */
+.nav-segments-content--works .nav-project-tab,
+.site-nav[data-state='intro'] :is(.nav-segments-content--intro > a, .nav-about)::before {
+  box-shadow: inset 0 0 0 0.3px rgba(255, 255, 255, 0), inset 0 1px 1.5px rgba(0, 0, 0, 0);
+  transition: opacity 160ms ease, background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.site-nav[data-state='intro'] .nav-segments-content--intro > a {
+  position: relative;
+  z-index: 0;
+}
+
+.site-nav[data-state='intro'] :is(.nav-segments-content--intro > a, .nav-about)::before {
+  position: absolute;
+  z-index: -1;
+  border-radius: var(--radius-control);
+  content: '';
+  pointer-events: none;
+}
+
+/* Each chip is 23px tall, like the tabs. Works sits 1px below the pill's geometric
+   centre (3.5px from the top edge, 1.5px from the bottom): the pill's top rim reads thicker
+   than its bottom (a bright highlight band under the stroke vs a thin dark band), so the
+   nudge evens out its visible gaps; it also sits 0.5px right (3px from the pill's left
+   end). About is centred (2.5px / 2.5px). Both tuned by eye. The
+   shared rule above sets no inset, so these per-segment rules never compete with it.
+   The Works link box is 27px tall and About's 28px, hence the different values. */
+/* About's chip reaches 2px further right so it meets the pill's right end at 2.5px too;
+   its content shifts 1px right to stay centred in the wider chip. */
+.site-nav[data-state='intro'] .nav-about {
+  padding-left: 2px;
+}
+
+.site-nav[data-state='intro'] .nav-about::before {
+  inset: 2.5px -2px 2.5px 0;
+}
+
+.site-nav[data-state='intro'] .nav-segments-content--intro > a::before {
+  inset: 3px -0.5px 1px 0.5px;
+}
+
+.nav-segments-content--works .nav-project-tab[aria-selected='false']:hover,
+.site-nav[data-state='intro'] :is(.nav-segments-content--intro > a, .nav-about):hover::before {
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 0.3px rgba(255, 255, 255, 0.16), inset 0 1px 1.5px rgba(0, 0, 0, 0);
+}
+
+.nav-segments-content--works .nav-project-tab[aria-selected='false']:active,
+.site-nav[data-state='intro'] :is(.nav-segments-content--intro > a, .nav-about):active::before {
+  background-color: rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 0 0 0.3px rgba(255, 255, 255, 0.08), inset 0 1px 1.5px rgba(0, 0, 0, 0.35);
+}
+
+/* Scrolled: the About bubble's chip fills the whole circle. */
+.site-nav[data-state='works'] .nav-about::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  border-radius: var(--radius-control);
+  box-shadow: inset 0 0 0 0.3px rgba(255, 255, 255, 0), inset 0 1px 1.5px rgba(0, 0, 0, 0);
+  content: '';
+  pointer-events: none;
+  transition: background-color 180ms ease, box-shadow 180ms ease;
+}
+
+.site-nav[data-state='works'] .nav-about:hover::before {
+  background-color: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 0 0 0.3px rgba(255, 255, 255, 0.16), inset 0 1px 1.5px rgba(0, 0, 0, 0);
+}
+
+.site-nav[data-state='works'] .nav-about:active::before {
+  background-color: rgba(0, 0, 0, 0.12);
+  box-shadow: inset 0 0 0 0.3px rgba(255, 255, 255, 0.08), inset 0 1px 1.5px rgba(0, 0, 0, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-nav[data-state='works'] .nav-about::before { transition: none; }
+  .nav-surface,
+  .nav-surface::after,
+  .nav-segments-content--works .nav-project-tab,
+  .site-nav[data-state='intro'] :is(.nav-segments-content--intro > a, .nav-about)::before { transition: none; }
 }
 
 .nav-about-label {
@@ -444,6 +649,8 @@ p, h1, h2, h3 { margin: 0; }
 }
 .social-links img { width: 14px; height: 14px; object-fit: contain; }
 
+/* The Works surface: one panel that slides up over the intro; introCoverMotion.ts adds
+   its slight trailing weight. Its top edge is the Works outline (.works-section). */
 .foreground-layer {
   position: relative;
   z-index: 1;
@@ -454,8 +661,12 @@ p, h1, h2, h3 { margin: 0; }
   isolation: isolate;
   background: var(--color-canvas);
   box-shadow: 0 -0.5px #fff;
+  will-change: transform;
 }
 
+/* Outline from Figma (Portfolio-2026, node 132:49275): a 0.5px black-10% top edge
+   with a 0.5px white highlight ring. The top edge is an inset shadow, not a border:
+   browsers round borders under 1px up to 1px, and a shadow also adds no height. */
 .works-section {
   position: relative;
   z-index: 1;
@@ -463,6 +674,9 @@ p, h1, h2, h3 { margin: 0; }
   padding: 120px 0 0;
   overflow: hidden;
   background: var(--color-canvas);
+  box-shadow:
+    inset 0 0.5px 0 rgba(0, 0, 0, 0.1),
+    0 0 0 0.5px #fff;
   scroll-margin-top: 0;
 }
 
@@ -483,6 +697,7 @@ p, h1, h2, h3 { margin: 0; }
   column-gap: 12px;
   row-gap: 16px;
   padding: 24px var(--page-gutter);
+  box-shadow: 0 0 0 0.5px #fff;
 }
 
 .project-card { position: relative; display: flex; min-width: 0; flex-direction: column; gap: 12px; }
@@ -516,7 +731,16 @@ p, h1, h2, h3 { margin: 0; }
 .project-meta p { opacity: 0.6; letter-spacing: -0.24px; }
 .project-meta time { opacity: 0.6; font-size: 10px; letter-spacing: -0.2px; }
 
+/* Projects without a detail page yet: their title and details are blurred (Figma layer
+   blur 10, which is a CSS blur of about 5px). The cover stays sharp. */
+.project-meta--blurred { filter: blur(5px); user-select: none; }
+
+/* Standalone motion exports (src/components/MotionPreview.tsx) fill their box. */
+.motion-preview { position: absolute; inset: 0; overflow: hidden; }
+.motion-preview iframe { display: block; border: 0; transform-origin: top left; pointer-events: none; }
+
 .project-image {
+  position: relative;
   display: grid;
   width: 100%;
   height: 300px;
@@ -531,6 +755,94 @@ p, h1, h2, h3 { margin: 0; }
   letter-spacing: 0.24px;
 }
 
+/* Progressive blur behind the sticky project headers (src/components/ProgressiveBlur.tsx).
+   Without backdrop-filter the header keeps its solid canvas background instead. */
+.progressive-blur { position: absolute; z-index: -1; inset: 0; pointer-events: none; }
+.progressive-blur > span { position: absolute; inset: 0; }
+/* No view-transition-name here: a named element becomes a backdrop root, so its
+   backdrop-filter would only see its own (empty) contents and never blur the page. */
+
+/* Project detail close button: on hover a thin ring draws around the X (the stroke's
+   dash offset runs 1.02 → 0 over its normalised length), and retracts on leave. The X and
+   the button's size and position don't change. */
+a[data-project-close] { position: relative; }
+
+.close-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  transform: rotate(-90deg);
+}
+
+.close-ring circle {
+  fill: none;
+  stroke: rgba(0, 0, 0, 0.5);
+  /* The normalised length rounds slightly, so the dash overshoots (1.02) to close the
+     circle fully, and the gap is wide enough (2) that nothing shows at rest. */
+  stroke-dasharray: 1.02 2;
+  stroke-dashoffset: 1.02;
+  /* butt, not round: a zero-length round-capped dash would still draw a dot. */
+  stroke-linecap: butt;
+  stroke-width: 0.75;
+  transition: stroke-dashoffset 420ms cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-dashoffset: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .close-ring circle { transition: none; }
+}
+
+/* Static cover images fill the card's height with their ratio locked, centred, so a
+   wider image crops evenly left and right and is never stretched. */
+.project-cover-image {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  display: block;
+  width: auto;
+  max-width: none;
+  height: 100%;
+  transform: translateX(-50%);
+}
+
+/* For images narrower than the card (e.g. Lasting Learn): fill the width instead, so a
+   taller image crops evenly top and bottom. */
+.project-cover-image--fill-width {
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: auto;
+  transform: translateY(-50%);
+}
+
+/* Covers built in code (src/components/SceneFit.tsx) fill their box like the motion
+   covers: the scene keeps its design size and is scaled from the top-left corner. */
+.scene-fit { position: absolute; inset: 0; overflow: hidden; }
+.scene-fit-stage { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+
+/* Media covers (motion and video) keep the square corners of their project page frames, with a
+   0.5px outline so light covers (Beam) separate from the page. Browsers round
+   borders under 1px up to 1px, so the outline is a 1px border on an overlay drawn
+   at 1/0.5 size and scaled down by 0.5. */
+.project-image--media { border: 0; border-radius: 0; }
+.project-image--media::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(100% / 0.5);
+  height: calc(100% / 0.5);
+  box-sizing: border-box;
+  border: 1px solid rgb(0 0 0 / 15%);
+  content: '';
+  pointer-events: none;
+  transform: scale(0.5);
+  transform-origin: 0 0;
+}
+
 .contact-footer {
   position: relative;
   z-index: 2;
@@ -538,7 +850,7 @@ p, h1, h2, h3 { margin: 0; }
   height: 730px;
   flex: 0 0 730px;
   flex-direction: column;
-  background: #f1f1f1;
+  background: var(--color-footer);
 }
 
 .contact-area {
@@ -548,13 +860,27 @@ p, h1, h2, h3 { margin: 0; }
   place-items: center;
   padding: 96px var(--page-gutter) 72px;
   overflow: hidden;
-  background: #f1f1f1;
+  background: var(--color-footer);
   box-shadow: 0 0 0 0.5px #fff;
+}
+
+/* The light-theme beam preset is very faint (stroke ~6% opacity). These multipliers,
+   read by border-beam, raise it to a deep black stroke with a softer glow. */
+.contact-beam {
+  --beam-stroke-opacity: 15;
+  --beam-inner-opacity: 3;
+  --beam-bloom-opacity: 2.5;
+}
+
+/* ContactBeam wraps the pill, so the wrapper takes its width and offset. */
+.contact-pill-beam {
+  width: min(var(--content-width), 100%);
+  transform: translateX(calc(-1 * var(--page-gutter)));
 }
 
 .contact-pill {
   display: flex;
-  width: min(var(--content-width), 100%);
+  width: 100%;
   height: 57px;
   align-items: center;
   justify-content: space-between;
@@ -564,7 +890,6 @@ p, h1, h2, h3 { margin: 0; }
     linear-gradient(90deg, rgba(99, 99, 99, 0.08), rgba(99, 99, 99, 0.08)),
     linear-gradient(180deg, rgba(255, 255, 255, 0.2) 50%, rgba(230, 230, 230, 0.2)),
     #fff;
-  transform: translateX(calc(-1 * var(--page-gutter)));
 }
 
 .contact-pill p {
@@ -583,6 +908,44 @@ p, h1, h2, h3 { margin: 0; }
   text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.85), 0.3px 0.3px 0.4px #000;
 }
 
+/* Footer "Let's Talk" CTA states, skeuomorphic. Every state uses the same three
+   shadow layers so they animate smoothly (a different layer count, or a swapped
+   background gradient, can't be interpolated and snaps). Hover brightens the body and
+   its top highlight; pressed darkens it, moves the highlight into an inner top shadow,
+   and sinks half a pixel. `:is()` gives two-class specificity to beat both bases. */
+:is(.contact-button, .pill-button--dark).skeuo-button {
+  box-shadow:
+    0 0 0 0.5px rgb(214 214 214 / 8%),
+    inset 0 1px 1px rgb(255 255 255 / 15%),
+    inset 0 -1px 0.5px #000;
+  cursor: pointer;
+  transition: box-shadow 180ms ease, filter 180ms ease, transform 120ms ease;
+}
+
+:is(.contact-button, .pill-button--dark).skeuo-button:hover {
+  box-shadow:
+    0 0 0 0.5px rgb(214 214 214 / 8%),
+    inset 0 1px 1px rgb(255 255 255 / 30%),
+    inset 0 -1px 0.5px #000;
+  filter: brightness(1.12);
+}
+
+:is(.contact-button, .pill-button--dark).skeuo-button:active {
+  box-shadow:
+    0 0 0 0.5px rgb(214 214 214 / 8%),
+    inset 0 1.5px 3px rgb(0 0 0 / 55%),
+    inset 0 -0.5px 0.5px rgb(255 255 255 / 10%);
+  filter: brightness(0.86);
+  transform: translateY(0.5px);
+}
+
+.skeuo-button:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  :is(.contact-button, .pill-button--dark).skeuo-button { transition: none; }
+  :is(.contact-button, .pill-button--dark).skeuo-button:active { transform: none; }
+}
+
 .footer-socials {
   display: grid;
   height: 77px;
@@ -590,7 +953,7 @@ p, h1, h2, h3 { margin: 0; }
   place-items: center;
   padding: 24px;
   overflow: hidden;
-  background: #f1f1f1;
+  background: var(--color-footer);
   box-shadow: 0 0 0 0.5px #fff;
 }
 
@@ -616,7 +979,8 @@ p, h1, h2, h3 { margin: 0; }
   .works-grid { grid-template-columns: 1fr; padding-top: 24px; padding-bottom: 24px; }
   .contact-footer { height: auto; flex-basis: auto; }
   .contact-area { padding: 64px var(--page-gutter) 48px; }
-  .contact-pill { height: auto; min-height: 57px; transform: none; }
+  .contact-pill-beam { transform: none; }
+  .contact-pill { height: auto; min-height: 57px; }
 }
 
 @media (max-width: 479px) {

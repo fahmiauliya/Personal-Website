@@ -190,7 +190,7 @@
   left: 0;
   height: 816px;
   overflow: hidden;
-  background: var(--about-surface);
+  background: var(--color-footer);
   box-shadow: 0 0 0 0.5px #fff;
 }
 
@@ -199,11 +199,16 @@
   align-items: center;
 }
 
-.contact-cta {
-  display: flex;
+/* ContactBeam wraps the pill, so the wrapper takes its place in the grid. */
+.contact-cta-beam {
   grid-column: 1 / -1;
   justify-self: center;
   width: min(100%, 587px);
+}
+
+.contact-cta {
+  display: flex;
+  width: 100%;
   min-height: 57px;
   align-items: center;
   justify-content: space-between;
@@ -264,7 +269,7 @@
   align-items: center;
   justify-content: center;
   padding-block: 24px;
-  background: var(--about-surface);
+  background: var(--color-footer);
   box-shadow: 0 0 0 0.5px #fff;
 }
 

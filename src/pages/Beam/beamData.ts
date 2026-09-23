@@ -1,3 +1,4 @@
+import type { MotionScene } from '../../components/MotionPreview';
 import content09Artwork from '../../assets/projects/beam/content-09.svg';
 import content10Artwork from '../../assets/projects/beam/content-10.svg';
 import content11Artwork from '../../assets/projects/beam/content-11.svg';
@@ -21,6 +22,9 @@ export const beamProject = {
     'It helps humans and agents work from the same up-to-date files without repeatedly copying, syncing, or rebuilding setup.',
   ],
   note: 'copying, syncing, or rebuilding setup.',
+  // Motion Lab's beam-content/motion-cover (Figma 248:3595); refresh with `npm run sync:beam -- cover`.
+  // The home page's Works card uses this same cover (src/data/portfolio.ts).
+  cover: { src: '/beam/motion-cover/index.html', width: 806, height: 706, title: 'Beam cover motion' } satisfies MotionScene,
 };
 
 export interface BeamVisual {
@@ -60,5 +64,6 @@ export const beamVisuals: BeamVisual[] = [
   { id: 11, width: 593, height: squareHeight, labelTop: 19.77, artwork: content11Artwork },
   { id: 12, width: 593, height: squareHeight, dark: true, labelTop: 19.77, artwork: content12Artwork },
   { id: 13, width: 593, height: squareHeight, labelTop: 19.77, artwork: content13Artwork },
-  { id: 14, width: 593, height: squareHeight, labelTop: 19.77, preview: { x: 47, y: 79.769, width: 500, height: 312.5, background: '#141414' } },
+  // Motion 14 is the Motion Lab component itself (./motion-14), laid out as Motion Lab's 593 × 473 frame.
+  { id: 14, width: 593, height: squareHeight, labelTop: 19.77 },
 ];

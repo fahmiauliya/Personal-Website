@@ -1,0 +1,64 @@
+/* Motion 14 — Upload progress loop. Self-contained: font, icons, and colors live in this folder. */
+@font-face {
+  font-family: 'TikTok Sans';
+  src: url('./assets/fonts/tiktok-sans-latin-400.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+.uploadProgressLoop {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 470px;
+  height: 77.13px;
+  overflow: hidden;
+  border: .5px solid rgba(255,255,255,.2);
+  border-radius: 6px;
+  color: #fff;
+  background: linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.2)), #3d3d3d;
+  box-shadow: 0 1px 2px -1px rgba(0,0,0,.25), 0 2px 4px -2px rgba(0,0,0,.2), 0 4px 8px -4px rgba(0,0,0,.15), 0 8px 12px -4px rgba(0,0,0,.1), inset 0 .5px .5px rgba(255,255,255,.25), inset 0 -.5px .5px rgba(0,0,0,.1);
+  font-family: 'TikTok Sans', Arial, sans-serif;
+  font-size: 14.46px;
+  font-weight: 400;
+  line-height: 21.69px;
+  font-synthesis: none;
+  user-select: none;
+}
+.uploadProgressLoop *,
+.uploadProgressLoop *::before { box-sizing: border-box; }
+.uploadProgressLoop img { display: block; }
+
+/* At 100% the dots settle into this calm green glow. */
+.uploadProgressLoop__glow {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(107,144,148,.16), rgba(107,144,148,.08));
+}
+
+.uploadProgressLoop__header {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: 100%;
+  height: 47px;
+  grid-template-columns: minmax(0, 194px) minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14.46px 14.46px 9.64px;
+}
+.uploadProgressLoop__title { display: flex; min-width: 0; align-items: center; gap: 7.23px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.uploadProgressLoop__title img { width: 14.46px; height: 14.46px; flex: 0 0 14.46px; }
+.uploadProgressLoop__percent { width: 48.2px; justify-self: end; text-align: right; }
+.uploadProgressLoop__actions { display: flex; align-items: center; gap: 4px; }
+.uploadProgressLoop__action { display: grid; width: 21.69px; height: 21.69px; padding: 3.615px; place-items: center; }
+.uploadProgressLoop__action img { width: 14.46px; height: 14.46px; }
+.uploadProgressLoop__action img.uploadProgressLoop__check { width: 11.44px; height: 8.75px; }
+.uploadProgressLoop__separator { width: 1px; height: 14.46px; margin: 0 7.23px; }
+
+.uploadProgressLoop__track { position: relative; z-index: 2; height: 29px; overflow: hidden; }
+.uploadProgressLoop__track::before { position: absolute; top: 4.82px; left: 0; width: 100%; border-top: .5px solid rgba(255,255,255,.06); content: ''; }
+.uploadProgressLoop__track > span { position: absolute; top: 4.82px; left: 0; height: 1px; background: #6b9094; }

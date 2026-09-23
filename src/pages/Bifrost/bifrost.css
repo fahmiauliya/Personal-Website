@@ -1,0 +1,92 @@
+.bifrost-page {
+  --navigation-control-height: 28px;
+  background: var(--color-canvas);
+  color: #000;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.bifrost-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 28px;
+  height: 63px;
+  align-items: center;
+  padding: 20px 16px 12px;
+  background: var(--color-canvas);
+}
+
+/* The page scrolls under the header through a progressive blur instead of a solid band. */
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .bifrost-header { background: none; }
+}
+
+.bifrost-header-center { display: flex; align-items: center; gap: 4px; justify-self: center; }
+.bifrost-header-spacer, .bifrost-close { width: 28px; height: 28px; }
+.bifrost-close { display: grid; place-items: center; }
+.bifrost-header-title { width: 109px; height: 31px; padding: 2px 4px 2px 2px; }
+.bifrost-header-title > span { display: grid; width: 103px; height: 27px; place-items: center; text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 25%), 0.3px 0.3px 0.4px rgb(0 0 0 / 25%); }
+
+.bifrost-main { width: calc(100% - 32px); margin-inline: auto; padding-bottom: 24px; }
+/* Same hero layout as Beam's (beam.css): three fixed columns, centred. */
+.bifrost-overview { display: grid; grid-template-columns: 285px 542px 285px; justify-content: center; gap: 16px; padding-block: 120px; margin-bottom: 16px; }
+.bifrost-details, .bifrost-description { display: flex; min-width: 0; flex-direction: column; justify-content: space-between; }
+.bifrost-details h1 { font: inherit; letter-spacing: 0.24px; }
+.bifrost-category { margin-top: 2px; color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }
+.bifrost-facts { margin: 12px 0 0; letter-spacing: -0.24px; }
+.bifrost-fact { display: grid; grid-template-columns: 50px minmax(0, 1fr); gap: 20px; padding-block: 10px; border-bottom: 0.5px solid rgb(0 0 0 / 10%); }
+.bifrost-fact:last-child { border: 0; }
+.bifrost-fact dt, .bifrost-fact dd { margin: 0; color: rgb(0 0 0 / 60%); }
+.bifrost-fact dd > span { display: block; }
+.bifrost-url { display: flex; align-items: center; gap: 20px; padding-block: 6px; }
+.bifrost-url > span:first-child { width: 50px; flex: 0 0 50px; color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }
+.bifrost-visit-frame { display: block; padding: 0.5px; border-radius: var(--radius-control); background: #f0f0f0; }
+.bifrost-visit { display: flex; height: 25px; align-items: center; justify-content: center; gap: 4px; padding: 4px 12px 4px 14px; border: 0.5px solid rgb(0 0 0 / 10%); border-radius: var(--radius-control); background: linear-gradient(180deg, rgb(255 255 255 / 20%) 50%, rgb(230 230 230 / 20%)), #fff; box-shadow: inset 0 0.5px 0.5px rgb(255 255 255 / 60%), inset 0 -0.5px 0.5px rgb(0 0 0 / 20%); text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 15%), 0.3px 0.3px 0.4px rgb(0 0 0 / 20%); white-space: nowrap; }
+/* Shows Motion Lab's cover frame background while the cover motion loads. */
+.bifrost-cover { position: relative; overflow: hidden; height: 475px; background: #00281e; }
+.bifrost-description { color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }
+.bifrost-description > div p + p { margin-top: 16.8px; }
+
+.bifrost-gallery { container-type: inline-size; }
+/* One design pixel of the 1408px-wide Figma gallery. */
+.bifrost-gallery-rows { --u: calc(100cqw / 1408); display: flex; flex-direction: column; gap: calc(12 * var(--u)); }
+.bifrost-gallery-row { display: flex; gap: calc(12 * var(--u)); }
+.bifrost-gallery-column { display: flex; flex-direction: column; gap: calc(12 * var(--u)); }
+.bifrost-motion { position: relative; width: calc(var(--frame-width) * var(--u)); margin: 0; overflow: hidden; aspect-ratio: var(--frame-ratio); }
+.bifrost-motion-label { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 15%), 0.3px 0.3px 0.4px rgb(0 0 0 / 20%); }
+.bifrost-motion-label--light { color: #fff; }
+.bifrost-motion-label--dark { color: #000; }
+
+.bifrost-footer { background: var(--color-footer); font-size: 14px; }
+.bifrost-footer .contact-grid { display: flex; height: 739px; align-items: center; justify-content: center; padding: 24px 16px; box-shadow: 0 0 0 0.5px #fff; }
+.bifrost-footer .contact-cta { height: 57px; }
+.bifrost-socials { display: grid; height: 77px; place-items: center; padding: 24px 16px; box-shadow: 0 0 0 0.5px #fff; }
+.bifrost-socials .social-links { display: flex; gap: 2px; }
+.bifrost-socials .social-links button { display: grid; width: 29px; height: 29px; padding: 0.5px; place-items: center; border-radius: 50%; }
+.bifrost-socials .social-links img { width: 14px; height: 14px; object-fit: contain; }
+
+@media (max-width: 1245px) {
+  .bifrost-overview { grid-template-columns: minmax(0, 285fr) minmax(0, 542fr) minmax(0, 285fr); }
+  .bifrost-cover { height: auto; aspect-ratio: 542 / 475; }
+  .bifrost-details, .bifrost-description { gap: 24px; }
+}
+
+/* The supplied frame is desktop-only. Reflow the same content, in order,
+   when its three columns no longer fit; no additional mobile content. */
+@media (max-width: 900px) {
+  .bifrost-overview { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); padding-block: 64px; }
+  .bifrost-description { grid-column: 1 / -1; gap: 24px; }
+  .bifrost-cover { align-self: start; }
+}
+
+@media (max-width: 600px) {
+  .bifrost-main { width: calc(100% - 32px); }
+  .bifrost-overview { grid-template-columns: minmax(0, 1fr); gap: 32px; padding-block: 48px; }
+  .bifrost-gallery-rows, .bifrost-gallery-row, .bifrost-gallery-column { gap: 12px; }
+  .bifrost-gallery-row { flex-direction: column; }
+  .bifrost-motion { width: 100%; }
+  .bifrost-footer .contact-grid { height: auto; min-height: 360px; padding-inline: 16px; }
+  .bifrost-footer .contact-cta { height: auto; min-height: 57px; }
+}

@@ -12,9 +12,15 @@ for (const motion of ['motion-01', 'motion-02', 'motion-03', 'motion-05', 'motio
   await rm(new URL(`${motion}/`, root), { recursive: true, force: true });
   await cp(new URL(`dist/${motion}/`, root), new URL(`${motion}/`, root), { recursive: true });
 }
+// Motion Lab exports (npm run sync:bifrost / sync:beam) live in public/<project>/motion-<slug>/;
+// public/talentpluto/ holds the TalentPluto cover video and poster.
+for (const project of ['bifrost/', 'beam/', 'talentpluto/']) {
+  await rm(new URL(project, root), { recursive: true, force: true });
+  await cp(new URL(`dist/${project}`, root), new URL(project, root), { recursive: true });
+}
 await copyFile(new URL('dist/favicon.svg', root), new URL('favicon.svg', root));
 await copyFile(new URL('dist/index.html', root), new URL('index.html', root));
-for (const route of ['about/', 'projects/beam/']) {
+for (const route of ['about/', 'projects/beam/', 'projects/bifrost/']) {
   await mkdir(new URL(route, root), { recursive: true });
   await copyFile(new URL('dist/index.html', root), new URL(`${route}index.html`, root));
 }

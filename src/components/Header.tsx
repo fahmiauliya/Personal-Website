@@ -4,9 +4,12 @@ import homeIcon from '../assets/icons/logo.svg';
 import contactIcon from '../assets/icons/nav-contact.svg';
 import worksIcon from '../assets/icons/nav-works.svg';
 import NavigationMaterial from './NavigationMaterial';
+import ProgressiveBlur from './ProgressiveBlur';
 import { materialPath, useNavigationProgress } from './navigationMotion';
 
 const NAVIGATION_CONTROL_HEIGHT = 28;
+// Two 121px project tabs (--nav-tab-width in global.css).
+const TAB_TRACK_WIDTH = 242;
 type WorkTab = 'selected' | 'exploration';
 
 export default function Header({ isAboutPage = false }: { isAboutPage?: boolean }) {
@@ -22,7 +25,7 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
   const aboutCenter = aboutLeft + (aboutWidth - labelWidth) / 2;
   const projectsOpacity = Math.max(0, Math.min(1, (progress - 0.3) / 0.4));
   const worksOpacity = Math.max(0, 1 - progress / 0.35);
-  const contentClip = Math.max(0, 240 - (aboutLeft - centerLeft - 7));
+  const contentClip = Math.max(0, TAB_TRACK_WIDTH - (aboutLeft - centerLeft - 7));
   const isIntroSettled = progress === 0;
   const isWorksSettled = progress === 1;
   const navigationStyle = {
@@ -48,7 +51,11 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
 
   return (
     <header className="site-header">
-      <nav className="site-nav" data-state={progress < 0.5 ? 'intro' : 'works'} data-material-hidden={(isIntroSettled || isWorksSettled) || undefined} data-works-settled={isWorksSettled || undefined} style={navigationStyle} aria-label="Primary navigation">
+      <ProgressiveBlur />
+      {/* The SVG material is the one persistent surface for the pill and the About bubble,
+          at rest and mid-morph, so their fill, border, shadow and highlight never swap
+          renderers or restart; only the geometry animates, in both directions. */}
+      <nav className="site-nav" data-state={progress < 0.5 ? 'intro' : 'works'} data-works-settled={isWorksSettled || undefined} style={navigationStyle} aria-label="Primary navigation">
         <NavigationMaterial path={materialPath(centerLeft, centerWidth, aboutCenter, progress, NAVIGATION_CONTROL_HEIGHT / 2)} />
 
         <a className="nav-circle nav-surface nav-home" style={{ transform: `translateX(${78 - 46 * progress}px)` }} href="/" aria-label="Back to introduction">
@@ -57,7 +64,7 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
           </span>
         </a>
 
-        <div className={`nav-segments${isIntroSettled || isWorksSettled ? ' nav-surface' : ''}`} style={{ width: centerWidth, transform: `translateX(${centerLeft}px)` }}>
+        <div className="nav-segments" style={{ width: centerWidth, transform: `translateX(${centerLeft}px)` }}>
           <div className="nav-segments-content nav-segments-content--intro" style={{ opacity: worksOpacity }} aria-hidden={worksOpacity === 0}>
             <a href="/#works" tabIndex={isIntroSettled ? 0 : -1} style={{ pointerEvents: isIntroSettled ? 'auto' : 'none' }}>
               <span className="nav-icon nav-icon--works" aria-hidden="true">
@@ -74,14 +81,14 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
         </div>
 
         {/* This link and its icon remain mounted and visible through the entire morph. */}
-        <a className={`nav-about${isWorksSettled ? ' nav-surface' : ''}`} href="/about/" aria-label="About" aria-current={isAboutPage ? 'page' : undefined} style={{ width: aboutWidth, transform: `translateX(${aboutLeft}px)` }}>
+        <a className="nav-about" href="/about/" aria-label="About" aria-current={isAboutPage ? 'page' : undefined} style={{ width: aboutWidth, transform: `translateX(${aboutLeft}px)` }}>
           <span className="nav-icon nav-icon--about" aria-hidden="true">
             <span><img src={aboutIcon} alt="" /></span>
           </span>
           <span className="nav-about-label" aria-hidden="true" style={{ width: labelWidth, opacity: 1 - collapse }}><span>About</span></span>
         </a>
 
-        <button className="nav-circle nav-surface nav-email" style={{ transform: `translateX(${269 + 78 * progress}px)` }} type="button" disabled aria-label="Send an email">
+        <button className="nav-circle nav-surface nav-email" style={{ transform: `translateX(${269 + 78 * progress}px)` }} type="button" aria-label="Send an email">
           <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={contactIcon} alt="" /></span>
         </button>
       </nav>

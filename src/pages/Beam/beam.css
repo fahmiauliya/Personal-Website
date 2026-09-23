@@ -18,6 +18,11 @@
   background: var(--color-canvas);
 }
 
+/* The page scrolls under the header through a progressive blur instead of a solid band. */
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .beam-header { background: none; }
+}
+
 .beam-header-center { display: flex; align-items: center; gap: 4px; justify-self: center; }
 .beam-header-spacer, .beam-close { width: 28px; height: 28px; }
 .beam-close { display: grid; place-items: center; }
@@ -38,7 +43,8 @@
 .beam-url > span:first-child { width: 50px; flex: 0 0 50px; color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }
 .beam-visit-frame { display: block; padding: 0.5px; border-radius: var(--radius-control); background: #f0f0f0; }
 .beam-visit { display: flex; height: 25px; align-items: center; justify-content: center; gap: 4px; padding: 4px 12px 4px 14px; border: 0.5px solid rgb(0 0 0 / 10%); border-radius: var(--radius-control); background: linear-gradient(180deg, rgb(255 255 255 / 20%) 50%, rgb(230 230 230 / 20%)), #fff; box-shadow: inset 0 0.5px 0.5px rgb(255 255 255 / 60%), inset 0 -0.5px 0.5px rgb(0 0 0 / 20%); text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 15%), 0.3px 0.3px 0.4px rgb(0 0 0 / 20%); white-space: nowrap; }
-.beam-cover { display: grid; height: 475px; place-items: center; background: var(--color-project); letter-spacing: 0.24px; }
+/* Shows Motion Lab's cover frame background while the cover motion loads. */
+.beam-cover { position: relative; overflow: hidden; height: 475px; background: #fafafa; }
 .beam-description { color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }
 .beam-description > div p + p { margin-top: 16.8px; }
 
@@ -56,11 +62,29 @@
 .beam-visual-preview { position: absolute; overflow: hidden; }
 .beam-visual-preview > img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .beam-motion-preview { width: 100%; height: 100%; overflow: hidden; }
+/* Motion 14: Motion Lab's frame as-is (593 × 473 with its #d9dcdf guides, bar 197.6px
+   from the top, centred; from motion-14/preview.css), scaled to the slot by SceneFit. */
+.beam-motion-14 { position: absolute; inset: 0; }
+.beam-motion-14-frame {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: #f7f8fa;
+}
+/* The guides, as 1px borders centred on Motion Lab's lines (x 60 and 531; y 102 and 374
+   from the bottom). Its half-pixel gradient stops don't paint once the frame is scaled. */
+.beam-motion-14-frame::before,
+.beam-motion-14-frame::after { position: absolute; box-sizing: border-box; border: 0 solid #d9dcdf; content: ''; pointer-events: none; }
+.beam-motion-14-frame::before { top: 0; bottom: 0; left: 59.5px; width: 472px; border-width: 0 1px; }
+.beam-motion-14-frame::after { right: 0; bottom: 101.5px; left: 0; height: 273px; border-width: 1px 0; }
+/* The frame centre (296.5) is 1px right of the guides' centre (295.5): shift the bar 1px
+   left so it sits exactly between them (60.5 to 530.5, inside the guides at 60 and 531). */
+.beam-motion-14-bar { position: absolute; top: 197.6px; left: 50%; transform: translateX(calc(-50% - 1px)); }
 .beam-motion-preview iframe { display: block; border: 0; transform-origin: top left; pointer-events: none; }
 .beam-visual-label { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 15%), 0.3px 0.3px 0.4px rgb(0 0 0 / 20%); }
 .beam-visual-label--overlap { color: #000; }
 
-.beam-footer { background: var(--color-canvas); font-size: 14px; }
+.beam-footer { background: var(--color-footer); font-size: 14px; }
 .beam-footer .contact-grid { display: flex; height: 739px; align-items: center; justify-content: center; padding: 24px 16px; box-shadow: 0 0 0 0.5px #fff; }
 .beam-footer .contact-cta { height: 57px; }
 .beam-socials { display: grid; height: 77px; place-items: center; padding: 24px 16px; box-shadow: 0 0 0 0.5px #fff; }

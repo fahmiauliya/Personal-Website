@@ -1,5 +1,6 @@
 import attachmentIcon from '../../assets/projects/beam/attachment.svg';
 import ContactCta from '../../components/ContactCta';
+import MotionPreview from '../../components/MotionPreview';
 import SocialLinks from '../../components/SocialLinks';
 import BeamHeader from './BeamHeader';
 import BeamGallery from './BeamGallery';
@@ -36,7 +37,7 @@ export default function BeamPage() {
               </span>
             </div>
           </div>
-          <div className="beam-cover" aria-label="Beam cover placeholder">Cover</div>
+          <div className="beam-cover" data-project-cover><MotionPreview scene={beamProject.cover} eager /></div>
           <div className="beam-description">
             <div>{beamProject.description.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div>
             <p>{beamProject.note}</p>

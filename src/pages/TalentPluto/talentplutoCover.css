@@ -1,0 +1,271 @@
+/* TalentPluto cover (TalentPlutoCover.tsx). Values are Figma px from node 262:161,
+   laid out on the 806 × 706 scene that SceneFit scales. */
+.tp-cover {
+  --tp-ink: #201f1d;
+  --tp-brand: #0d76f2;
+  --tp-card-shadow:
+    0 0.358px 0.716px -0.716px rgba(0, 0, 0, 0.2),
+    0 0.716px 1.432px -0.716px rgba(0, 0, 0, 0.15),
+    0 1.432px 2.864px -1.432px rgba(0, 0, 0, 0.1),
+    0 2.864px 4.296px -2.864px rgba(0, 0, 0, 0.05);
+  --tp-card-rim:
+    inset 0 0.358px 0.358px rgba(255, 255, 255, 0.25),
+    inset 0 -0.358px 0.358px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 0.651px rgba(0, 0, 0, 0.1);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  color: #000;
+  font-family: Geist, sans-serif;
+  /* Figma sets no tracking; don't inherit the card label's 0.24px. */
+  letter-spacing: normal;
+}
+
+.tp-cover-video {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+/* The Figma frame's area, centred on the scene. Only its contents are drawn (the
+   message and the matches card float on the video); the frame itself has no fill.
+   --tp-scale enlarges them around the centre (the group is centred in the frame). */
+.tp-panel {
+  --tp-scale: 1.35;
+  position: absolute;
+  top: calc(50% - 264px);
+  left: calc(50% - 268px);
+  width: 536px;
+  height: 528px;
+  transform: scale(var(--tp-scale));
+  transform-origin: 50% 50%;
+}
+
+/* Message from Pluto */
+.tp-message {
+  position: absolute;
+  top: 60px;
+  left: 53px;
+  display: flex;
+  width: 429.715px;
+  gap: 10.412px;
+}
+
+.tp-avatar {
+  position: relative;
+  width: 28.518px;
+  height: 28.518px;
+  margin-top: 4.456px;
+  flex: none;
+}
+
+/* The exported avatar includes its drop shadows, so it overhangs its 28.5px box. */
+.tp-avatar img {
+  position: absolute;
+  inset: 0 -5.5% -16.5% -5.5%;
+  display: block;
+  width: 111%;
+  height: 116.5%;
+  max-width: none;
+}
+
+.tp-message-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5.553px;
+  padding-top: 8.329px;
+}
+
+.tp-message-meta {
+  display: flex;
+  gap: 5.553px;
+  font-size: 16.124px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+.tp-bubble,
+.tp-matches {
+  position: relative;
+  overflow: hidden;
+  border-radius: 9.21px;
+  box-shadow: var(--tp-card-shadow);
+}
+
+.tp-bubble {
+  width: 385.986px;
+  padding: 14.259px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(195, 192, 217, 0.2) 100%),
+    #fff;
+}
+
+.tp-bubble p {
+  font-size: 16.124px;
+  line-height: 1.4;
+}
+
+.tp-bubble::after,
+.tp-matches::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--tp-card-rim);
+  content: '';
+  pointer-events: none;
+}
+
+/* Curated matches */
+.tp-matches {
+  position: absolute;
+  top: 187.19px;
+  left: 92.21px;
+  width: 385.373px;
+  /* Frosted in Figma: over the video, the gaps between rows blur what's behind. */
+  background: rgba(255, 255, 255, 0.3);
+  -webkit-backdrop-filter: blur(8.28px);
+  backdrop-filter: blur(8.28px);
+}
+
+.tp-matches-header {
+  display: flex;
+  align-items: center;
+  gap: 5.208px;
+  padding: 13.019px;
+  border-bottom: 0.651px solid rgba(0, 0, 0, 0.1);
+  background: #fff;
+  color: var(--tp-ink);
+  font-size: 13.019px;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.tp-matches-header img {
+  display: block;
+  width: 14.844px;
+  height: 14.536px;
+  flex: none;
+}
+
+.tp-matches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7.883px;
+  padding: 12.267px;
+  border-radius: 3.151px;
+  background: rgba(250, 250, 250, 0.02);
+}
+
+.tp-match {
+  display: flex;
+  align-items: center;
+  gap: 11.383px;
+  overflow: hidden;
+  padding: 11.383px;
+  border-radius: 4.089px;
+  background: #fff;
+}
+
+.tp-match--first { box-shadow: 0 0 0 1px #fff; }
+
+.tp-match-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1 0 0;
+  flex-direction: column;
+  justify-content: center;
+  gap: 11.383px;
+}
+
+.tp-match-heading {
+  display: flex;
+  align-items: flex-start;
+}
+
+.tp-match-name {
+  display: flex;
+  align-items: center;
+  gap: 7.812px;
+}
+
+.tp-match-title,
+.tp-match-place {
+  font-size: 13.019px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.tp-match-title { color: var(--tp-ink); }
+.tp-match-place { color: rgba(0, 0, 0, 0.95); opacity: 0.5; }
+
+/* Company logo discs */
+.tp-company {
+  position: relative;
+  display: block;
+  width: 15.623px;
+  height: 15.623px;
+  flex: none;
+  overflow: hidden;
+  border-radius: 39.058px;
+  background: var(--company);
+  box-shadow:
+    0 0.215px 0.43px -0.43px rgba(0, 0, 0, 0.2),
+    0 0.43px 0.859px -0.43px rgba(0, 0, 0, 0.15),
+    0 1.719px 2.578px -1.719px rgba(0, 0, 0, 0.05);
+}
+
+.tp-company[data-gradient] {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 100%), var(--company);
+}
+
+.tp-company img {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+}
+
+.tp-company::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0.215px 0.215px rgba(255, 255, 255, 0.25),
+    inset 0 -0.215px 0.215px rgba(0, 0, 0, 0.1),
+    inset 0 0 0 0.236px rgba(0, 0, 0, 0.1);
+  content: '';
+}
+
+/* "New" badge */
+.tp-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3.792px;
+  padding: 1.897px 7.585px;
+  border-radius: 94.86px;
+  background: #f4f9ff;
+  color: var(--tp-brand);
+  font-size: 9.486px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.tp-badge img {
+  display: block;
+  width: 9.486px;
+  height: 9.486px;
+}
+
+.tp-chevron {
+  display: block;
+  width: 15.623px;
+  height: 15.623px;
+  flex: none;
+}
