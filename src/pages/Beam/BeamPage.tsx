@@ -17,9 +17,9 @@ export default function BeamPage() {
         <section className="beam-overview" aria-labelledby="beam-title">
           <div className="beam-details">
             <div>
-              <h1 id="beam-title">{beamProject.title}</h1>
-              <p className="beam-category">{beamProject.category}</p>
-              <dl className="beam-facts">
+              <h1 id="beam-title" data-project-part="title">{beamProject.title}</h1>
+              <p className="beam-category" data-project-part="category">{beamProject.category}</p>
+              <dl className="beam-facts" data-project-part="metadata">
                 {beamProject.details.map(({ label, lines }, index) => (
                   <div className="beam-fact" key={`${label}-${index}`}>
                     <dt>{label}</dt>
@@ -28,7 +28,7 @@ export default function BeamPage() {
                 ))}
               </dl>
             </div>
-            <div className="beam-url">
+            <div className="beam-url" data-project-part="url">
               <span>URL</span>
               <span className="beam-visit-frame">
                 {beamProject.websiteUrl
@@ -38,7 +38,7 @@ export default function BeamPage() {
             </div>
           </div>
           <div className="beam-cover" data-project-cover><MotionPreview scene={beamProject.cover} eager /></div>
-          <div className="beam-description">
+          <div className="beam-description" data-project-part="description">
             <div>{beamProject.description.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div>
             <p>{beamProject.note}</p>
           </div>

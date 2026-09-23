@@ -21,9 +21,8 @@ export interface SocialLink {
   icon: string;
 }
 
-import { createElement, type ComponentType } from 'react';
+import type { ComponentType } from 'react';
 import type { MotionScene } from '../components/MotionPreview';
-import TalentPlutoCover from '../pages/TalentPluto/TalentPlutoCover';
 import { beamProject } from '../pages/Beam/beamData';
 import { bifrostProject } from '../pages/Bifrost/bifrostData';
 // Avea Robotics cover: ~/Documents/avea-robotics-2.jpg, resized for the web (1000px tall).
@@ -32,16 +31,14 @@ import aveaCover from '../assets/projects/avea/cover.jpg';
 import lastingLearnCover from '../assets/projects/lasting-learn/cover.jpg';
 // Almanac Market cover: Figma Portfolio-2026 node 267:4640 at 4x, resized for the web (1000px tall).
 import almanacMarketCover from '../assets/projects/almanac-market/cover.jpg';
+// TalentPluto card image: a still of its cover video, from Motion Lab website-content/shared/assets.
+import talentPlutoCover from '../assets/projects/talentpluto/cover.jpg';
 import githubIcon from '../assets/icons/social-github.svg';
 import linkedinIcon from '../assets/icons/social-linkedin.svg';
 import xIcon from '../assets/icons/social-x.svg';
 import dribbbleIcon from '../assets/icons/social-dribbble.svg';
 
 export const CONTACT_EMAIL = 'hello@fahmiauliya.com';
-
-// TalentPluto's temporary cover video: ~/Documents/Video.mp4, re-encoded for the web
-// (muted, 1200px wide, fast start) into public/talentpluto/.
-const TalentPlutoCardCover = () => createElement(TalentPlutoCover, { video: '/talentpluto/cover.mp4', poster: '/talentpluto/cover-poster.jpg' });
 
 export const projects: Project[] = Array.from({ length: 8 }, (_, index) => {
   const projectNumber = index + 1;
@@ -54,8 +51,7 @@ export const projects: Project[] = Array.from({ length: 8 }, (_, index) => {
     imageLabel: projectNumber === 1 ? 'Cover' : `IMG-${projectNumber}`,
     href: projectNumber === 1 ? '/projects/beam/' : projectNumber === 2 ? '/projects/bifrost/' : undefined,
     cover: projectNumber === 1 ? beamProject.cover : projectNumber === 2 ? bifrostProject.cover : undefined,
-    coverScene: projectNumber === 4 ? TalentPlutoCardCover : undefined,
-    coverImage: projectNumber === 3 ? lastingLearnCover : projectNumber === 5 ? aveaCover : projectNumber === 6 ? almanacMarketCover : undefined,
+    coverImage: projectNumber === 3 ? lastingLearnCover : projectNumber === 4 ? talentPlutoCover : projectNumber === 5 ? aveaCover : projectNumber === 6 ? almanacMarketCover : undefined,
     coverImageFit: projectNumber === 3 || projectNumber === 6 ? 'width' : undefined,
   };
 });

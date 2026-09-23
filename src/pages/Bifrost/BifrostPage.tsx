@@ -17,9 +17,9 @@ export default function BifrostPage() {
         <section className="bifrost-overview" aria-labelledby="bifrost-title">
           <div className="bifrost-details">
             <div>
-              <h1 id="bifrost-title">{bifrostProject.title}</h1>
-              <p className="bifrost-category">{bifrostProject.category}</p>
-              <dl className="bifrost-facts">
+              <h1 id="bifrost-title" data-project-part="title">{bifrostProject.title}</h1>
+              <p className="bifrost-category" data-project-part="category">{bifrostProject.category}</p>
+              <dl className="bifrost-facts" data-project-part="metadata">
                 {bifrostProject.details.map(({ label, lines }, index) => (
                   <div className="bifrost-fact" key={`${label}-${index}`}>
                     <dt>{label}</dt>
@@ -28,7 +28,7 @@ export default function BifrostPage() {
                 ))}
               </dl>
             </div>
-            <div className="bifrost-url">
+            <div className="bifrost-url" data-project-part="url">
               <span>URL</span>
               <span className="bifrost-visit-frame">
                 {bifrostProject.websiteUrl
@@ -38,7 +38,7 @@ export default function BifrostPage() {
             </div>
           </div>
           <div className="bifrost-cover" data-project-cover><MotionPreview scene={bifrostProject.cover} eager /></div>
-          <div className="bifrost-description">
+          <div className="bifrost-description" data-project-part="description">
             <div>{bifrostProject.description.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div>
             <p>{bifrostProject.note}</p>
           </div>

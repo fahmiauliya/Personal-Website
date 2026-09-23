@@ -10,7 +10,17 @@ import { flushSync } from 'react-dom';
 // see ::view-transition-*(project-cover) in global.css). Closing runs the same morph in
 // reverse to the card's exact grid position. Browsers without View Transitions, or with
 // reduced motion, switch instantly.
+//
+// Around the morph, the detail page runs one timeline in layers (tuned in Motion Lab,
+// website-content/motion-project-open): the page background fades in from see-through,
+// then its content arrives as a staggered wave (title, category, metadata and URL,
+// description, header). Each layer gets its own view-transition-name for the transition
+// only: a named element is a backdrop root, which would switch off the header's blur.
+// Closing plays the layers backwards. The timings are the ::view-transition-* rules in
+// global.css, keyed to the html.project-vt-open / project-vt-close class set here.
 const COVER_NAME = 'project-cover';
+const LAYER_NAME = 'project-layer';
+const PART_PREFIX = 'project-part-';
 
 export const normalizePath = (pathname: string) => (pathname === '/' ? pathname : pathname.replace(/\/$/, ''));
 export const isProjectPath = (path: string) => path.startsWith('/projects/');
@@ -28,6 +38,22 @@ const detailCover = () => document.querySelector<HTMLElement>('.project-layer [d
 
 const setName = (element: HTMLElement | null, named: boolean) => {
   if (element) element.style.viewTransitionName = named ? COVER_NAME : '';
+};
+
+/** Names the detail page's background and content layers, or clears them. */
+const nameLayers = (named: boolean) => {
+  const layer = document.querySelector<HTMLElement>('.project-layer');
+  if (!layer) return;
+  layer.style.viewTransitionName = named ? LAYER_NAME : '';
+  for (const part of layer.querySelectorAll<HTMLElement>('[data-project-part]')) {
+    part.style.viewTransitionName = named ? `${PART_PREFIX}${part.dataset.projectPart}` : '';
+  }
+};
+
+const setDirection = (direction: 'open' | 'close' | null) => {
+  const root = document.documentElement.classList;
+  root.toggle('project-vt-open', direction === 'open');
+  root.toggle('project-vt-close', direction === 'close');
 };
 
 // A timer, not requestAnimationFrame: rendering (and so rAF) is paused while a view
@@ -85,10 +111,13 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
       const card = cardImage(opening ? next : current);
       // While a layer is open the layer owns scrolling, so the browser must not restore
       // window scroll on back/forward; normal restoration returns once it closes.
+      // The card's image is "lifted" into the detail page while it is open, so the grid
+      // shows its empty slot as the cover flies out and back.
       const apply = () => {
         current = next;
         flushSync(() => setPath(next));
         history.scrollRestoration = opening ? 'manual' : 'auto';
+        if (card) card.style.visibility = opening ? 'hidden' : '';
       };
       const doc = document as ViewTransitionDocument;
       if (!doc.startViewTransition || !card || reducedMotion.matches) {
@@ -101,17 +130,24 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
         if (rect.bottom < 0 || rect.top > window.innerHeight) card.scrollIntoView({ block: 'center' });
       }
       const from = opening ? card : detailCover();
+      setDirection(opening ? 'open' : 'close');
       setName(from, true);
+      if (!opening) nameLayers(true);
       const transition = doc.startViewTransition(async () => {
         setName(from, false);
         apply();
         const to = opening ? detailCover() : card;
-        if (opening) await coverReady(to);
+        // No grace: once the cover's document has mounted, the open starts, rather than
+        // freezing the page until its Rive gauge draws (it paints in a frame or two).
+        if (opening) await coverReady(to, 0);
         setName(to, true);
+        if (opening) nameLayers(true);
       });
       transition.finished.finally(() => {
         setName(card, false);
         setName(detailCover(), false);
+        nameLayers(false);
+        setDirection(null);
       });
     };
 

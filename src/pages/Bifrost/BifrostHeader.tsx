@@ -6,7 +6,7 @@ import closeIcon from '../../assets/projects/bifrost/close.svg';
 
 export default function BifrostHeader() {
   return (
-    <header className="bifrost-header">
+    <header className="bifrost-header" data-project-part="actions">
       <ProgressiveBlur />
       <span className="bifrost-header-spacer" aria-hidden="true" />
       <nav className="bifrost-header-center" aria-label="Project navigation">

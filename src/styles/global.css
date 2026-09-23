@@ -6,6 +6,15 @@
   font-display: swap;
 }
 
+/* The ASCII covers and scrambled text of projects without a page yet (Ascii.tsx). */
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('../assets/geist-mono-latin-400.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+}
+
 * { box-sizing: border-box; }
 
 html {
@@ -61,14 +70,34 @@ p, h1, h2, h3 { margin: 0; }
 
 html.project-open { overflow: hidden; }
 
-/* Shared-element morph between the grid card and the detail cover. Only the
-   destination snapshot is shown, so it is one object changing position and size, not
-   two images crossfading. The rest of the page fades: the old view out quickly, the new
-   one in during and after the expansion. */
+/* Project open/close (src/components/projectTransition.ts), tuned in Motion Lab
+   (website-content/motion-project-open/settings.json). One 1300ms timeline, one ease,
+   overlapping layers, in % of the total:
+
+     image        0 ─── 55            the card image morphs into the detail cover
+     background     20 ──────── 100   the page fades in, from 20% opacity to solid
+     content              55 ── 100   a wave, 50ms apart, each block rising 8px as it
+                                      fades in: title, category, metadata (and URL),
+                                      description, header
+
+   Closing mirrors the slices and plays the layers backwards: the wave leaves first
+   (last block first), the background fades out (0–80%), and the image shrinks back into
+   its card (45–100%). Delays and durations are those percentages of 1300ms. */
+
+/* The home page under the detail stays put: only its new snapshot, no fade. */
+::view-transition-old(root) { animation: none; opacity: 0; }
+::view-transition-new(root) { animation: none; }
+
+/* Image: only the destination snapshot is shown, so it is one object changing position
+   and size, not two images crossfading. */
 ::view-transition-group(project-cover) {
-  animation-duration: 560ms;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 3;
+  animation-duration: 715ms;
+  animation-delay: 0ms;
+  animation-timing-function: cubic-bezier(0, 1, 0.4, 1);
+  animation-fill-mode: both;
 }
+html.project-vt-close::view-transition-group(project-cover) { animation-delay: 585ms; }
 
 ::view-transition-old(project-cover) {
   animation: none;
@@ -82,16 +111,42 @@ html.project-open { overflow: hidden; }
   object-fit: cover;
 }
 
-::view-transition-old(root) {
-  animation: project-view-out 220ms ease both;
+/* Background: the detail page's surface (everything not in its own layer). */
+::view-transition-group(project-layer) { z-index: 1; animation: none; }
+::view-transition-old(project-layer), ::view-transition-new(project-layer) { animation: none; }
+html.project-vt-open::view-transition-new(project-layer) { animation: project-layer-in 1040ms cubic-bezier(0, 1, 0.4, 1) 260ms both; }
+html.project-vt-close::view-transition-old(project-layer) { animation: project-layer-in 1040ms cubic-bezier(0, 1, 0.4, 1) 0ms both reverse; }
+
+/* Content: the staggered wave. */
+::view-transition-group(project-part-title), ::view-transition-group(project-part-category), ::view-transition-group(project-part-metadata), ::view-transition-group(project-part-url), ::view-transition-group(project-part-description), ::view-transition-group(project-part-actions) { z-index: 2; animation: none; }
+::view-transition-old(project-part-title), ::view-transition-new(project-part-title),
+::view-transition-old(project-part-category), ::view-transition-new(project-part-category),
+::view-transition-old(project-part-metadata), ::view-transition-new(project-part-metadata),
+::view-transition-old(project-part-url), ::view-transition-new(project-part-url),
+::view-transition-old(project-part-description), ::view-transition-new(project-part-description),
+::view-transition-old(project-part-actions), ::view-transition-new(project-part-actions) { animation: none; }
+html.project-vt-open::view-transition-new(project-part-title) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 715ms both; }
+html.project-vt-open::view-transition-new(project-part-category) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 765ms both; }
+html.project-vt-open::view-transition-new(project-part-metadata) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 815ms both; }
+html.project-vt-open::view-transition-new(project-part-url) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 815ms both; }
+html.project-vt-open::view-transition-new(project-part-description) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 865ms both; }
+html.project-vt-open::view-transition-new(project-part-actions) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 915ms both; }
+html.project-vt-close::view-transition-old(project-part-title) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 200ms both reverse; }
+html.project-vt-close::view-transition-old(project-part-category) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 150ms both reverse; }
+html.project-vt-close::view-transition-old(project-part-metadata) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 100ms both reverse; }
+html.project-vt-close::view-transition-old(project-part-url) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 100ms both reverse; }
+html.project-vt-close::view-transition-old(project-part-description) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 50ms both reverse; }
+html.project-vt-close::view-transition-old(project-part-actions) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 0ms both reverse; }
+
+@keyframes project-layer-in {
+  from { opacity: 0.2; }
+  to { opacity: 1; }
 }
 
-::view-transition-new(root) {
-  animation: project-view-in 380ms 160ms ease both;
+@keyframes project-part-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
 }
-
-@keyframes project-view-out { to { opacity: 0; } }
-@keyframes project-view-in { from { opacity: 0; } }
 
 /* As the Works surface covers it, the intro recedes slightly: its content column moves
    up and shrinks, and the full-width layer dims. Only the column is scaled, so the
@@ -730,10 +785,6 @@ button.nav-circle { cursor: pointer; }
 .project-meta div { display: flex; align-items: center; justify-content: space-between; }
 .project-meta p { opacity: 0.6; letter-spacing: -0.24px; }
 .project-meta time { opacity: 0.6; font-size: 10px; letter-spacing: -0.2px; }
-
-/* Projects without a detail page yet: their title and details are blurred (Figma layer
-   blur 10, which is a CSS blur of about 5px). The cover stays sharp. */
-.project-meta--blurred { filter: blur(5px); user-select: none; }
 
 /* Standalone motion exports (src/components/MotionPreview.tsx) fill their box. */
 .motion-preview { position: absolute; inset: 0; overflow: hidden; }

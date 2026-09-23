@@ -6,7 +6,7 @@ import closeIcon from '../../assets/projects/beam/close.svg';
 
 export default function BeamHeader() {
   return (
-    <header className="beam-header">
+    <header className="beam-header" data-project-part="actions">
       <ProgressiveBlur />
       <span className="beam-header-spacer" aria-hidden="true" />
       <nav className="beam-header-center" aria-label="Project navigation">
