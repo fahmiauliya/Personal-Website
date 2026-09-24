@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { useNearView } from './useNearView';
 
 // A Motion Lab frame from the shared motion bundle (public/motions/, built by
@@ -58,11 +58,14 @@ export default function MotionPreview({ scene, fit = 'fill', eager = false }: { 
 
   useEffect(warmWhenIdle, []);
 
-  useEffect(() => {
+  // The scale is set before the first paint (layout effect), then follows the box as it
+  // resizes. A ResizeObserver alone first reports a frame after the element appears, so
+  // a freshly opened detail cover showed one frame at its unscaled design size, and the
+  // project transition captured it zoomed in before it snapped to the right size.
+  useLayoutEffect(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
-    const observer = new ResizeObserver(([entry]) => {
-      const { width, height } = entry.contentRect;
+    const fitTo = (width: number, height: number) => {
       const x = width / scene.width;
       const y = height / scene.height;
       if (fit === 'fill') {
@@ -73,7 +76,9 @@ export default function MotionPreview({ scene, fit = 'fill', eager = false }: { 
       const left = (width - scene.width * scale) / 2;
       const top = (height - scene.height * scale) / 2;
       setTransform(`translate(${left}px, ${top}px) scale(${scale})`);
-    });
+    };
+    fitTo(viewport.clientWidth, viewport.clientHeight);
+    const observer = new ResizeObserver(([entry]) => fitTo(entry.contentRect.width, entry.contentRect.height));
     observer.observe(viewport);
     return () => observer.disconnect();
   }, [fit, scene.height, scene.width]);

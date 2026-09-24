@@ -3,18 +3,8 @@ import { RESUME_DELAY_MS, RESUME_STAGGER_MS } from './useNearView';
 
 // Copied from Motion Lab (website-content/shared/ascii.tsx), where it is tuned; keep the
 // two in step. The Works grid passes the lab's saved dial values (see Works.tsx).
-// Site-only additions: everything here holds still while the page scrolls, and stops
-// while a project page covers the home page (see below).
-
-// Scroll activity, shared by every ASCII image and text. They pause while the page (or a
-// project layer) scrolls and resume shortly after it stops, so their redraws never
-// compete with the scroll-driven navigation morph for the main thread.
-const SCROLL_IDLE_MS = 150;
-let scrollingUntil = 0;
-if (typeof window !== 'undefined') {
-  window.addEventListener('scroll', () => { scrollingUntil = performance.now() + SCROLL_IDLE_MS; }, { passive: true, capture: true });
-}
-const isScrolling = () => performance.now() < scrollingUntil;
+// Site-only addition: everything here stops while a project page covers the home page
+// (see below). It keeps playing while the page scrolls.
 
 // While a project page is open (html.project-open, projectTransition.ts) it covers the
 // Works grid completely, so the ASCII there stops instead of drawing unseen frames. It
@@ -259,7 +249,7 @@ export function AsciiImage({ src, options, order = 0 }: { src: string; options: 
       raf = 0;
       if (cancelled || !active()) return;
       const frameMs = 1000 / Math.max(1, motion.current.Fps);
-      if (now - lastPaint >= frameMs - 1 && !isScrolling()) {
+      if (now - lastPaint >= frameMs - 1) {
         lastPaint = now;
         paint((now - start) / 1000);
       }
@@ -332,7 +322,7 @@ export function AsciiText({ text, rate = 12, churn = 0.18 }: { text: string; rat
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     let tick = 0;
     const timer = window.setInterval(() => {
-      if (isScrolling() || isCovered()) return;
+      if (isCovered()) return;
       tick += 1;
       for (let index = 0; index < chars.length; index += 1) {
         if (chars[index] !== ' ' && hash(index + seed * 131, tick) < churn) glyphs[index] = pick(index * 7919 + seed + tick * 104729);
