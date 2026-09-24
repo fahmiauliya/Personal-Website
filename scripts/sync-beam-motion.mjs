@@ -1,5 +1,5 @@
 import { spawnSync } from 'node:child_process';
-import { access, cp, mkdir, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
+import { access, cp, mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -37,11 +37,6 @@ try {
 
   await rm(output, { recursive: true, force: true });
   await cp(exportDir, output, { recursive: true });
-  await mkdir(join(output, 'TikTok_Sans'), { recursive: true });
-  await cp(
-    join(motionLab, 'public/TikTok_Sans/TikTokSans-VariableFont_opsz,slnt,wdth,wght.ttf'),
-    join(output, 'TikTok_Sans/TikTokSans-VariableFont_opsz,slnt,wdth,wght.ttf'),
-  );
   await cp(join(website, 'src/assets/geist-regular.woff2'), join(output, 'assets/geist-regular.woff2'));
   if (number === '03') {
     await cp(join(motionLab, 'public/assets/hero'), join(output, 'assets/hero'), { recursive: true });
@@ -56,7 +51,9 @@ try {
         'https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/GeistMono-variable.woff2',
         './geist-regular.woff2',
       )
-      .replaceAll('url(/TikTok_Sans/', 'url(../TikTok_Sans/'));
+      // Every Beam motion shares one copy of TikTok Sans (public/fonts: the lab's variable
+      // TTF as WOFF2, same glyphs and axes), so the browser downloads it once.
+      .replaceAll('url(/TikTok_Sans/TikTokSans-VariableFont_opsz,slnt,wdth,wght.ttf) format("truetype")', 'url(/fonts/tiktok-sans-variable.woff2) format("woff2")'));
   }
   if (number === '03') {
     for (const file of await readdir(join(output, 'assets'))) {

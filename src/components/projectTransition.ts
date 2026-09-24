@@ -60,16 +60,17 @@ const setDirection = (direction: 'open' | 'close' | null) => {
 // transition's update is pending.
 const tick = () => new Promise<void>(resolve => setTimeout(resolve, 16));
 
-// The detail cover is a freshly mounted motion iframe. Before the new view is captured,
-// wait for its document to mount, then until its canvases have painted or a short grace
-// has passed, so the expanding cover is never blank. Canvases that draw immediately (the
-// Beam dot field) end the wait early. Rive gauges draw on requestAnimationFrame, which
-// is paused during the update, so they can't paint here; the grace lets their files
-// load so they draw in the frame the browser captures. The old view stays frozen on
-// screen meanwhile, and the whole wait is capped so a slow network can't stall the open.
+// The detail cover is a freshly mounted motion (MotionPreview, in its shadow root).
+// Before the new view is captured, wait for it to render, then until its canvases have
+// painted or a short grace has passed, so the expanding cover is never blank. Canvases
+// that draw immediately (the Beam dot field) end the wait early. Rive draws on
+// requestAnimationFrame, which is paused during the update, so it can't paint here; the
+// grace lets its file load so it draws in the frame the browser captures. The old view
+// stays frozen on screen meanwhile, and the whole wait is capped so a slow network can't
+// stall the open.
 async function coverReady(cover: HTMLElement | null, grace = 200, timeout = 700) {
-  const frame = cover?.querySelector('iframe');
-  if (!frame) return;
+  const stage = cover?.querySelector('.motion-preview-stage');
+  if (!stage) return;
   const probe = document.createElement('canvas');
   probe.width = probe.height = 12;
   const probeContext = probe.getContext('2d', { willReadFrequently: true });
@@ -84,10 +85,10 @@ async function coverReady(cover: HTMLElement | null, grace = 200, timeout = 700)
   const start = performance.now();
   let mountedAt = 0;
   while (performance.now() - start < timeout) {
-    const inner = frame.contentDocument;
-    if (inner?.readyState === 'complete' && inner.getElementById('root')?.childElementCount) {
+    const frame = stage.shadowRoot?.querySelector('div');
+    if (frame?.firstElementChild) {
       mountedAt ||= performance.now();
-      const canvases = [...inner.querySelectorAll('canvas')];
+      const canvases = [...frame.querySelectorAll('canvas')];
       if (canvases.length && canvases.every(painted)) return;
       if (performance.now() - mountedAt >= grace) return;
     }
@@ -130,6 +131,9 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
         if (rect.bottom < 0 || rect.top > window.innerHeight) card.scrollIntoView({ block: 'center' });
       }
       const from = opening ? card : detailCover();
+      // The card the image returns to may mount its motion during the close
+      // (useNearView); every other motion waits for the transition to end.
+      if (!opening) card.dataset.projectReturning = '';
       setDirection(opening ? 'open' : 'close');
       setName(from, true);
       if (!opening) nameLayers(true);
@@ -147,6 +151,7 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
         setName(card, false);
         setName(detailCover(), false);
         nameLayers(false);
+        delete card.dataset.projectReturning;
         setDirection(null);
       });
     };

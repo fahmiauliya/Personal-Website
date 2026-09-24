@@ -1,7 +1,34 @@
 import { useEffect, useRef } from 'react';
+import { RESUME_DELAY_MS, RESUME_STAGGER_MS } from './useNearView';
 
 // Copied from Motion Lab (website-content/shared/ascii.tsx), where it is tuned; keep the
 // two in step. The Works grid passes the lab's saved dial values (see Works.tsx).
+// Site-only additions: everything here holds still while the page scrolls, and stops
+// while a project page covers the home page (see below).
+
+// Scroll activity, shared by every ASCII image and text. They pause while the page (or a
+// project layer) scrolls and resume shortly after it stops, so their redraws never
+// compete with the scroll-driven navigation morph for the main thread.
+const SCROLL_IDLE_MS = 150;
+let scrollingUntil = 0;
+if (typeof window !== 'undefined') {
+  window.addEventListener('scroll', () => { scrollingUntil = performance.now() + SCROLL_IDLE_MS; }, { passive: true, capture: true });
+}
+const isScrolling = () => performance.now() < scrollingUntil;
+
+// While a project page is open (html.project-open, projectTransition.ts) it covers the
+// Works grid completely, so the ASCII there stops instead of drawing unseen frames. It
+// also holds still while a project opens or closes, resuming once the close has
+// finished, so it never draws while the shared image animates.
+const isCovered = () => {
+  const root = document.documentElement.classList;
+  return root.contains('project-open') || root.contains('project-vt-open') || root.contains('project-vt-close');
+};
+const coverListeners = new Set<() => void>();
+if (typeof window !== 'undefined') {
+  new MutationObserver(() => coverListeners.forEach(listener => listener()))
+    .observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+}
 
 /**
  * An image drawn as animated coloured ASCII. The image is sampled on a grid of monospace
@@ -59,6 +86,20 @@ const GLYPH_RATIO = 0.6;
 const FONT = "700 {size}px 'Geist Mono', ui-monospace, Menlo, monospace";
 
 const clamp01 = (value: number) => Math.min(1, Math.max(0, value));
+
+// A cell and its glyph packed into one number for the colour batches (Ascii image).
+const GLYPH_SLOTS = 128;
+// Fill styles for the rounded colours (5 bits per channel), built once each.
+const colourStyles = new Map<number, string>();
+const colourStyle = (colour: number) => {
+  let style = colourStyles.get(colour);
+  if (!style) {
+    const channel = (shift: number) => (((colour >> shift) & 31) << 3) | 4;
+    style = `rgb(${channel(10)}, ${channel(5)}, ${channel(0)})`;
+    colourStyles.set(colour, style);
+  }
+  return style;
+};
 
 /** A stable pseudo-random number in 0..1 for a cell and a tick. */
 function hash(cell: number, tick: number) {
@@ -152,6 +193,9 @@ export function AsciiImage({ src, options, order = 0 }: { src: string; options: 
       context.textBaseline = 'top';
     };
 
+    // Cells of each rounded colour, reused from frame to frame.
+    const batches = new Map<number, number[]>();
+
     // Draw one frame of glyphs at time `seconds`.
     const paint = (seconds: number) => {
       if (!grid) return;
@@ -168,6 +212,10 @@ export function AsciiImage({ src, options, order = 0 }: { src: string; options: 
       const centre = (phase * 1.6 - 0.3) * diagonal;
       const bandWidth = diagonal * 0.18;
       const last = RAMP.length - 1;
+      // Site-only: glyphs are grouped by colour and each colour is set once per frame,
+      // instead of building a colour string and switching fill for every cell. Colours
+      // are rounded to 32 steps per channel (at most 4/255 off, not visible).
+      for (const cells of batches.values()) cells.length = 0;
       for (let y = 0; y < rows; y += 1) {
         for (let x = 0; x < cols; x += 1) {
           const cell = y * cols + x;
@@ -179,33 +227,54 @@ export function AsciiImage({ src, options, order = 0 }: { src: string; options: 
           // Flicker: a few cells borrow a neighbouring glyph this tick.
           const roll = hash(cell, tick);
           if (roll < Flicker) index = Math.min(last, Math.max(1, index + (roll < Flicker / 2 ? -1 : 1) * (1 + Math.floor((roll * 97) % 3))));
-          const glyph = RAMP[index];
-          if (glyph === ' ') continue;
-          const lift = (0.35 + 0.65 * lit) * 255;
-          context.fillStyle = `rgb(${Math.round(hue[cell * 3] * lift)}, ${Math.round(hue[cell * 3 + 1] * lift)}, ${Math.round(hue[cell * 3 + 2] * lift)})`;
-          context.fillText(glyph, x * cellW, y * cellH);
+          if (RAMP[index] === ' ') continue;
+          const lift = 0.35 + 0.65 * lit;
+          const colour = (Math.min(31, (hue[cell * 3] * lift * 32) | 0) << 10) | (Math.min(31, (hue[cell * 3 + 1] * lift * 32) | 0) << 5) | Math.min(31, (hue[cell * 3 + 2] * lift * 32) | 0);
+          let cells = batches.get(colour);
+          if (!cells) batches.set(colour, (cells = []));
+          cells.push(cell * GLYPH_SLOTS + index);
+        }
+      }
+      for (const [colour, cells] of batches) {
+        if (!cells.length) continue;
+        context.fillStyle = colourStyle(colour);
+        for (const packed of cells) {
+          const cell = (packed / GLYPH_SLOTS) | 0;
+          context.fillText(RAMP[packed % GLYPH_SLOTS], (cell % cols) * cellW, ((cell / cols) | 0) * cellH);
         }
       }
     };
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let visible = true;
+    // Drawing only while the canvas is on screen and not under an open project page.
+    const active = () => visible && !isCovered();
     let raf = 0;
+    let sleep = 0;
     let lastPaint = -Infinity;
     const start = performance.now();
+    // Site-only: between drawn frames the loop sleeps on a timer rather than waking on
+    // every display frame just to skip it.
     const loop = (now: number) => {
       raf = 0;
-      if (cancelled || !visible) return;
+      if (cancelled || !active()) return;
       const frameMs = 1000 / Math.max(1, motion.current.Fps);
-      if (now - lastPaint >= frameMs - 1) {
+      if (now - lastPaint >= frameMs - 1 && !isScrolling()) {
         lastPaint = now;
         paint((now - start) / 1000);
       }
-      raf = requestAnimationFrame(loop);
+      const wait = Math.max(0, lastPaint + frameMs - performance.now() - 4);
+      sleep = window.setTimeout(() => { sleep = 0; raf = requestAnimationFrame(loop); }, wait);
+    };
+    let resume = 0;
+    const stop = () => {
+      if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      if (sleep) { window.clearTimeout(sleep); sleep = 0; }
+      if (resume) { window.clearTimeout(resume); resume = 0; }
     };
     const run = () => {
       if (reduced) { paint(0); return; }
-      if (!raf && visible) raf = requestAnimationFrame(loop);
+      if (!raf && !sleep && active()) raf = requestAnimationFrame(loop);
     };
     const refresh = () => { sample(); lastPaint = -Infinity; if (reduced) paint(0); else run(); };
 
@@ -213,17 +282,26 @@ export function AsciiImage({ src, options, order = 0 }: { src: string; options: 
     document.fonts?.ready.then(refresh).catch(() => {});
     const resize = new ResizeObserver(refresh);
     resize.observe(element);
+    // Coming back from under a project page, the covers resume one after another
+    // (in sweep order) shortly after the transition ends, not all in its last frame.
+    const update = (uncovered = false) => {
+      if (!active()) { stop(); return; }
+      if (!uncovered) { run(); return; }
+      if (!raf && !sleep && !resume) resume = window.setTimeout(() => { resume = 0; run(); }, RESUME_DELAY_MS + Math.max(0, motion.current.order) * RESUME_STAGGER_MS);
+    };
+    const onCover = () => update(true);
     const onScreen = new IntersectionObserver(([entry]) => {
       visible = entry?.isIntersecting ?? true;
-      if (visible) run();
-      else if (raf) { cancelAnimationFrame(raf); raf = 0; }
+      update();
     });
     onScreen.observe(element);
+    coverListeners.add(onCover);
     return () => {
       cancelled = true;
-      if (raf) cancelAnimationFrame(raf);
+      stop();
       resize.disconnect();
       onScreen.disconnect();
+      coverListeners.delete(onCover);
     };
   }, [src, CellPx, Contrast, Brightness, Saturation]);
 
@@ -254,6 +332,7 @@ export function AsciiText({ text, rate = 12, churn = 0.18 }: { text: string; rat
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     let tick = 0;
     const timer = window.setInterval(() => {
+      if (isScrolling() || isCovered()) return;
       tick += 1;
       for (let index = 0; index < chars.length; index += 1) {
         if (chars[index] !== ' ' && hash(index + seed * 131, tick) < churn) glyphs[index] = pick(index * 7919 + seed + tick * 104729);

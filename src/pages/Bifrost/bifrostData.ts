@@ -4,7 +4,6 @@ import type { MotionScene } from '../../components/MotionPreview';
 export const bifrostProject = {
   title: 'Bifrost',
   category: 'Website, Web app (Design + Implementation',
-  websiteUrl: null as string | null,
   details: [
     { label: 'Year', lines: ['2022'] },
     { label: 'Role', lines: ['Product Designer + Developer (Vibe Code)'] },
@@ -16,7 +15,7 @@ export const bifrostProject = {
     'It helps humans and agents work from the same up-to-date files without repeatedly copying, syncing, or rebuilding setup.',
   ],
   note: 'copying, syncing, or rebuilding setup.',
-  // Motion Lab's bifrost-content/motion-cover (Figma 244:2284); refresh with `npm run sync:bifrost -- cover`.
+  // Motion Lab's bifrost-content/motion-cover (Figma 244:2284); refresh with `npm run sync:motions`.
   // The home page's Works card uses this same cover (src/data/portfolio.ts).
-  cover: { src: '/bifrost/motion-cover/index.html', width: 806, height: 706, title: 'Bifrost cover motion' } satisfies MotionScene,
+  cover: { id: 'bifrost/cover', width: 806, height: 706, title: 'Bifrost cover motion' } satisfies MotionScene,
 };

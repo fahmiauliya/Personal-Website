@@ -10,7 +10,6 @@ import content13Artwork from '../../assets/projects/beam/content-13.svg';
 export const beamProject = {
   title: 'Beam',
   category: 'Website, Web app (Design + Implementation',
-  websiteUrl: null as string | null,
   details: [
     { label: 'Year', lines: ['2022'] },
     { label: 'Role', lines: ['Product Designer + Developer (Vibe Code)'] },
@@ -22,9 +21,9 @@ export const beamProject = {
     'It helps humans and agents work from the same up-to-date files without repeatedly copying, syncing, or rebuilding setup.',
   ],
   note: 'copying, syncing, or rebuilding setup.',
-  // Motion Lab's beam-content/motion-cover (Figma 248:3595); refresh with `npm run sync:beam -- cover`.
+  // Motion Lab's beam-content/motion-cover (Figma 248:3595); refresh with `npm run sync:motions`.
   // The home page's Works card uses this same cover (src/data/portfolio.ts).
-  cover: { src: '/beam/motion-cover/index.html', width: 806, height: 706, title: 'Beam cover motion' } satisfies MotionScene,
+  cover: { id: 'beam/cover', width: 806, height: 706, title: 'Beam cover motion' } satisfies MotionScene,
 };
 
 export interface BeamVisual {

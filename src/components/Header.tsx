@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type KeyboardEvent } from 'react';
+import type { CSSProperties, KeyboardEvent } from 'react';
 import aboutIcon from '../assets/icons/nav-about.svg';
 import homeIcon from '../assets/icons/logo.svg';
 import contactIcon from '../assets/icons/nav-contact.svg';
@@ -6,15 +6,15 @@ import worksIcon from '../assets/icons/nav-works.svg';
 import NavigationMaterial from './NavigationMaterial';
 import ProgressiveBlur from './ProgressiveBlur';
 import { materialPath, useNavigationProgress } from './navigationMotion';
+import { setWorkTab, useWorkTab, type WorkTab } from './workTab';
 
 const NAVIGATION_CONTROL_HEIGHT = 28;
 // Two 121px project tabs (--nav-tab-width in global.css).
 const TAB_TRACK_WIDTH = 242;
-type WorkTab = 'selected' | 'exploration';
 
 export default function Header({ isAboutPage = false }: { isAboutPage?: boolean }) {
   const progress = useNavigationProgress();
-  const [activeTab, setActiveTab] = useState<WorkTab>('selected');
+  const activeTab = useWorkTab();
   const centerLeft = 110 - 46 * progress;
   const centerWidth = 155 + 92 * progress;
   const aboutLeft = 186.5 + 128.5 * progress;
@@ -37,15 +37,15 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
   const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     let nextTab: WorkTab | undefined;
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-      nextTab = event.currentTarget.id === 'nav-tab-selected' ? 'exploration' : 'selected';
+      nextTab = event.currentTarget.id === 'nav-tab-selected' ? 'recent' : 'selected';
     } else if (event.key === 'Home') {
       nextTab = 'selected';
     } else if (event.key === 'End') {
-      nextTab = 'exploration';
+      nextTab = 'recent';
     }
     if (!nextTab) return;
     event.preventDefault();
-    setActiveTab(nextTab);
+    setWorkTab(nextTab);
     document.getElementById(`nav-tab-${nextTab}`)?.focus();
   };
 
@@ -75,8 +75,8 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
           </div>
           <div className="nav-segments-content nav-segments-content--works" data-active={activeTab} role="tablist" aria-label="Work categories" style={{ opacity: projectsOpacity, clipPath: `inset(0 ${contentClip}px 0 0)` }} aria-hidden={projectsOpacity === 0}>
             <span className="nav-tab-indicator" aria-hidden="true" />
-            <button id="nav-tab-selected" className="nav-project-tab" type="button" role="tab" aria-selected={activeTab === 'selected'} tabIndex={isWorksSettled && activeTab === 'selected' ? 0 : -1} onClick={() => setActiveTab('selected')} onKeyDown={handleTabKeyDown}>Selected Project</button>
-            <button id="nav-tab-exploration" className="nav-project-tab" type="button" role="tab" aria-selected={activeTab === 'exploration'} tabIndex={isWorksSettled && activeTab === 'exploration' ? 0 : -1} onClick={() => setActiveTab('exploration')} onKeyDown={handleTabKeyDown}>Design Exploration</button>
+            <button id="nav-tab-selected" className="nav-project-tab" type="button" role="tab" aria-controls="works-panel" aria-selected={activeTab === 'selected'} tabIndex={isWorksSettled && activeTab === 'selected' ? 0 : -1} onClick={() => setWorkTab('selected')} onKeyDown={handleTabKeyDown}>Selected Project</button>
+            <button id="nav-tab-recent" className="nav-project-tab" type="button" role="tab" aria-controls="works-panel" aria-selected={activeTab === 'recent'} tabIndex={isWorksSettled && activeTab === 'recent' ? 0 : -1} onClick={() => setWorkTab('recent')} onKeyDown={handleTabKeyDown}>Recent Work</button>
           </div>
         </div>
 

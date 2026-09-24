@@ -31,7 +31,10 @@
 
 .bifrost-main { width: calc(100% - 32px); margin-inline: auto; padding-bottom: 24px; }
 /* Same hero layout as Beam's (beam.css): three fixed columns, centred. */
-.bifrost-overview { display: grid; grid-template-columns: 285px 542px 285px; justify-content: center; gap: 16px; padding-block: 120px; margin-bottom: 16px; }
+/* The intro (header + this) fills 98% of the screen height, content centred as before,
+   so the gallery's first row starts just above the bottom edge. The 79px is the 63px
+   header and this section's 16px bottom margin. */
+.bifrost-overview { display: grid; min-height: calc(98vh - 79px); min-height: calc(98svh - 79px); grid-template-columns: 285px 542px 285px; justify-content: center; align-content: center; gap: 16px; padding-block: 120px; margin-bottom: 16px; }
 .bifrost-details, .bifrost-description { display: flex; min-width: 0; flex-direction: column; justify-content: space-between; }
 .bifrost-details h1 { font: inherit; letter-spacing: 0.24px; }
 .bifrost-category { margin-top: 2px; color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }

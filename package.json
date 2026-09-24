@@ -16,8 +16,7 @@
     "sync:motion-03": "node scripts/sync-beam-motion.mjs 03",
     "sync:motion-05": "node scripts/sync-beam-motion.mjs 05",
     "sync:motion-06": "node scripts/sync-beam-motion.mjs 06",
-    "sync:bifrost": "node scripts/motion-export/sync.mjs bifrost",
-    "sync:beam": "node scripts/motion-export/sync.mjs beam"
+    "sync:motions": "node scripts/motion-export/pack.mjs"
   },
   "dependencies": {
     "border-beam": "^1.4.1",

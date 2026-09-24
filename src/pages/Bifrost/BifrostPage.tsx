@@ -8,8 +8,6 @@ import { bifrostProject } from './bifrostData';
 import './bifrost.css';
 
 export default function BifrostPage() {
-  const visitContent = <><span>Visit site</span><img src={attachmentIcon} alt="" width="14" height="14" /></>;
-
   return (
     <div className="bifrost-page">
       <BifrostHeader />
@@ -31,9 +29,7 @@ export default function BifrostPage() {
             <div className="bifrost-url" data-project-part="url">
               <span>URL</span>
               <span className="bifrost-visit-frame">
-                {bifrostProject.websiteUrl
-                  ? <a className="bifrost-visit" href={bifrostProject.websiteUrl} target="_blank" rel="noreferrer">{visitContent}</a>
-                  : <button className="bifrost-visit" type="button" disabled>{visitContent}</button>}
+                <button className="bifrost-visit skeuo-button" type="button"><span>Visit site</span><img src={attachmentIcon} alt="" width="14" height="14" /></button>
               </span>
             </div>
           </div>

@@ -24,11 +24,11 @@ export default function Intro() {
             </div>
 
             <div className="intro-actions">
-              <button className="pill-button pill-button--dark" type="button" disabled>
+              <button className="pill-button pill-button--dark skeuo-button" type="button">
                 <span>Let’s Talk</span>
                 <img src={ctaIcon} alt="" />
               </button>
-              <button className="pill-button pill-button--light" type="button" disabled>
+              <button className="pill-button pill-button--light skeuo-button" type="button">
                 <span>Copy Email</span>
                 <img src={copyIcon} alt="" />
               </button>

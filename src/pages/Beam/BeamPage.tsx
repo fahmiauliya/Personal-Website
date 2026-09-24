@@ -8,8 +8,6 @@ import { beamProject } from './beamData';
 import './beam.css';
 
 export default function BeamPage() {
-  const visitContent = <><span>Visit site</span><img src={attachmentIcon} alt="" width="14" height="14" /></>;
-
   return (
     <div className="beam-page">
       <BeamHeader />
@@ -31,9 +29,7 @@ export default function BeamPage() {
             <div className="beam-url" data-project-part="url">
               <span>URL</span>
               <span className="beam-visit-frame">
-                {beamProject.websiteUrl
-                  ? <a className="beam-visit" href={beamProject.websiteUrl} target="_blank" rel="noreferrer">{visitContent}</a>
-                  : <button className="beam-visit" type="button" disabled>{visitContent}</button>}
+                <button className="beam-visit skeuo-button" type="button"><span>Visit site</span><img src={attachmentIcon} alt="" width="14" height="14" /></button>
               </span>
             </div>
           </div>

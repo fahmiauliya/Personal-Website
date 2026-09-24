@@ -75,14 +75,16 @@ html.project-open { overflow: hidden; }
    overlapping layers, in % of the total:
 
      image        0 ─── 55            the card image morphs into the detail cover
-     background     20 ──────── 100   the page fades in, from 20% opacity to solid
+     background   0─12                the page's background dissolves in almost at once
+                                      (150ms), so the image expands over it
      content              55 ── 100   a wave, 50ms apart, each block rising 8px as it
                                       fades in: title, category, metadata (and URL),
                                       description, header
 
-   Closing mirrors the slices and plays the layers backwards: the wave leaves first
-   (last block first), the background fades out (0–80%), and the image shrinks back into
-   its card (45–100%). Delays and durations are those percentages of 1300ms. */
+   Closing is one continuous motion, everything starting together as the close
+   begins: the content fades out (120ms), the background dissolves almost at once
+   (100ms), and the image shrinks straight back into its card over the home page
+   (715ms, the open's duration and ease), the only thing still moving after that. */
 
 /* The home page under the detail stays put: only its new snapshot, no fade. */
 ::view-transition-old(root) { animation: none; opacity: 0; }
@@ -97,7 +99,6 @@ html.project-open { overflow: hidden; }
   animation-timing-function: cubic-bezier(0, 1, 0.4, 1);
   animation-fill-mode: both;
 }
-html.project-vt-close::view-transition-group(project-cover) { animation-delay: 585ms; }
 
 ::view-transition-old(project-cover) {
   animation: none;
@@ -111,11 +112,33 @@ html.project-vt-close::view-transition-group(project-cover) { animation-delay: 5
   object-fit: cover;
 }
 
+/* Closing shows the detail cover's (old) snapshot instead of the card's. The card crops
+   the scene to its own shape (its height is fixed while its width follows the window),
+   so its snapshot stretched into the large detail frame looked zoomed in and jumped in
+   size the moment the close began. Opening already uses the detail snapshot.
+
+   The snapshot is only ever scaled uniformly: it spans the moving box's width at its own
+   aspect ratio, centred vertically, and the box clips it, so it never shows larger than
+   the box and is never stretched, in any browser (no reliance on object-fit). The card
+   is always at least as wide for its height as the detail cover, so at the end this is
+   exactly the card's own crop of the scene. */
+html.project-vt-close::view-transition-group(project-cover) { overflow: hidden; }
+
+html.project-vt-close::view-transition-old(project-cover) {
+  top: 50%;
+  width: 100%;
+  height: auto;
+  opacity: 1;
+  translate: 0 -50%;
+}
+
+html.project-vt-close::view-transition-new(project-cover) { opacity: 0; }
+
 /* Background: the detail page's surface (everything not in its own layer). */
 ::view-transition-group(project-layer) { z-index: 1; animation: none; }
 ::view-transition-old(project-layer), ::view-transition-new(project-layer) { animation: none; }
-html.project-vt-open::view-transition-new(project-layer) { animation: project-layer-in 1040ms cubic-bezier(0, 1, 0.4, 1) 260ms both; }
-html.project-vt-close::view-transition-old(project-layer) { animation: project-layer-in 1040ms cubic-bezier(0, 1, 0.4, 1) 0ms both reverse; }
+html.project-vt-open::view-transition-new(project-layer) { animation: project-layer-open 150ms ease-out 0ms both; }
+html.project-vt-close::view-transition-old(project-layer) { animation: project-fade-out 100ms ease-out 0ms both; }
 
 /* Content: the staggered wave. */
 ::view-transition-group(project-part-title), ::view-transition-group(project-part-category), ::view-transition-group(project-part-metadata), ::view-transition-group(project-part-url), ::view-transition-group(project-part-description), ::view-transition-group(project-part-actions) { z-index: 2; animation: none; }
@@ -131,16 +154,21 @@ html.project-vt-open::view-transition-new(project-part-metadata) { animation: pr
 html.project-vt-open::view-transition-new(project-part-url) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 815ms both; }
 html.project-vt-open::view-transition-new(project-part-description) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 865ms both; }
 html.project-vt-open::view-transition-new(project-part-actions) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 915ms both; }
-html.project-vt-close::view-transition-old(project-part-title) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 200ms both reverse; }
-html.project-vt-close::view-transition-old(project-part-category) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 150ms both reverse; }
-html.project-vt-close::view-transition-old(project-part-metadata) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 100ms both reverse; }
-html.project-vt-close::view-transition-old(project-part-url) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 100ms both reverse; }
-html.project-vt-close::view-transition-old(project-part-description) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 50ms both reverse; }
-html.project-vt-close::view-transition-old(project-part-actions) { animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 0ms both reverse; }
+html.project-vt-close::view-transition-old(project-part-title) { animation: project-fade-out 120ms ease-out 0ms both; }
+html.project-vt-close::view-transition-old(project-part-category) { animation: project-fade-out 120ms ease-out 0ms both; }
+html.project-vt-close::view-transition-old(project-part-metadata) { animation: project-fade-out 120ms ease-out 0ms both; }
+html.project-vt-close::view-transition-old(project-part-url) { animation: project-fade-out 120ms ease-out 0ms both; }
+html.project-vt-close::view-transition-old(project-part-description) { animation: project-fade-out 120ms ease-out 0ms both; }
+html.project-vt-close::view-transition-old(project-part-actions) { animation: project-fade-out 120ms ease-out 0ms both; }
 
-@keyframes project-layer-in {
-  from { opacity: 0.2; }
+@keyframes project-layer-open {
+  from { opacity: 0; }
   to { opacity: 1; }
+}
+
+@keyframes project-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 @keyframes project-part-in {
@@ -397,7 +425,7 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.nav-segments-content--works[data-active='exploration'] .nav-tab-indicator {
+.nav-segments-content--works[data-active='recent'] .nav-tab-indicator {
   transform: translateX(var(--nav-tab-width));
 }
 
@@ -753,7 +781,11 @@ button.nav-circle { cursor: pointer; }
   row-gap: 16px;
   padding: 24px var(--page-gutter);
   box-shadow: 0 0 0 0.5px #fff;
+  /* Switching tabs remounts the grid (Works.tsx), which fades in with its cards. */
+  animation: works-grid-in 260ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
+@keyframes works-grid-in { from { opacity: 0; } }
 
 .project-card { position: relative; display: flex; min-width: 0; flex-direction: column; gap: 12px; }
 .project-card-link::after { position: absolute; inset: 0; z-index: 1; content: ''; }
@@ -767,6 +799,15 @@ button.nav-circle { cursor: pointer; }
 .project-card--6 { grid-column: 1; grid-row: 3; }
 .project-card--7 { grid-column: 2; grid-row: 3; }
 .project-card--8 { grid-column: 4; grid-row: 3; }
+/* Recent Work: the same cards, scattered differently so the two tabs don't read alike. */
+.recent-card--1 { grid-column: 2; grid-row: 1; }
+.recent-card--2 { grid-column: 4; grid-row: 1; }
+.recent-card--3 { grid-column: 1; grid-row: 2; }
+.recent-card--4 { grid-column: 2; grid-row: 2; }
+.recent-card--5 { grid-column: 3; grid-row: 3; }
+.recent-card--6 { grid-column: 1; grid-row: 4; }
+.recent-card--7 { grid-column: 3; grid-row: 4; }
+.recent-card--8 { grid-column: 4; grid-row: 4; }
 
 .project-meta {
   display: flex;
@@ -786,9 +827,10 @@ button.nav-circle { cursor: pointer; }
 .project-meta p { opacity: 0.6; letter-spacing: -0.24px; }
 .project-meta time { opacity: 0.6; font-size: 10px; letter-spacing: -0.2px; }
 
-/* Standalone motion exports (src/components/MotionPreview.tsx) fill their box. */
+/* Motions from the shared bundle (src/components/MotionPreview.tsx) fill their box: the
+   stage is the frame at its design size, scaled from its top-left corner. */
 .motion-preview { position: absolute; inset: 0; overflow: hidden; }
-.motion-preview iframe { display: block; border: 0; transform-origin: top left; pointer-events: none; }
+.motion-preview-stage { position: absolute; top: 0; left: 0; display: block; overflow: hidden; transform-origin: top left; pointer-events: none; }
 
 .project-image {
   position: relative;
@@ -923,6 +965,10 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   --beam-bloom-opacity: 2.5;
 }
 
+/* Off screen, the beam's spin stops where it is (ContactBeam.tsx). The package's own
+   rules are injected later with equal specificity, hence !important. */
+.contact-beam[data-beam-paused] { animation-play-state: paused !important; }
+
 /* ContactBeam wraps the pill, so the wrapper takes its width and offset. */
 .contact-pill-beam {
   width: min(var(--content-width), 100%);
@@ -959,14 +1005,18 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.85), 0.3px 0.3px 0.4px #000;
 }
 
-/* Footer "Let's Talk" CTA states, skeuomorphic. Every state uses the same three
-   shadow layers so they animate smoothly (a different layer count, or a swapped
-   background gradient, can't be interpolated and snaps). Hover brightens the body and
-   its top highlight; pressed darkens it, moves the highlight into an inner top shadow,
-   and sinks half a pixel. `:is()` gives two-class specificity to beat both bases. */
+/* Button states, skeuomorphic: default, hover, pressed. Every state of a button uses the
+   same three shadow layers so they animate smoothly (a different layer count, or a
+   swapped background gradient, can't be interpolated and snaps). Hover lifts the
+   highlight; pressed moves the light into an inner top shadow and sinks half a pixel.
+   The buttons have no action or link target yet. `:is()` gives two-class specificity to
+   beat each button's base style.
+
+   Dark ("Let's Talk", intro and footer): hover brightens the body, pressed darkens it.
+   --skeuo-ring is the hairline around it, which differs with the surface it sits on. */
 :is(.contact-button, .pill-button--dark).skeuo-button {
   box-shadow:
-    0 0 0 0.5px rgb(214 214 214 / 8%),
+    0 0 0 0.5px var(--skeuo-ring, rgb(214 214 214 / 8%)),
     inset 0 1px 1px rgb(255 255 255 / 15%),
     inset 0 -1px 0.5px #000;
   cursor: pointer;
@@ -975,7 +1025,7 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
 
 :is(.contact-button, .pill-button--dark).skeuo-button:hover {
   box-shadow:
-    0 0 0 0.5px rgb(214 214 214 / 8%),
+    0 0 0 0.5px var(--skeuo-ring, rgb(214 214 214 / 8%)),
     inset 0 1px 1px rgb(255 255 255 / 30%),
     inset 0 -1px 0.5px #000;
   filter: brightness(1.12);
@@ -983,18 +1033,83 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
 
 :is(.contact-button, .pill-button--dark).skeuo-button:active {
   box-shadow:
-    0 0 0 0.5px rgb(214 214 214 / 8%),
+    0 0 0 0.5px var(--skeuo-ring, rgb(214 214 214 / 8%)),
     inset 0 1.5px 3px rgb(0 0 0 / 55%),
     inset 0 -0.5px 0.5px rgb(255 255 255 / 10%);
   filter: brightness(0.86);
   transform: translateY(0.5px);
 }
 
+.intro-actions .pill-button--dark { --skeuo-ring: #d6d6d6; }
+
+/* Light ("Copy Email", "Visit site"): white can't get brighter, so hover deepens the
+   bottom shading and the highlight a touch, and pressed greys it with an inner shadow.
+   "Visit site" sits in its own 0.5px frame, so it draws no ring of its own. */
+:is(.pill-button--light, .beam-visit, .bifrost-visit).skeuo-button {
+  box-shadow:
+    0 0 0 0.5px var(--skeuo-light-ring, #f0f0f0),
+    inset 0 0.5px 0.5px rgb(255 255 255 / 60%),
+    inset 0 -0.5px 0.5px rgb(0 0 0 / 20%);
+  cursor: pointer;
+  transition: box-shadow 180ms ease, filter 180ms ease, transform 120ms ease;
+}
+
+:is(.pill-button--light, .beam-visit, .bifrost-visit).skeuo-button:hover {
+  box-shadow:
+    0 0 0 0.5px var(--skeuo-light-ring, #e4e4e4),
+    inset 0 1px 1px rgb(255 255 255 / 100%),
+    inset 0 -1px 1px rgb(0 0 0 / 16%);
+  filter: brightness(0.985);
+}
+
+:is(.pill-button--light, .beam-visit, .bifrost-visit).skeuo-button:active {
+  box-shadow:
+    0 0 0 0.5px var(--skeuo-light-ring, #e4e4e4),
+    inset 0 1px 2.5px rgb(0 0 0 / 18%),
+    inset 0 -0.5px 0.5px rgb(255 255 255 / 60%);
+  filter: brightness(0.95);
+  transform: translateY(0.5px);
+}
+
+:is(.beam-visit, .bifrost-visit) { --skeuo-light-ring: transparent; }
+
 .skeuo-button:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
 
+/* Social icons: a raised light chip fades in behind the icon on hover and presses in
+   on press. The chip is its own layer, so only its opacity and shadow animate. */
+.social-links .social-button { position: relative; cursor: pointer; }
+.social-button::before {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, rgb(255 255 255 / 20%) 50%, rgb(230 230 230 / 20%)), #fff;
+  box-shadow:
+    0 0 0 0.5px #e4e4e4,
+    inset 0 0.5px 0.5px rgb(255 255 255 / 60%),
+    inset 0 -0.5px 0.5px rgb(0 0 0 / 20%);
+  content: '';
+  opacity: 0;
+  transition: opacity 180ms ease, box-shadow 180ms ease, filter 180ms ease;
+}
+.social-button img { position: relative; transition: transform 120ms ease; }
+.social-button:hover::before { opacity: 1; }
+.social-button:active::before {
+  opacity: 1;
+  box-shadow:
+    0 0 0 0.5px #e4e4e4,
+    inset 0 1px 2.5px rgb(0 0 0 / 18%),
+    inset 0 -0.5px 0.5px rgb(255 255 255 / 60%);
+  filter: brightness(0.95);
+}
+.social-button:active img { transform: translateY(0.5px); }
+.social-button:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 2px; }
+
 @media (prefers-reduced-motion: reduce) {
-  :is(.contact-button, .pill-button--dark).skeuo-button { transition: none; }
-  :is(.contact-button, .pill-button--dark).skeuo-button:active { transform: none; }
+  .skeuo-button,
+  .social-button::before,
+  .social-button img { transition: none; }
+  .skeuo-button:active,
+  .social-button:active img { transform: none; }
 }
 
 .footer-socials {
@@ -1013,6 +1128,8 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   .nav-project-tab {
     transition: none;
   }
+
+  .works-grid { animation: none; }
 }
 
 @media (max-width: 1023px) {
