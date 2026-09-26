@@ -1,0 +1,38 @@
+/* The site's own sans (Geist), quiet, like the transition's caption, a little brighter since it is the only thing
+   on screen: the name and the percentage on one row, a thin line under them. Centred. */
+.mark {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  width: 208px;
+  flex-direction: column;
+  gap: 10px;
+  transform: translate(-50%, -50%);
+  font-family: Geist, Arial, sans-serif;
+  font-size: 12px;
+  line-height: 16px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: rgb(255 255 255 / 42%);
+  transition: opacity var(--fade-ms) ease-out;
+}
+.row { display: flex; justify-content: space-between; }
+/* Tabular digits, so the number never shifts as it counts. */
+.number { font-variant-numeric: tabular-nums; }
+
+/* One thin line: a faint track, and the fill growing from the left. */
+.track { position: relative; height: 1px; overflow: hidden; background: rgb(255 255 255 / 8%); }
+.fill {
+  position: absolute;
+  inset: 0;
+  background: rgb(255 255 255 / 55%);
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+/* At 100%, after the hold: the line retracts to the right, track and all. */
+.track { transform-origin: right center; transition: transform var(--retract-ms) cubic-bezier(0.76, 0, 0.24, 1); }
+.mark[data-phase='retract'] .track,
+.mark[data-phase='fade'] .track { transform: scaleX(0); }
+/* Then the name and the number fade. */
+.mark[data-phase='fade'] { opacity: 0; }

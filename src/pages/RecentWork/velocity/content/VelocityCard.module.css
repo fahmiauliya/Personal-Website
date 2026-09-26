@@ -1,0 +1,160 @@
+/*
+ * Figma 312:2215 "Velocity": 536 × 410.204071, fill #bebebe, holding the 474 × 325.029
+ * Insight Performance dashboard (312:2224, #dadada). Values are Figma px; text line heights are
+ * rounded up to whole pixels, as Figma sizes its text boxes, and strokes are inset shadows,
+ * since Figma draws them inside a layer without changing its size. Hairlines are CSS lines: an
+ * image under half a pixel wide can disappear.
+ */
+@font-face { font-family: 'Velocity Outfit'; src: url('./assets/fonts/outfit-variable.ttf') format('truetype'); font-style: normal; font-weight: 100 900; font-display: swap; }
+
+.card {
+  position: relative;
+  width: 536px;
+  height: 410.2040710449219px;
+  margin: 0;
+  overflow: hidden;
+  background: #bebebe;
+  font-family: 'Velocity Outfit', Outfit, Arial, sans-serif;
+  font-weight: 300;
+  font-size: 4.608px;
+  line-height: 8px;
+  color: #202020;
+}
+.card *, .card *::before, .card *::after { box-sizing: border-box; }
+.card p, .card h1 { margin: 0; white-space: nowrap; }
+.card img { display: block; max-width: none; }
+.regular { font-weight: 400; }
+.muted { color: #6a7077; }
+.muted2 { color: #a1a1a1; }
+.dark { color: #202020 !important; }
+.blue { color: #1a57f1; }
+.icon6 { width: 6.583px; height: 6.583px; flex: none; }
+.icon5 { width: 5.267px; height: 5.267px; flex: none; }
+
+.dashboard {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 474px;
+  /* Figma's frame is 325.029 tall; cropped to 277.5 so it ends just below the Routes bucket
+     headers, and centred in the card. */
+  height: 277.5px;
+  overflow: hidden;
+  background: #dadada;
+  transform: translate(-50%, -50%);
+}
+
+/* 312:2225: top bar */
+.topBar { position: absolute; right: 0; top: 0; width: 474px; height: 21.067px; }
+.brand { position: absolute; left: 13.17px; top: 6.58px; display: flex; height: 14.483px; align-items: center; gap: 2.633px; }
+.logo { position: relative; width: 14.483px; height: 14.483px; flex: none; }
+.logo img { position: absolute; left: 1.86px; top: 3.23px; width: 10.78px; height: 8px; }
+.brandDivider { width: 0.4px; height: 4.5px; flex: none; background: rgb(0 0 0 / 20%); }
+.company { display: flex; align-items: center; justify-content: center; gap: 2.633px; padding: 3.621px 2px; border-radius: 1.317px; }
+.navTabs { position: absolute; left: calc(50% + 0.16px); top: 6.58px; display: flex; align-items: center; transform: translateX(-50%); }
+.tabs { display: flex; align-items: center; }
+.tab { display: flex; flex: none; flex-direction: column; align-items: center; justify-content: center; padding: 3.621px 6.583px; box-shadow: inset 0 -0.329px 0 #bbbfc3; color: #a1a1a1; }
+.tabActive { box-shadow: inset 0 -0.329px 0 #202020; color: #202020; font-weight: 400; }
+.actions { position: absolute; left: 420.02px; top: 6.58px; display: flex; align-items: center; gap: 3.95px; }
+.bell { width: 14.483px; height: 14.483px; flex: none; }
+.account { display: flex; align-items: center; border-radius: 1.317px; background: #ebebeb; }
+.avatarBox { display: flex; padding: 2.633px 0 2.633px 2.633px; }
+.avatarBox img { width: 9.217px; height: 9.217px; border-radius: 1.317px; object-fit: cover; }
+.listBox { display: flex; padding: 3.95px 3.95px 3.95px 2.633px; }
+
+/* 312:2266: title row */
+.titleRow { position: absolute; left: 0; top: 21.07px; display: flex; width: 474px; align-items: center; justify-content: space-between; padding: 13.167px 13.167px 10.533px; }
+.title { display: flex; align-items: center; gap: 3.292px; }
+.title h1 { font-size: 18.433px; font-weight: 300; line-height: 22px; letter-spacing: -0.553px; }
+.titleCaret { display: flex; padding: 1.975px; box-shadow: inset 0 0 0 0.494px #ebebeb; border-radius: 32.917px; background: #ebebeb; }
+.titleActions { display: flex; align-items: center; gap: 6.583px; }
+.select { display: flex; align-items: center; gap: 2.633px; padding: 3.621px 5.267px; border-radius: 1.317px; background: #ebebeb; font-weight: 400; }
+
+/* 312:2284: body */
+.body { position: absolute; left: 0; top: 65.83px; display: flex; width: 474px; align-items: flex-start; gap: 2.633px; padding: 0 13.167px; }
+.vitals { display: flex; width: 83.279px; flex: none; flex-direction: column; justify-content: center; gap: 7.9px; }
+.vitalsList { display: flex; width: 100%; flex-direction: column; }
+.scoreItem { display: flex; width: 100%; flex-direction: column; gap: 2.633px; padding: 5.267px 5.267px 5.267px 6.583px; border-radius: 1.317px; background: #ebebeb; box-shadow: inset 1.317px 0 0 #fff; }
+.scoreItemLabel { font-weight: 400; }
+.scoreItemRow { display: flex; align-items: center; gap: 2.633px; }
+.scoreBadge { width: 13.167px; height: 13.167px; }
+.scoreItemValue { font-size: 7.9px; line-height: 11px; }
+.vital { display: flex; width: 100%; flex-direction: column; gap: 2.633px; padding: 5.267px 5.267px 5.267px 6.583px; border-radius: 2.633px; }
+.vitalLabel { color: #a1a1a1; }
+.vitalRow { position: relative; width: 100%; height: 13.167px; color: #a1a1a1; }
+.vitalBar { position: absolute; left: 0.33px; top: 1.32px; height: 10.533px; background: linear-gradient(to left, rgb(187 191 195 / 50%), rgb(218 218 218 / 50%)); }
+.vitalBarEmpty { position: absolute; left: 0; top: 50%; height: 10.533px; background: linear-gradient(to top, rgb(187 191 195 / 50%), rgb(218 218 218 / 50%)); transform: translateY(-50%); }
+.vitalValue { position: absolute; left: 0; top: 1.32px; font-size: 7.9px; line-height: 11px; }
+.vitalUnit { position: absolute; top: 4.94px; font-size: 3.95px; line-height: 7px; }
+.vitalGood { position: absolute; left: calc(100% - 14.15px); top: calc(50% - 3.62px); }
+/* 312:2304 "Vector 31": the GOOD threshold, a 0.329px #a1a1a1 line (drawn in CSS; an image this thin can vanish). */
+.vitalLine { position: absolute; left: 55.466px; top: 0; width: 0.329px; height: 13.825px; background: #a1a1a1; }
+
+.main { display: flex; min-width: 0; flex: 1 0 0; flex-direction: column; justify-content: center; gap: 7.9px; }
+
+/* 312:2346: score panel */
+.panel { display: flex; width: 100%; height: 167.217px; align-items: flex-start; justify-content: center; gap: 7.9px; padding: 5.267px; border-radius: 1.317px; background: #e9e9e9; }
+.summary { display: flex; min-width: 0; height: 100%; flex: 1 0 0; flex-direction: column; align-items: flex-start; gap: 7.9px; }
+.notice { display: flex; width: 100%; align-items: center; gap: 2.633px; padding: 2.633px; border-radius: 1.317px; box-shadow: inset 0 0 0 0.329px #bbbfc3; background: linear-gradient(to right, #cccfd1, #e9e9e9); color: #454545; }
+.scoreBar { position: relative; width: 100%; height: 30.283px; flex: none; }
+.scoreBarFill { position: absolute; left: 0; top: 0; width: 128.704px; height: 30.283px; }
+.scoreBaseline { position: absolute; left: 3.95px; top: 28.144px; width: 120.804px; height: 0.329px; background: #18c687; }
+/* Frame 96: the score bar's ticks, in code so the two tall markers can slide with the score. */
+.scoreTicks { position: absolute; bottom: 1.316px; left: 3.95px; width: 120.804px; height: 27.65px; }
+.tick, .marker { position: absolute; bottom: 0; width: 0.329px; margin-left: -0.1646px; background: #18c687; }
+.tick { height: 1.317px; }
+.marker { height: 27.65px; }
+.scoreLabel { position: absolute; left: 3.95px; top: 3.95px; display: flex; height: 22.383px; flex-direction: column; justify-content: center; border-radius: 1.317px; }
+.scoreKicker { display: flex; align-items: flex-start; gap: 1.317px; color: #a1a1a1; font-size: 3.95px; line-height: 7px; }
+.scoreValue { font-size: 10.533px; line-height: 16px; }
+.heading { display: flex; width: 100%; flex-direction: column; gap: 2.633px; }
+.headingTitle { font-size: 10.533px; line-height: 14px; letter-spacing: -0.316px; }
+.meta { display: flex; width: 100%; align-items: center; gap: 2.633px; }
+.metaItem { display: flex; align-items: center; gap: 1.317px; }
+.description { min-width: 100%; flex: 1 0 0; font-size: 5.267px; line-height: 8.558px; white-space: normal !important; color: #6a7077; }
+.learnMore { display: flex; align-items: center; gap: 1.317px; font-weight: 400; }
+.learnMoreIcon { position: relative; width: 7.242px; height: 7.242px; flex: none; border: 0.329px solid #ff7a7a; border-radius: 32.917px; }
+.learnMoreIcon img { position: absolute; left: 50%; top: 50%; width: 5.267px; height: 5.267px; transform: translate(-50%, -50%); }
+
+/* 312:2403: chart */
+.chart { display: flex; width: 214.617px; height: 100%; flex: none; flex-direction: column; align-items: flex-end; gap: 5.267px; }
+.chartHeader { display: flex; width: 100%; align-items: center; justify-content: flex-end; gap: 5.267px; }
+.percentiles { display: flex; align-items: center; gap: 5.267px; color: #a1a1a1; }
+.percentile { display: flex; align-items: center; gap: 1.317px; }
+.percentile img { width: 1.975px; height: 1.975px; }
+.range { display: flex; align-items: center; justify-content: center; gap: 1.317px; border-radius: 1.317px; background: #ebebeb; font-weight: 400; }
+.plot { position: relative; width: 100%; height: 143.846px; flex: none; }
+.yAxis { position: absolute; left: 0; top: 0; display: flex; width: 8.229px; height: 143.846px; flex-direction: column; justify-content: space-between; font-size: 3.95px; line-height: 7px; color: #a1a1a1; }
+.axis {
+  position: absolute;
+  left: 9.544px;
+  top: 3.29px;
+  width: 0.329px;
+  height: 135.946px;
+  /* Three segments of #cccfd1 with small gaps (Vectors 28, 30, 29). */
+  background: linear-gradient(to bottom, #cccfd1 0 43.56px, transparent 43.56px 46.193px, #cccfd1 46.193px 89.753px, transparent 89.753px 92.386px, #cccfd1 92.386px 135.946px);
+}
+.xAxis { position: absolute; right: 0; bottom: 0; display: flex; width: 202.108px; align-items: center; justify-content: space-between; font-size: 3.95px; line-height: 7px; text-align: center; color: #a1a1a1; }
+.xAxis p { min-width: 1px; flex: 1 0 0; }
+.bar { position: absolute; border-top: 0.987px solid #a1a1a1; border-radius: 0.658px; background: linear-gradient(to bottom, #cccfd1, #e9e9e9 80%); }
+.barHighlight { border-top: 1.317px solid #fd964b; background: linear-gradient(to bottom, #fec093, #e9e9e9 86.5%); }
+.tooltip { position: absolute; display: flex; flex-direction: column; align-items: flex-start; gap: 2.304px; padding: 1.975px 2.633px; border-radius: 0.658px; background: #f4f4f4; }
+.tooltipScore { display: flex; align-items: center; gap: 1.317px; font-size: 7.9px; line-height: 11px; }
+.tooltipText { display: flex; width: 100%; flex-direction: column; font-size: 3.95px; line-height: 7px; }
+.tooltipMeta { display: flex; gap: 1.317px; }
+.tooltipMeta p:last-child { width: 21.067px; }
+
+/* 312:2468: routes */
+.routes { display: flex; width: 100%; flex-direction: column; gap: 2.633px; }
+.buckets { display: flex; width: 100%; align-items: flex-start; gap: 1.317px; border-radius: 1.317px; }
+.bucket { display: flex; min-width: 1px; flex: 1 0 0; flex-direction: column; align-items: flex-start; border-radius: 1.317px; background: #e9e9e9; }
+.stretch { align-self: stretch; }
+.bucketHeader { display: flex; width: 100%; align-items: center; justify-content: space-between; padding: 5.267px; }
+.bucketEmpty { display: flex; width: 100%; flex-direction: column; align-items: center; justify-content: center; color: #a1a1a1; }
+.bucketEmpty p { width: 47.071px; white-space: normal !important; text-align: center; }
+.routeList { display: flex; width: 100%; flex-direction: column; gap: 0.658px; }
+.route { position: relative; display: flex; width: 100%; align-items: center; justify-content: space-between; overflow: hidden; padding: 3.95px 5.267px; border-radius: 1.317px; background: #e9e9e9; }
+.route > p, .routeStats { position: relative; }
+.routeShare { position: absolute; left: 0; top: 0; height: 15.142px; background: #f4f4f4; }
+.routeStats { display: flex; align-items: center; gap: 7.9px; }
+.routeVisits { display: flex; align-items: center; gap: 1.317px; }

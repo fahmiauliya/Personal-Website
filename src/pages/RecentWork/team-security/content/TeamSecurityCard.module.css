@@ -1,0 +1,89 @@
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.slide {
+  position: absolute;
+  left: -185.283203px;
+  top: -47px;
+  width: 906.56604px;
+  height: 528px;
+  overflow: hidden;
+  background: white;
+}
+
+.artboard {
+  position: absolute;
+  left: -34.468861px;
+  top: -27.396227px;
+  width: 975.50116px;
+  height: 573.106934px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.grid {
+  position: absolute;
+  left: -31.404593px;
+  top: -194.086349px;
+  max-width: none;
+  display: block;
+}
+
+.icon {
+  position: absolute;
+  left: 331.816742px;
+  top: 118.961266px;
+  width: 311.869812px;
+  height: 311.869812px;
+  border-radius: 68.222px;
+  overflow: hidden;
+}
+
+.symbol {
+  position: absolute;
+  /* Include the SVG's original shadow bounds around the Figma group. */
+  left: 51.50821px;
+  top: 62.3369px;
+  max-width: none;
+  display: block;
+}
+
+/* Timeline-controlled CSS motion; negative delay allows exact pause and scrubbing. */
+.light { pointer-events: none; }
+.gridWave {
+  animation: security-grid-wave 8s linear infinite;
+  animation-delay: var(--light-delay, 0s);
+  animation-play-state: var(--light-play, running);
+}
+@keyframes security-grid-wave {
+  from { transform: translateX(0); }
+  to { transform: translateX(1120px); }
+}
+.sweep {
+  animation: security-sweep 8s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  animation-delay: var(--light-delay, 0s);
+  animation-play-state: var(--light-play, running);
+}
+.orbit {
+  animation: security-orbit 8s linear infinite;
+  animation-delay: var(--light-delay, 0s);
+  animation-play-state: var(--light-play, running);
+}
+@keyframes security-sweep {
+  0%, 15% { transform: translateX(-130px); }
+  75%, 100% { transform: translateX(310px); }
+}
+@keyframes security-orbit {
+  from { stroke-dashoffset: 0; }
+  to { stroke-dashoffset: -100; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .light { display: none; }
+  .sweep, .orbit, .gridWave { animation: none; }
+}

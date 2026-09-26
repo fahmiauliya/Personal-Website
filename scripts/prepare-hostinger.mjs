@@ -15,7 +15,7 @@ for (const motion of ['motion-01', 'motion-02', 'motion-03', 'motion-05', 'motio
 // public/motions/ is the shared Motion Lab motion bundle (npm run sync:motions);
 // public/talentpluto/ holds the TalentPluto cover video and poster;
 // public/fonts/ holds fonts shared by the Beam gallery motions (TikTok Sans).
-for (const folder of ['motions/', 'talentpluto/', 'fonts/']) {
+for (const folder of ['motions/', 'talentpluto/', 'fonts/', 'rive/']) {
   await rm(new URL(folder, root), { recursive: true, force: true });
   await cp(new URL(`dist/${folder}`, root), new URL(folder, root), { recursive: true });
 }

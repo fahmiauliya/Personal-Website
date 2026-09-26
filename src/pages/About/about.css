@@ -1,17 +1,7 @@
 .about-page {
   --about-ink: #1b1b1b;
   --about-surface: #fafafa;
-  --about-page-width: 1198px;
-  --about-label-width: 488px;
-  --about-column-gap: 20px;
-  --about-content-width: 690px;
-  --about-content-inset: 12px;
-  --experience-year-width: 169.5px;
-  --experience-column-gap: 16px;
-  --experience-date-width: 157px;
-  --service-gap: 4px;
-  position: relative;
-  height: 2556.14px;
+  min-width: 320px;
   background: var(--about-surface);
   color: var(--about-ink);
   font-family: 'Geist', Arial, sans-serif;
@@ -20,61 +10,50 @@
   line-height: 1.4;
 }
 
-.about-main,
-.about-bottom-overlay {
-  width: min(calc(100% - 48px), var(--about-page-width));
-  margin-inline: auto;
-}
-
 .about-main {
-  padding-block: 80px;
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  background: var(--about-surface);
 }
 
-.about-section {
+.introduction {
+  display: flex;
+  width: 100%;
+  height: 460px;
+  justify-content: center;
   padding-block: 120px;
   overflow: hidden;
 }
 
-.about-section-grid {
-  display: grid;
-  grid-template-columns: var(--about-label-width) minmax(0, var(--about-content-width));
-  gap: var(--about-column-gap);
-  align-items: start;
+.introduction-content {
+  display: flex;
+  width: 744px;
+  height: 220px;
+  flex-direction: column;
+  gap: 80px;
 }
 
-.introduction {
-  height: 390px;
-}
-
-.experience-section {
-  height: 500px;
-}
-
-.capabilities-section {
-  height: 690.14px;
-}
-
-.about-label {
-  color: rgb(27 27 27 / 80%);
-}
-
-.about-label h2,
-.experience-heading h3,
-.introduction-title {
-  margin: 0;
-  font: inherit;
-  color: var(--about-ink);
-}
-
-.about-label h2 {
-  color: inherit;
+.introduction-label {
+  display: flex;
+  width: 488px;
+  height: 40px;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .introduction-title {
   display: flex;
   align-items: center;
   gap: 4px;
+  color: var(--about-ink);
+  font: inherit;
   white-space: nowrap;
+}
+
+.introduction-title > span:first-child {
+  width: 61px;
+  flex: 0 0 61px;
 }
 
 .introduction-label > p {
@@ -89,7 +68,7 @@
   flex: 0 0 20px;
   overflow: hidden;
   border: 0.071px solid #e6e6e6;
-  border-radius: 50%;
+  border-radius: 83.333px;
   background: #fff;
   box-shadow:
     inset 0 0.071px 0.071px rgb(255 255 255 / 60%),
@@ -97,77 +76,231 @@
 }
 
 .profile-image-frame img {
-  display: block;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  top: -0.07px;
+  left: -0.14px;
+  width: 20px;
+  height: 20px;
   object-fit: cover;
 }
 
 .about-copy {
-  display: grid;
-  grid-template-columns: var(--about-content-inset) minmax(0, 1fr);
-  min-width: 0;
-  font-size: 18px;
+  display: flex;
+  width: 744px;
+  height: 100px;
+  align-items: flex-start;
 }
 
-.about-copy-inner {
+.about-copy p {
+  width: 100%;
+}
+
+.experience-section {
   display: flex;
-  grid-column: 2;
-  min-width: 0;
-  flex-direction: column;
-  gap: 25.2px;
+  width: 100%;
+  height: 540px;
+  justify-content: center;
+  padding-block: 120px;
+  overflow: hidden;
+}
+
+.experience-content {
+  width: 852px;
+  height: 300px;
+  padding-inline: 32px;
+}
+
+.experience-content > h2 {
+  width: 488px;
+  height: 20px;
+  padding-inline: 20px;
+  color: rgb(27 27 27 / 40%);
+  font: inherit;
+}
+
+.experience-timeline {
+  display: flex;
+  width: 788px;
+  height: 260px;
+  margin-top: 20px;
+  align-items: flex-start;
+}
+
+.experience-track {
+  width: 20px;
+  height: 228px;
+  flex: 0 0 20px;
 }
 
 .experience-list {
-  min-width: 0;
+  width: 768px;
+  height: 260px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .experience-row {
-  display: grid;
-  grid-template-columns:
-    var(--about-content-inset)
-    var(--experience-year-width)
-    var(--experience-column-gap)
-    minmax(0, 1fr);
-  min-height: 68px;
-  padding-top: 12px;
+  display: flex;
+  width: 100%;
+  height: 68px;
+  gap: 16px;
+  align-items: flex-start;
+  padding-block: 12px;
 }
 
 .experience-row:first-child {
-  min-height: 56px;
+  height: 56px;
   padding-top: 0;
 }
 
 .experience-year {
-  grid-column: 2;
+  width: 178px;
+  flex: 0 0 178px;
 }
 
 .experience-details {
-  display: grid;
-  grid-column: 4;
-  min-width: 0;
+  display: flex;
+  width: 574px;
+  height: 44px;
+  flex-direction: column;
   gap: 4px;
+  overflow: hidden;
 }
 
 .experience-heading {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) var(--experience-date-width);
+  width: 100%;
+  height: 20px;
+  grid-template-columns: minmax(0, 1fr) 166px;
   align-items: center;
-  min-width: 0;
+}
+
+.experience-heading h3 {
+  color: var(--about-ink);
+  font: inherit;
+  white-space: nowrap;
 }
 
 .experience-heading p,
 .experience-role {
   color: rgb(27 27 27 / 60%);
+  white-space: nowrap;
+}
+
+.capabilities-section {
+  display: flex;
+  width: 100%;
+  height: 583px;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.capabilities-board {
+  position: relative;
+  width: 852px;
+  height: 583px;
+  flex: 0 0 852px;
+  overflow: hidden;
+  background: var(--about-surface);
+}
+
+.capability-guides {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.capability-guide-lines {
+  z-index: 0;
+}
+
+.capability-guide-overlay {
+  z-index: 3;
+}
+
+.capability-guide-vertical {
+  position: absolute;
+  z-index: 0;
+  top: -95px;
+  left: 0;
+  width: 862.5px;
+  height: 749.5px;
+  max-width: none;
+}
+
+.capability-guide-horizontal-pattern {
+  position: absolute;
+  z-index: 0;
+  top: 0;
+  left: -30px;
+  width: 894px;
+  height: 583px;
+  max-width: none;
+  overflow: visible;
+}
+
+.capability-guide-outlines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.capability-guide-dot {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #ccc;
+}
+
+.capability-fade {
+  position: absolute;
+}
+
+.capability-fade-left {
+  top: calc(50% - 0.5px);
+  left: 0;
+  width: 20px;
+  height: 602px;
+  transform: translateY(-50%);
+}
+
+.capability-fade-right {
+  top: calc(50% - 0.5px);
+  right: 0;
+  width: 20px;
+  height: 574px;
+  transform: translateY(-50%) scaleX(-1);
+}
+
+.capability-fade-bottom {
+  bottom: 0;
+  left: calc(50% + 0.5px);
+  width: 787px;
+  height: 20px;
+  transform: translateX(-50%) scaleY(-1);
+}
+
+.capability-fade-top {
+  top: 0;
+  left: calc(50% + 0.5px);
+  width: 871px;
+  height: 20px;
+  transform: translateX(-50%);
 }
 
 .capabilities-grid {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  z-index: 2;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--service-gap);
+  width: 772px;
+  height: 503px;
+  grid-template-columns: repeat(4, 190px);
+  grid-template-rows: repeat(3, 165px);
+  gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -175,41 +308,231 @@
 
 .capabilities-grid li {
   min-width: 0;
-  aspect-ratio: 169.5 / 147.38;
   padding: 12px;
   overflow: hidden;
-  border: 0.5px solid rgb(0 0 0 / 20%);
-  border-radius: 12px;
-  overflow-wrap: anywhere;
+  /* Guides above the cards own the desktop stroke; keep border space intact. */
+  border: 0.5px solid transparent;
+  background: var(--about-surface);
 }
 
-.about-bottom-overlay {
+.capability-card {
+  /* Foil controls: times in ms, angle in degrees, width as a card-width fraction. */
+  --capability-idle-pattern-opacity: 0.015;
+  --capability-pattern-opacity: 0.36;
+  --capability-holographic-saturation: 0.78;
+  --capability-grain-active: 0.13;
+  --capability-reflection-width: 0.032;
+  --capability-reflection-angle: 22;
+  --capability-right-edge-intensity: 1;
+  --capability-cursor-smoothing: 85;
+  --capability-edge-glow: 1.15;
+  --capability-edge-in: 110ms;
+  --capability-structure-delay: 80ms;
+  --capability-structure-in: 220ms;
+  --capability-texture-delay: 320ms;
+  --capability-texture-in: 480ms;
+  --capability-material-delay: 240ms;
+  --capability-material-in: 500ms;
+  --capability-reflection-delay: 640ms;
+  --capability-reflection-in: 360ms;
+  --capability-reflection-fade-out: 180ms;
+  --capability-color-fade-out: 340ms;
+  --capability-pattern-fade-out: 480ms;
+  --capability-texture-fade-out: 400ms;
+  --capability-edge-fade-out: 580ms;
+  --capability-pointer-x: 95px;
+  --capability-pointer-y: 82.5px;
+  --capability-light-position: 70%;
+  --capability-light-angle: 68deg;
+  --capability-light-width: 3.2%;
+  --capability-edge-level: 0;
+  --capability-texture-level: 0;
+  --capability-structure-level: 0;
+  --capability-material-level: 0;
+  --capability-reflection-level: 0;
+  --capability-edge-0: 0;
+  --capability-edge-1: 1;
+  --capability-edge-2: 0;
+  --capability-edge-3: 0;
+  --capability-hotspot-mask: radial-gradient(ellipse 30% 36% at var(--capability-pointer-x) var(--capability-pointer-y),
+    #000 0%, rgb(0 0 0 / 96%) 35%, rgb(0 0 0 / 62%) 65%, rgb(0 0 0 / 20%) 85%, transparent 100%);
+  --capability-entry-angle: 270deg;
+  --capability-structure-front: -18%;
+  --capability-material-front: -18%;
+  position: relative;
+  contain: paint;
+  isolation: isolate;
+}
+
+.capability-card__mask-defs { position: absolute; pointer-events: none; }
+
+.capability-card__title { position: relative; z-index: 7; }
+
+.capability-card__edge,
+.capability-card__pattern,
+.capability-card__material,
+.capability-card__sheen,
+.capability-card__grain,
+.capability-card__reflection {
   position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.capability-card__pattern { overflow: hidden; fill: none; }
+.capability-card__pattern path { vector-effect: non-scaling-stroke; }
+.capability-card__pattern--neutral { z-index: 0; opacity: var(--capability-idle-pattern-opacity); }
+.capability-card__pattern--neutral path { stroke: #eaeaea; stroke-width: 0.55; }
+
+/* Independent levels are driven by one finite sequence in CapabilityCard. */
+.capability-card__material,
+.capability-card__sheen { z-index: 1; }
+
+.capability-card__material {
+  visibility: hidden;
+  /* The shader owns spatial alpha. This guard also clears a paused/hidden canvas. */
+  opacity: min(1, calc((var(--capability-edge-level) + var(--capability-material-level)) * 1000));
+}
+.capability-card[data-foil-renderer='webgpu'] .capability-card__material { visibility: visible; }
+
+.capability-card__pattern--structure {
+  z-index: 2;
+  opacity: calc(var(--capability-structure-level) * (0.60 - var(--capability-material-level) * 0.52));
+  mask-image: linear-gradient(var(--capability-entry-angle),
+    #000 calc(var(--capability-structure-front) - 8%), transparent calc(var(--capability-structure-front) + 8%));
+}
+.capability-card__pattern--structure path { stroke: #d5d5d5; stroke-width: 0.55; }
+
+/* Directional fallback for browsers without WebGPU; never an opaque black canvas. */
+.capability-card__sheen {
+  opacity: calc(var(--capability-material-level) * .55);
+  mask-image: var(--capability-hotspot-mask), linear-gradient(var(--capability-entry-angle),
+    #000 calc(var(--capability-material-front) - 8%), transparent calc(var(--capability-material-front) + 8%));
+  mask-composite: intersect;
+  background:
+    linear-gradient(145deg, #d3eef0, transparent 42%, #f4e7c8),
+    linear-gradient(65deg, #dfe4f1 5%, #ead8ef 25%, #c9eaf0 47%, #e1dcf2 64%, #f4e0e9 79%, #e7efce);
+  background-size: 140% 140%;
+  background-position: var(--capability-light-position) 50%;
+}
+.capability-card[data-foil-renderer='webgpu'] .capability-card__edge,
+.capability-card[data-foil-renderer='webgpu'] .capability-card__sheen,
+.capability-card[data-foil-renderer='webgpu'] .capability-card__reflection,
+.capability-card[data-foil-renderer='webgpu'] .capability-card__pattern--structure,
+.capability-card[data-foil-renderer='webgpu'] .capability-card__pattern--holographic,
+.capability-card[data-foil-renderer='webgpu'] .capability-card__pattern--specular,
+.capability-card[data-foil-renderer='webgpu'] .capability-card__grain--active { visibility: hidden; }
+
+/* Soft pearl on the actual boundary, independent of the cursor's stronger color. */
+.capability-card__edge {
+  z-index: 6;
+  opacity: calc(var(--capability-edge-level) * var(--capability-edge-glow) * .24);
+  background:
+    radial-gradient(ellipse 10% 30% at 0% var(--capability-pointer-y), rgb(192 225 238 / var(--capability-edge-0)), transparent),
+    radial-gradient(ellipse 10% 30% at 100% var(--capability-pointer-y), rgb(230 215 240 / var(--capability-edge-1)), transparent),
+    radial-gradient(ellipse 30% 10% at var(--capability-pointer-x) 0%, rgb(217 223 244 / var(--capability-edge-2)), transparent),
+    radial-gradient(ellipse 30% 10% at var(--capability-pointer-x) 100%, rgb(224 238 216 / var(--capability-edge-3)), transparent);
+}
+
+.capability-card__pattern--holographic {
+  z-index: 3;
+  opacity: calc(var(--capability-pattern-opacity) * var(--capability-material-level));
+  mask-image: linear-gradient(var(--capability-entry-angle),
+    #000 calc(var(--capability-material-front) - 8%), transparent calc(var(--capability-material-front) + 8%));
+}
+.capability-card__pattern--holographic path { stroke-width: 0.55; }
+
+.capability-card__pattern--specular {
+  z-index: 4;
+  opacity: calc(var(--capability-pattern-opacity) * var(--capability-reflection-level));
+  /* A thin white lip along each fixed contour reads as embossed laminate. */
+  mask-image: linear-gradient(var(--capability-light-angle),
+    rgb(0 0 0 / 38%), #000 var(--capability-light-position), rgb(0 0 0 / 55%));
+}
+.capability-card__pattern--specular path { stroke: #fff; stroke-width: 0.45; }
+
+.capability-card__grain--active {
+  z-index: 5;
+  opacity: calc(var(--capability-grain-active) * var(--capability-texture-level));
+  mask-image: var(--capability-hotspot-mask);
+  background: url('../../assets/about/capability-grain.svg') repeat;
+  background-size: 48px 48px;
+  mix-blend-mode: soft-light;
+}
+
+.capability-card__reflection {
+  z-index: 2;
+  mask-image: var(--capability-hotspot-mask);
+  opacity: var(--capability-reflection-level);
+  background: linear-gradient(var(--capability-light-angle),
+    transparent calc(var(--capability-light-position) - var(--capability-light-width) * 4),
+    rgb(255 255 255 / 30%) calc(var(--capability-light-position) - var(--capability-light-width) * 2),
+    #fff var(--capability-light-position),
+    rgb(255 255 255 / 30%) calc(var(--capability-light-position) + var(--capability-light-width) * 2),
+    transparent calc(var(--capability-light-position) + var(--capability-light-width) * 4));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capability-card {
+    --capability-edge-in: 0ms;
+    --capability-structure-delay: 0ms;
+    --capability-structure-in: 0ms;
+    --capability-texture-delay: 0ms;
+    --capability-texture-in: 0ms;
+    --capability-material-delay: 0ms;
+    --capability-material-in: 0ms;
+    --capability-reflection-delay: 0ms;
+    --capability-reflection-in: 0ms;
+    --capability-reflection-fade-out: 0ms;
+    --capability-color-fade-out: 0ms;
+    --capability-pattern-fade-out: 0ms;
+    --capability-texture-fade-out: 0ms;
+    --capability-edge-fade-out: 0ms;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .capability-card__edge,
+  .capability-card__material,
+  .capability-card__sheen,
+  .capability-card__pattern--structure,
+  .capability-card__pattern--holographic,
+  .capability-card__pattern--specular,
+  .capability-card__grain--active,
+  .capability-card__reflection { display: none; }
+}
+
+
+.about-bottom {
+  position: relative;
+  z-index: 1;
+  width: 100%;
   height: 816px;
   overflow: hidden;
-  background: var(--color-footer);
+  background: var(--about-surface);
   box-shadow: 0 0 0 0.5px #fff;
 }
 
 .contact-grid {
+  display: flex;
+  width: 100%;
   height: 739px;
   align-items: center;
+  justify-content: center;
+  padding-block: 24px;
 }
 
-/* ContactBeam wraps the pill, so the wrapper takes its place in the grid. */
 .contact-cta-beam {
-  grid-column: 1 / -1;
-  justify-self: center;
-  width: min(100%, 587px);
+  width: 587px;
+  flex: 0 0 587px;
 }
 
 .contact-cta {
   display: flex;
   width: 100%;
-  min-height: 57px;
+  height: 57px;
   align-items: center;
   justify-content: space-between;
   padding: 12px;
@@ -225,6 +548,7 @@
   padding-inline: 12px;
   color: #000;
   text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 25%), 0.3px 0.3px 0.4px rgb(0 0 0 / 25%);
+  white-space: nowrap;
 }
 
 .contact-button-frame {
@@ -237,7 +561,7 @@
 .contact-button {
   position: relative;
   display: flex;
-  min-height: 32px;
+  height: 32px;
   align-items: center;
   justify-content: center;
   gap: 4px;
@@ -250,26 +574,24 @@
     #636363;
   box-shadow: inset 0 1px 1px rgb(255 255 255 / 15%), inset 0 -1px 0.5px #000;
   color: #fff;
-  cursor: default;
-  text-decoration: none;
+  cursor: pointer;
   text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 85%), 0.3px 0.3px 0.4px #000;
   white-space: nowrap;
 }
 
 .contact-button img {
-  display: block;
-  width: 14px;
+  width: 14.3281px;
   height: 14px;
 }
 
 .about-footer {
   display: flex;
+  width: 100%;
   height: 77px;
-  flex: 0 0 77px;
   align-items: center;
   justify-content: center;
   padding-block: 24px;
-  background: var(--color-footer);
+  background: var(--about-surface);
   box-shadow: 0 0 0 0.5px #fff;
 }
 
@@ -279,135 +601,122 @@
   gap: 2px;
 }
 
-.about-footer .social-links button {
+.about-footer .social-button {
   display: flex;
   width: 29px;
   height: 29px;
   align-items: center;
   justify-content: center;
   padding: 0.5px;
-  border-radius: 50%;
+  border-radius: 100px;
+  background: transparent;
 }
 
-.about-footer .social-links img {
-  display: block;
-  width: 14px;
-  height: 14px;
-  object-fit: contain;
+.about-footer .social-button img {
+  width: auto;
+  height: auto;
 }
 
-@media (max-width: 1100px) {
-  .about-page {
-    height: auto;
-    min-height: 100vh;
-    min-height: 100dvh;
-  }
-
-  .about-section-grid {
-    grid-template-columns: minmax(230px, 40%) minmax(0, 1fr);
-  }
-
+@media (max-width: 900px) {
   .introduction,
-  .experience-section,
+  .experience-section {
+    height: auto;
+    padding: 96px 24px;
+  }
+
+  .introduction-content,
+  .about-copy,
+  .experience-content,
+  .experience-timeline,
+  .experience-list {
+    width: 100%;
+    height: auto;
+  }
+
+  .introduction-content { gap: 64px; }
+  .experience-content { padding-inline: 0; }
+  .experience-content > h2 { padding-inline: 20px; }
+  .experience-track { display: none; }
+
+  .experience-row,
+  .experience-row:first-child {
+    height: auto;
+    min-height: 68px;
+    padding-block: 12px;
+  }
+
+  .experience-year {
+    width: min(24vw, 178px);
+    flex-basis: min(24vw, 178px);
+  }
+
+  .experience-details {
+    width: auto;
+    height: auto;
+    flex: 1;
+  }
+
   .capabilities-section {
     height: auto;
+    padding: 48px 24px;
   }
 
-  .experience-row {
-    grid-template-columns:
-      var(--about-content-inset)
-      minmax(72px, 25%)
-      var(--experience-column-gap)
-      minmax(0, 1fr);
-  }
-
-  .about-bottom-overlay {
-    position: static;
-    display: flex;
+  .capabilities-board {
+    width: 100%;
     height: auto;
-    flex-direction: column;
-    gap: 24px;
-    padding-top: 24px;
+    flex-basis: auto;
+    overflow: visible;
   }
+
+  .capability-guides { display: none; }
+
+  .capabilities-grid {
+    position: relative;
+    top: auto;
+    left: auto;
+    width: 100%;
+    height: auto;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+  }
+
+  .capabilities-grid li {
+    aspect-ratio: 190 / 165;
+    border-color: rgb(204 204 204 / 25%);
+  }
+  .about-bottom { height: auto; }
 
   .contact-grid {
-    height: auto;
-    align-items: start;
+    height: 520px;
+    padding-inline: 24px;
+  }
+
+  .contact-cta-beam {
+    width: min(100%, 587px);
+    flex-basis: auto;
   }
 }
 
-@media (max-width: 760px) {
-  .about-main,
-  .about-bottom-overlay {
-    width: calc(100% - 48px);
-  }
-
-  .about-main {
-    padding-block: 48px;
-  }
-
-  .about-section {
-    padding-block: 80px;
-  }
-
-  .about-section-grid {
-    grid-template-columns: minmax(88px, 31%) minmax(0, 1fr);
-    gap: 12px;
-  }
-
-  .introduction-title {
-    flex-wrap: wrap;
-    white-space: normal;
-  }
-
-  .introduction-label > p {
-    width: auto;
-  }
-
-  .about-copy {
-    grid-template-columns: 0 minmax(0, 1fr);
-    font-size: 16px;
-  }
-
-  .experience-row {
-    grid-template-columns: 0 40px 12px minmax(0, 1fr);
-  }
+@media (max-width: 560px) {
+  .introduction,
+  .experience-section { padding-block: 72px; }
+  .introduction-label { width: 100%; }
+  .about-copy { height: auto; }
+  .about-copy p br:first-of-type { display: none; }
 
   .experience-heading {
     display: flex;
-    align-items: flex-start;
+    height: auto;
     flex-direction: column;
+    align-items: flex-start;
   }
 
-  .experience-heading p {
-    width: auto;
-  }
-
-  .capabilities-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 480px) {
-  .about-main,
-  .about-bottom-overlay {
-    width: calc(100% - 40px);
-  }
-
-  .about-section {
-    padding-block: 64px;
-  }
-
-  .about-section-grid {
-    grid-template-columns: minmax(82px, 30%) minmax(0, 1fr);
-  }
-
-  .contact-cta {
-    padding-left: 10px;
-  }
+  .experience-heading p,
+  .experience-role { white-space: normal; }
+  .contact-cta { padding-left: 8px; }
 
   .contact-cta > p {
     padding-inline: 8px;
-    font-size: 12px;
+    font-size: 11px;
   }
 }

@@ -25,6 +25,7 @@ import type { ComponentType } from 'react';
 import type { MotionScene } from '../components/MotionPreview';
 import { beamProject } from '../pages/Beam/beamData';
 import { bifrostProject } from '../pages/Bifrost/bifrostData';
+import { recentWorkPath, recentWorkProjects } from '../pages/RecentWork/recentWorkData';
 // Avea Robotics cover: ~/Documents/avea-robotics-2.jpg, resized for the web (600px tall, 2x the card).
 import aveaCover from '../assets/projects/avea/cover.jpg';
 // Lasting Learn cover: Figma Portfolio-2026 node 265:4229 at 4x, resized for the web (600px tall, 2x the card).
@@ -59,15 +60,31 @@ export const projects: Project[] = Array.from({ length: 8 }, (_, index) => {
   };
 });
 
-// Recent Work tab: placeholder cards until their projects and images are ready. Same card
-// as Selected Project, scattered differently on the grid (.recent-card--N in global.css).
-export const recentWorks: Project[] = Array.from({ length: 8 }, (_, index) => ({
-  id: index + 1,
-  title: `Recent Work ${index + 1}`,
-  description: `Description ${index + 1}`,
-  date: '00/00',
-  imageLabel: `IMG-${index + 1}`,
-}));
+// Recent Work tab: the projects developed in Motion Lab (recent-work-content/), each a
+// live card with an open/close detail page like Beam and Bifrost. Scattered differently
+// on the grid (.recent-card--N in global.css) from Selected Project's own placement.
+// Slot 8 stays a placeholder until an eighth project exists.
+export const recentWorks: Project[] = Array.from({ length: 8 }, (_, index) => {
+  const project = recentWorkProjects[index];
+  if (project) {
+    return {
+      id: index + 1,
+      title: project.title,
+      description: project.category,
+      date: '2024',
+      imageLabel: project.title,
+      href: recentWorkPath(project.slug),
+      coverScene: project.Cover,
+    };
+  }
+  return {
+    id: index + 1,
+    title: `Recent Work ${index + 1}`,
+    description: `Description ${index + 1}`,
+    date: '00/00',
+    imageLabel: `IMG-${index + 1}`,
+  };
+});
 
 export const socialLinks: SocialLink[] = [
   { label: 'GitHub', href: 'https://github.com/fahmiauliya', icon: githubIcon },

@@ -1,0 +1,53 @@
+/* The persistent transition overlay. Between transitions it is hidden (not faded) and lets clicks
+   through; while one runs it shows, and catches clicks so nothing is pressed mid-transition.
+   Fixed, not absolute: it is mounted once at the top of the app (App.tsx), a sibling of the
+   page stage, not inside it, so it always covers the real viewport regardless of scroll or of
+   the stage's own transform. */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  overflow: hidden;
+  visibility: hidden;
+  pointer-events: none;
+}
+.overlay[data-active] { visibility: visible; pointer-events: auto; }
+/* Columns, and the full-height pieces inside them, overlap their neighbours (a pixel of margin
+   and a 2px same-colour edge to each side) so no seam shows, even when drawn scaled down. */
+.column { display: flex; flex: 1 1 0; margin-right: -1px; }
+/* The surface: a soft near-black, a still grain of about 2%, and a faint 1px highlight along
+   each piece's top edge, so the moving steps feel slightly dimensional. Only the top: side
+   highlights would read as seams once the screen is covered. */
+.piece {
+  height: 100%;
+  flex: 1 1 0;
+  margin-right: -1px;
+  background: var(--puzzle-grain) repeat, #141414;
+  background-size: 128px 128px, auto;
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 6%),
+    2px 0 0 #141414,
+    -2px 0 0 #141414;
+  will-change: transform;
+}
+
+/* The small note shown while covered: low contrast, in the lower middle, in its own window. */
+.caption {
+  position: absolute;
+  left: 50%;
+  bottom: 9%;
+  overflow: hidden;
+  transform: translateX(-50%);
+  font-family: Geist, Arial, sans-serif;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: rgb(255 255 255 / 30%);
+  pointer-events: none;
+}
+.caption span { display: block; transform: translate3d(0, 110%, 0); }
+
+/* Content shown above the pieces (the loader's identity note). */
+.content { position: absolute; inset: 0; pointer-events: none; }

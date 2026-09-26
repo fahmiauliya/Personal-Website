@@ -1,0 +1,17 @@
+.card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  margin: 0;
+  width: 536px;
+  height: 410.2040710449219px;
+  background: #f0f0f0;
+}
+.card img, .card svg { display: block; max-width: none; pointer-events: none; user-select: none; }
+.card svg { isolation: isolate; }
+.background { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.symbol { position: absolute; left: 119.91889190673828px; top: 68.2205810546875px; width: 296.0622253417969px; height: 185.05747985839844px; }
+/* Exported SVG extents include the fine strokes outside their Figma bounds. */
+.symbolAsset { position: absolute; left: -0.444093px; top: -0.259080px; }
+.wordmark { position: absolute; left: 120.0011215209961px; top: 281.3716125488281px; width: 275.7904968261719px; height: 60.276214599609375px; }
+.overlay { mix-blend-mode: overlay; }

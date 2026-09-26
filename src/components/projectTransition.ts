@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
 
 // Shared-element project open/close. The detail page opens as a layer over the home
@@ -60,17 +60,28 @@ const setDirection = (direction: 'open' | 'close' | null) => {
 // transition's update is pending.
 const tick = () => new Promise<void>(resolve => setTimeout(resolve, 16));
 
-// The detail cover is a freshly mounted motion (MotionPreview, in its shadow root).
-// Before the new view is captured, wait for it to render, then until its canvases have
-// painted or a short grace has passed, so the expanding cover is never blank. Canvases
-// that draw immediately (the Beam dot field) end the wait early. Rive draws on
-// requestAnimationFrame, which is paused during the update, so it can't paint here; the
-// grace lets its file load so it draws in the frame the browser captures. The old view
-// stays frozen on screen meanwhile, and the whole wait is capped so a slow network can't
-// stall the open.
-async function coverReady(cover: HTMLElement | null, grace = 200, timeout = 700) {
-  const stage = cover?.querySelector('.motion-preview-stage');
-  if (!stage) return;
+// The detail cover is a freshly mounted motion: MotionPreview's (Bifrost/Beam), in its
+// shadow root, or a Recent Work project's own component, straight in the light DOM.
+// Before the new view is captured, wait for it to render, then until its canvases show
+// real content or a grace period has passed, so the expanding cover is never blank.
+//
+// "Real content" is pixel variance in a downsampled sample, not just non-zero alpha: a
+// canvas that hasn't drawn yet can be either fully transparent (alpha 0 everywhere) or
+// fully opaque in one flat colour (Rive clears its canvas to opaque black before its
+// first frame), and either way every sampled pixel is identical until real content
+// draws, which never is.
+//
+// MotionPreview's covers get no grace: their motions paint within a frame or two (Rive
+// draws on requestAnimationFrame, which is paused during the update, so it can't paint
+// here, but its file has had time to load by the time this runs), and the old view stays
+// frozen on screen while it waits, so there's no reason to hold it any longer. Recent
+// Work's own components (a large Rive file, a WebGL shader) can take longer to load and
+// compile on a fresh mount, so they get a real grace period. Either way the whole wait
+// is capped so a slow network or a stalled canvas can't stall the open indefinitely.
+async function coverReady(cover: HTMLElement | null, timeout = 700) {
+  if (!cover) return;
+  const stage = cover.querySelector('.motion-preview-stage');
+  const grace = stage ? 0 : 220;
   const probe = document.createElement('canvas');
   probe.width = probe.height = 12;
   const probeContext = probe.getContext('2d', { willReadFrequently: true });
@@ -79,17 +90,22 @@ async function coverReady(cover: HTMLElement | null, grace = 200, timeout = 700)
     probeContext.clearRect(0, 0, 12, 12);
     probeContext.drawImage(canvas, 0, 0, 12, 12);
     const { data } = probeContext.getImageData(0, 0, 12, 12);
-    for (let i = 3; i < data.length; i += 4) if (data[i] > 0) return true;
+    const [r, g, b, a] = data;
+    for (let i = 4; i < data.length; i += 4) {
+      if (data[i] !== r || data[i + 1] !== g || data[i + 2] !== b || data[i + 3] !== a) return true;
+    }
     return false;
   };
   const start = performance.now();
   let mountedAt = 0;
   while (performance.now() - start < timeout) {
-    const frame = stage.shadowRoot?.querySelector('div');
-    if (frame?.firstElementChild) {
+    const frame = stage
+      ? (stage.shadowRoot?.querySelector('div')?.firstElementChild ? stage.shadowRoot!.querySelector('div') : null)
+      : (cover.firstElementChild ? cover : null);
+    if (frame) {
       mountedAt ||= performance.now();
       const canvases = [...frame.querySelectorAll('canvas')];
-      if (canvases.length && canvases.every(painted)) return;
+      if (!canvases.length || canvases.every(painted)) return;
       if (performance.now() - mountedAt >= grace) return;
     }
     await tick();
@@ -97,16 +113,25 @@ async function coverReady(cover: HTMLElement | null, grace = 200, timeout = 700)
 }
 
 export function useProjectTransitions(path: string, setPath: (path: string) => void) {
+  const pathRef = useRef(path);
+  pathRef.current = path;
   // Lock the page underneath while a project layer is open; its scroll position stays.
   useLayoutEffect(() => {
     document.documentElement.classList.toggle('project-open', isProjectPath(path));
+    // Ordinary navigation may close the layer through the puzzle instead of go().
+    if (!isProjectPath(path)) {
+      document.querySelectorAll<HTMLElement>('.project-card .project-image').forEach(card => {
+        card.style.visibility = '';
+      });
+      history.scrollRestoration = 'auto';
+    }
   }, [path]);
 
   useEffect(() => {
-    let current = path;
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
     const go = (next: string) => {
+      const current = pathRef.current;
       if (next === current) return;
       const opening = isProjectPath(next);
       const card = cardImage(opening ? next : current);
@@ -115,7 +140,7 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
       // The card's image is "lifted" into the detail page while it is open, so the grid
       // shows its empty slot as the cover flies out and back.
       const apply = () => {
-        current = next;
+        pathRef.current = next;
         flushSync(() => setPath(next));
         history.scrollRestoration = opening ? 'manual' : 'auto';
         if (card) card.style.visibility = opening ? 'hidden' : '';
@@ -141,9 +166,7 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
         setName(from, false);
         apply();
         const to = opening ? detailCover() : card;
-        // No grace: once the cover's document has mounted, the open starts, rather than
-        // freezing the page until its Rive gauge draws (it paints in a frame or two).
-        if (opening) await coverReady(to, 0);
+        if (opening) await coverReady(to);
         setName(to, true);
         if (opening) nameLayers(true);
       });
@@ -158,6 +181,7 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
 
     const onClick = (event: MouseEvent) => {
       if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const current = pathRef.current;
       const target = event.target as Element | null;
       const open = target?.closest<HTMLAnchorElement>('a.project-card-link[href^="/projects/"]');
       const close = target?.closest<HTMLAnchorElement>('a[data-project-close]');
@@ -174,16 +198,23 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
         }
       }
     };
-    const onPopState = () => go(normalizePath(window.location.pathname));
+    const onPopState = () => {
+      const next = normalizePath(window.location.pathname);
+      const current = pathRef.current;
+      // Project entry and project → Works history keep the existing cover morph.
+      // All other regular page changes are handled by useSiteTransition.
+      if (!isProjectPath(next) && !(isProjectPath(current) && next === '/')) return;
+      go(next);
+    };
 
-    if (isProjectPath(current)) history.scrollRestoration = 'manual';
+    if (isProjectPath(pathRef.current)) history.scrollRestoration = 'manual';
     document.addEventListener('click', onClick);
     window.addEventListener('popstate', onPopState);
     return () => {
       document.removeEventListener('click', onClick);
       window.removeEventListener('popstate', onPopState);
     };
-    // Mounted once; `current` tracks the path inside the handlers.
+    // Mounted once; pathRef also tracks routes changed by the site navigation hook.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }

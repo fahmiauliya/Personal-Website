@@ -1,0 +1,12 @@
+/* Rolling text: each slot clips its two faces, so a value changes by sliding, never fading. */
+/* Baseline alignment, so each slot keeps its own one-em height instead of stretching to the line. */
+.roll { display: inline-flex; align-items: baseline; white-space: pre; }
+/* Each slot is one em tall on the text's baseline; the clip trims that to the digits' own height
+   (Outfit: cap line to just under the baseline), so a rolling digit shows only inside its row. */
+.slot { display: inline-grid; overflow: hidden; line-height: 1em; vertical-align: baseline; clip-path: inset(0.1em 0 0.06em 0); }
+.swap { display: grid; overflow: hidden; }
+.face { grid-area: 1 / 1; justify-self: start; white-space: pre; will-change: transform; }
+
+/* A flip card: both faces share one cell; each hides its back. */
+.flip { display: grid; perspective: 40px; }
+.flipFace { grid-area: 1 / 1; backface-visibility: hidden; transform-style: preserve-3d; }

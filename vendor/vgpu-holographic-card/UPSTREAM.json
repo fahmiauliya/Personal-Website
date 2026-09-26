@@ -1,0 +1,30 @@
+{
+  "source": "https://github.com/vercel-labs/vgpu",
+  "example": "holographic-card",
+  "command": "npx vgpu examples pull holographic-card --out ./holographic-card",
+  "package": "vgpu@0.5.0",
+  "revision": "6fa27bb458ffc3f498727090f09dce3fe5faabb43689fd669d633a2a23dc36bb",
+  "cliAggregateSha256": "7855eb828f858f8efc7d20805665e0b6980796d925b6af3e08b48ff52f25c144",
+  "files": {
+    "index.tsx": {
+      "bytes": 1251,
+      "sha256": "6a28c33426bfbda81b66cd4b611eb632b08b898219b762b25cfa9a3a9ce44916"
+    },
+    "lettering.ts": {
+      "bytes": 39872,
+      "sha256": "644a7471b8a86360a97d278e99c5d925d2db658de7ec3a2fb6a019669cb9ea7c"
+    },
+    "renderer.ts": {
+      "bytes": 3685,
+      "sha256": "06fdd35e03db11b936e12fa65914a1aff39fc66bdba74b15feb6bcc3d7787557"
+    },
+    "scene.ts": {
+      "bytes": 911,
+      "sha256": "658116424493d99483ca2326657574ade6782ab7424395a956c67371a0623b9b"
+    },
+    "shader.wgsl": {
+      "bytes": 12114,
+      "sha256": "190136f2a6a37448cf9ece1c87c552cc85516867eb896a4459f86ca65f010b39"
+    }
+  }
+}

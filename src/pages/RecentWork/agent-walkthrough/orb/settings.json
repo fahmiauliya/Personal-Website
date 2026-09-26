@@ -1,0 +1,49 @@
+{
+  "playbackRate": 1,
+  "holdSeconds": 2,
+  "slideSeconds": 1.2,
+  "values": {
+    "Orb Colour": {
+      "Blue": "#1787ee",
+      "Yellow": "#dbb82e",
+      "Bloom": 1,
+      "Exposure": 1
+    },
+    "Orb Motion": {
+      "Speed": 1,
+      "Wander": 0.6
+    },
+    "Orb Shape": {
+      "Radius": 0.72,
+      "Density": 1.6,
+      "CoreX": 0.2,
+      "CoreY": 0.2,
+      "CoreSize": 3.5,
+      "RimStrength": 0
+    },
+    "Orb Edge": {
+      "EdgeSoftness": 0,
+      "Glow": 0.6
+    }
+  },
+  "timeline": {
+    "at": 0,
+    "from": 0,
+    "steps": [
+      {
+        "duration": 30,
+        "to": 30,
+        "transition": {
+          "type": "easing",
+          "duration": 30,
+          "ease": [
+            0,
+            0,
+            1,
+            1
+          ]
+        }
+      }
+    ]
+  }
+}

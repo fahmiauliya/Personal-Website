@@ -1,0 +1,216 @@
+/*
+ * Figma 285:43271 "Agent Walkthrough": 536 × 410.204071, fill #f5f5f5. Values are Figma px.
+ * The onboarding panel is built in code, one element per Figma layer, so each part can
+ * move on its own later.
+ */
+@font-face { font-family: 'Agent Walkthrough Inter'; src: url('./assets/fonts/inter-variable.ttf') format('truetype'); font-style: normal; font-weight: 100 900; font-display: swap; }
+
+.card {
+  position: relative;
+  width: 536px;
+  height: 410.2040710449219px;
+  margin: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: #f5f5f5;
+  font-family: 'Agent Walkthrough Inter', Inter, Arial, sans-serif;
+  line-height: 1.2;
+  color: #201f1d;
+}
+.card *, .card *::before, .card *::after { box-sizing: border-box; }
+.card p { margin: 0; }
+/* Figma rounds each text box up to whole pixels: 10px for 7.925px text, 11px for 9.246px. */
+.card img { display: block; }
+
+/* 287:55437: the image layer, clipped to the card, exported at 2× with its rotation and colour adjustments. */
+.background { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; pointer-events: none; user-select: none; }
+
+/* 287:55459: the glass frame around the panel. Figma's glass effect acts like a lens: the rim
+   shows the background from nearer the centre, softened. In code, the glass holds its own copy
+   of the background, magnified 1.8× about the glass centre and blurred (fitted to Figma's
+   render); the opaque panel covers the middle, so only the 10px rim shows. */
+.glass {
+  position: absolute;
+  left: 110px;
+  top: 43px;
+  width: 315.87774658203125px;
+  padding: 10px;
+  overflow: hidden;
+  border-radius: 20px;
+  isolation: isolate;
+}
+.lens {
+  position: absolute;
+  left: -110px;
+  top: -43px;
+  width: 536px;
+  height: 410.2040710449219px;
+  z-index: -1;
+  max-width: none;
+  pointer-events: none;
+  user-select: none;
+  /* Origin = glass centre in card coordinates. The blur runs before the scale, so 16.7px reads as ~30px. */
+  transform-origin: 267.939px 205.115px;
+  transform: scale(1.8);
+  filter: blur(16.7px);
+}
+/* The same lens, copied from the live background each frame (drawLens in the component). The
+   canvas is drawn unscaled, so its blur is the full 30px; it reaches 60px past the glass so the
+   blur never fades at the rim. */
+.lensLive {
+  position: absolute;
+  left: -60px;
+  top: -60px;
+  z-index: -1;
+  width: calc(315.87774658203125px + 120px);
+  height: calc(324.22918701171875px + 120px);
+  pointer-events: none;
+  filter: blur(30px);
+}
+/* Figma's 10% white fill, and the thin light edge of the glass. */
+.glass::before {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  background: rgb(255 255 255 / 10%);
+  box-shadow: inset 0 0 0 0.5px rgb(255 255 255 / 45%), inset 0 1px 1px rgb(255 255 255 / 30%);
+  pointer-events: none;
+  content: '';
+}
+
+/* 287:55351: the onboarding panel. */
+.panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 295.878px;
+  overflow: hidden;
+  border-radius: 10.567px;
+  background: #fff;
+  box-shadow:
+    0 0.363px 0.726px -0.726px rgb(0 0 0 / 20%),
+    0 0.726px 1.453px -0.726px rgb(0 0 0 / 15%),
+    0 1.453px 2.906px -1.453px rgb(0 0 0 / 10%),
+    0 2.906px 4.359px -2.906px rgb(0 0 0 / 5%);
+}
+
+/* The inner edge Figma draws over panels, rows and buttons. */
+.panel::after, .row::after, .input::after, .send::after, .badgeActive::after {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  content: '';
+}
+.panel::after, .row::after {
+  box-shadow: inset 0 0.363px 0.363px rgb(255 255 255 / 25%), inset 0 -0.363px 0.363px rgb(0 0 0 / 10%), inset 0 0 0 0.4px rgb(0 0 0 / 10%);
+}
+
+/* 287:55352: the five steps. */
+.steps {
+  display: flex;
+  height: 31.701px;
+  align-items: center;
+  gap: 13.209px;
+  padding: 10.567px 15.851px;
+  border-bottom: 0.33px solid rgb(0 0 0 / 10%);
+  background: #fff;
+}
+.step { display: flex; min-width: 0; flex: 1 0 0; align-items: center; gap: 2.642px; }
+.stepCentred { justify-content: center; }
+.stepLabel { font-size: 7.925px; line-height: 10px; white-space: nowrap; color: #a3a3a3; }
+.stepActive .stepLabel { color: #201f1d; }
+
+.badge {
+  position: relative;
+  display: grid;
+  width: 10.567px;
+  height: 10.567px;
+  flex: none;
+  place-items: center;
+  border: 0.264px solid #c2c2c2;
+  border-radius: 26.418px;
+  font-size: 6.604px;
+  font-weight: 500;
+  color: #7a7a7a;
+  opacity: 0.5;
+  box-shadow: 0 0.145px 0.291px rgb(0 0 0 / 20%), 0 0.291px 0.581px rgb(0 0 0 / 15%), 0 1.162px 1.744px rgb(0 0 0 / 5%);
+}
+.badgeActive {
+  border: 0;
+  border-radius: 17.612px;
+  font-weight: 600;
+  color: #fff;
+  opacity: 1;
+  background: linear-gradient(180deg, rgb(255 255 255 / 20%) 0%, rgb(255 255 255 / 0%) 100%), #e17000;
+  box-shadow: 0 0.097px 0.194px -0.194px rgb(0 0 0 / 20%), 0 0.194px 0.387px -0.194px rgb(0 0 0 / 15%), 0 0.775px 1.162px -0.775px rgb(0 0 0 / 5%);
+}
+.badgeActive::after { box-shadow: inset 0 0.097px 0.097px rgb(255 255 255 / 25%), inset 0 -0.097px 0.097px rgb(0 0 0 / 10%), inset 0 0 0 0.107px rgb(0 0 0 / 10%); }
+
+/* 287:55373: the panel body. */
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 26.418px;
+  padding: 18.492px 5.284px 5.284px;
+  background: linear-gradient(180deg, rgb(0 0 0 / 0%) 0%, rgb(102 102 102 / 10%) 100%), #fff;
+}
+
+/* 287:55374: agent avatar and heading. */
+.intro { display: flex; width: 100%; flex-direction: column; align-items: center; gap: 7.925px; }
+.avatar { position: relative; width: 31.701px; height: 31.701px; flex: none; }
+/* The orb's canvas is larger than the avatar, to leave room for its halo, and centred on it. */
+.orb { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+.introText { display: flex; flex-direction: column; align-items: center; gap: 2.642px; white-space: nowrap; }
+.introTitle { font-size: 9.246px; line-height: 11px; color: #201f1d; }
+.introSubtitle { font-size: 7.925px; line-height: 10px; letter-spacing: -0.1585px; color: #525252; }
+
+/* 287:55380: options and the input. */
+.actions { display: flex; width: 100%; flex-direction: column; gap: 5.284px; }
+.rows { display: flex; flex-direction: column; gap: 2.642px; }
+.row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 7.925px;
+  padding: 7.925px;
+  overflow: hidden;
+  border-radius: 3.197px;
+  background: #fff;
+  box-shadow: 0 0.363px 0.726px -0.726px rgb(0 0 0 / 20%), 0 1.321px 2.906px -1.453px rgb(0 0 0 / 10%), 0 2.906px 4.359px -2.906px rgb(0 0 0 / 5%);
+}
+.rowMain { display: flex; min-width: 0; flex: 1 0 0; align-items: flex-start; gap: 5.284px; }
+.rowIcon { display: flex; padding-block: 1.3px; }
+.rowIcon img, .chevron { width: 10.567px; height: 10.567px; flex: none; }
+.rowText { display: flex; flex-direction: column; gap: 3.963px; padding-block: 1.321px; font-size: 7.925px; line-height: 10px; white-space: nowrap; }
+.rowTitle { color: #201f1d; }
+.rowDescription { color: #666; }
+
+.input {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5.284px;
+  padding: 1.321px 1.321px 1.321px 7.925px;
+  overflow: hidden;
+  border-radius: 5.284px;
+  background: #fff;
+  box-shadow: 0 2.906px 4.359px -2.906px rgb(0 0 0 / 5%);
+}
+.input::after { box-shadow: inset 0 0 0 0.33px rgb(0 0 0 / 10%); }
+.placeholder { flex: 1 0 0; min-width: 0; font-size: 7.925px; line-height: 10px; color: #525252; }
+.send {
+  position: relative;
+  display: grid;
+  width: 18.492px;
+  height: 18.492px;
+  flex: none;
+  place-items: center;
+  border-radius: 3.963px;
+  background: linear-gradient(180deg, rgb(0 0 0 / 0%) 0%, rgb(0 0 0 / 10%) 100%), #e17000;
+  box-shadow: 0 0.254px 0.509px -0.509px rgb(0 0 0 / 20%), 0 0.509px 1.017px -0.509px rgb(0 0 0 / 15%), 0 2.034px 3.051px -2.034px rgb(0 0 0 / 5%);
+}
+.send::after { box-shadow: inset 0 0.254px 0.254px rgb(255 255 255 / 25%), inset 0 -0.254px 0.254px rgb(0 0 0 / 10%), inset 0 0 0 0.33px rgb(0 0 0 / 10%); }
+.send img { width: 11.558px; height: 11.558px; }

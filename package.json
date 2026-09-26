@@ -19,9 +19,11 @@
     "sync:motions": "node scripts/motion-export/pack.mjs"
   },
   "dependencies": {
+    "@rive-app/react-canvas": "^4.35.0",
     "border-beam": "^1.4.1",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "vgpu": "0.5.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

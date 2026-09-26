@@ -1,0 +1,83 @@
+/* One shared stylesheet for every Recent Work project page (RecentWorkPage.tsx), the
+   same shell as Beam's and Bifrost's (beam.css/bifrost.css) so the open/close transition
+   and the header line up identically. The cover keeps the card's own 536 × 410.204071
+   ratio (via aspect-ratio, not a fixed height like Beam/Bifrost) since it is shown
+   uncropped here, unlike their 806 × 706 covers which happen to match the shared box. */
+.recent-work-page {
+  --navigation-control-height: 28px;
+  background: var(--color-canvas);
+  color: #000;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.recent-work-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 28px;
+  height: 63px;
+  align-items: center;
+  padding: 20px 16px 12px;
+  background: var(--color-canvas);
+}
+
+@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+  .recent-work-header { background: none; }
+}
+
+.recent-work-header-center { display: flex; align-items: center; gap: 4px; justify-self: center; }
+.recent-work-header-spacer, .recent-work-close { width: 28px; height: 28px; }
+.recent-work-close { display: grid; place-items: center; }
+/* Beam and Bifrost's title box is a fixed 109 × 31px (Figma's single-word layout);
+   Recent Work titles run longer ("Agent Walkthrough"), so this one sizes to its text
+   instead, at the same height and padding, rather than wrapping inside a fixed box. */
+.recent-work-header-title { display: flex; align-items: center; justify-content: center; min-width: 109px; height: 31px; padding: 2px 4px; }
+.recent-work-header-title > span { display: grid; height: 27px; padding-inline: 4px; place-items: center; white-space: nowrap; text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 25%), 0.3px 0.3px 0.4px rgb(0 0 0 / 25%); }
+
+.recent-work-main { width: calc(100% - 32px); margin-inline: auto; padding-bottom: 24px; }
+/* The intro (header + this) fills 98% of the screen height, as on Beam/Bifrost. */
+.recent-work-overview { display: grid; min-height: calc(98vh - 79px); min-height: calc(98svh - 79px); grid-template-columns: 285px 542px 285px; justify-content: center; align-content: center; gap: 16px; padding-block: 120px; margin-bottom: 16px; }
+.recent-work-details, .recent-work-description { display: flex; min-width: 0; flex-direction: column; justify-content: space-between; }
+.recent-work-details h1 { font: inherit; letter-spacing: 0.24px; }
+.recent-work-category { margin-top: 2px; color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }
+.recent-work-facts { margin: 12px 0 0; letter-spacing: -0.24px; }
+.recent-work-fact { display: grid; grid-template-columns: 50px minmax(0, 1fr); gap: 20px; padding-block: 10px; border-bottom: 0.5px solid rgb(0 0 0 / 10%); }
+.recent-work-fact:last-child { border: 0; }
+.recent-work-fact dt, .recent-work-fact dd { margin: 0; color: rgb(0 0 0 / 60%); }
+.recent-work-fact dd > span { display: block; }
+
+/* The live card at its own ratio, uncropped, filling the shared 542px column. */
+.recent-work-cover { position: relative; overflow: hidden; aspect-ratio: 536 / 410.2040710449219; background: #fafafa; }
+/* Mounted only near the screen (useNearView); fills whatever box it's given. */
+.recent-work-card-viewport { position: absolute; inset: 0; overflow: hidden; }
+
+.recent-work-description { color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }
+.recent-work-description > div p + p { margin-top: 16.8px; }
+
+.recent-work-footer { background: var(--color-footer); font-size: 14px; }
+.recent-work-footer .contact-grid { display: flex; height: 739px; align-items: center; justify-content: center; padding: 24px 16px; box-shadow: 0 0 0 0.5px #fff; }
+.recent-work-footer .contact-cta { height: 57px; }
+.recent-work-socials { display: grid; height: 77px; place-items: center; padding: 24px 16px; box-shadow: 0 0 0 0.5px #fff; }
+.recent-work-socials .social-links { display: flex; gap: 2px; }
+.recent-work-socials .social-links button { display: grid; width: 29px; height: 29px; padding: 0.5px; place-items: center; border-radius: 50%; }
+.recent-work-socials .social-links img { width: 14px; height: 14px; object-fit: contain; }
+
+@media (max-width: 1245px) {
+  .recent-work-overview { grid-template-columns: minmax(0, 285fr) minmax(0, 542fr) minmax(0, 285fr); }
+  .recent-work-details, .recent-work-description { gap: 24px; }
+}
+
+@media (max-width: 900px) {
+  .recent-work-overview { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); padding-block: 64px; }
+  .recent-work-description { grid-column: 1 / -1; gap: 24px; }
+  .recent-work-cover { align-self: start; }
+}
+
+@media (max-width: 600px) {
+  .recent-work-main { width: calc(100% - 32px); }
+  .recent-work-overview { grid-template-columns: minmax(0, 1fr); gap: 32px; padding-block: 48px; }
+  .recent-work-footer .contact-grid { height: auto; min-height: 360px; padding-inline: 16px; }
+  .recent-work-footer .contact-cta { height: auto; min-height: 57px; }
+}
