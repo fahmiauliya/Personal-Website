@@ -51,13 +51,34 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
     releaseFixed.current?.();
     releaseFixed.current = null;
   }, []);
+  // The headers' progressive blur belongs to the top of the screen, not to the page: while
+  // the page zooms, each blur gets the inverse scale about the same point, so it stays
+  // full-width at the top edge instead of shrinking away with the navigation.
+  const blurs = useRef<HTMLElement[]>([]);
+  const releaseBlurs = useCallback(() => {
+    for (const blur of blurs.current) {
+      blur.getAnimations().forEach(animation => animation.cancel());
+      blur.style.transform = '';
+      blur.style.transformOrigin = '';
+    }
+    blurs.current = [];
+  }, []);
   const prepareZoom = useCallback((page: HTMLElement) => {
     // This synchronous reset is either before the first animation frame or under
     // the closed puzzle. Measure viewport-fixed layers before the containing block changes.
     page.style.transform = '';
     restoreFixed();
+    releaseBlurs();
+    // The page zooms about the middle of the viewport (origin() below). Measured at scale 1
+    // and before pinning: pinned fixed layers only sit right once the stage is transformed.
+    blurs.current = [...page.querySelectorAll<HTMLElement>('.progressive-blur')];
+    const origins = blurs.current.map(blur => {
+      const box = blur.getBoundingClientRect();
+      return `${window.innerWidth / 2 - box.left}px ${window.innerHeight / 2 - box.top}px`;
+    });
     releaseFixed.current = pinViewportLayers(page);
-  }, [restoreFixed]);
+    blurs.current.forEach((blur, index) => { blur.style.transformOrigin = origins[index]; });
+  }, [restoreFixed, releaseBlurs]);
 
   const lock = useCallback(() => {
     const scroll = scroller.current;
@@ -100,6 +121,16 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
   const full = () => live.current.scale === 1
     ? { opacity: 1 }
     : { transform: 'scale(1)', opacity: 1 };
+  // The blur's counter-zoom (see prepareZoom): scale(1 / s) while the page is at s.
+  const unzoomed = () => `scale(${1 / live.current.scale})`;
+  const counterZoom = (from: string, to: string, timing: KeyframeAnimationOptions) => {
+    if (live.current.scale === 1) return;
+    for (const blur of blurs.current) blur.animate([{ transform: from }, { transform: to }], timing);
+  };
+  const holdBlurs = () => {
+    if (live.current.scale === 1) return;
+    for (const blur of blurs.current) blur.style.transform = unzoomed();
+  };
 
   /** Holds the page small behind a closed overlay: the state enter() starts from. */
   const hold = useCallback(() => {
@@ -112,6 +143,7 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
     lock();
     page.style.transformOrigin = origin(page);
     Object.assign(page.style, small());
+    holdBlurs();
   }, [stage, lock, unlock, origin, prepareZoom]);
 
   /** The puzzle opens while the page (held small) comes toward the viewer. */
@@ -127,6 +159,7 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
       page.style.transform = '';
       page.style.opacity = '';
       page.style.transformOrigin = '';
+      releaseBlurs();
       restoreFixed();
       unlock();
       running.current = false;
@@ -134,18 +167,21 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
       return;
     }
     await new Promise(requestAnimationFrame);
-    const animation = page.animate([small(), full()], { duration: puzzle.duration(), easing: live.current.easing, fill: 'forwards' });
+    const timing = { duration: puzzle.duration(), easing: live.current.easing, fill: 'forwards' } as const;
+    const animation = page.animate([small(), full()], timing);
+    counterZoom(unzoomed(), 'scale(1)', timing);
     await puzzle.reveal();
     await animation.finished.catch(() => undefined);
     page.style.transform = '';
     page.style.opacity = '';
     page.style.transformOrigin = '';
     animation.cancel();
+    releaseBlurs();
     restoreFixed();
     unlock();
     running.current = false;
     setBusy(false);
-  }, [stage, overlay, hold, unlock, restoreFixed]);
+  }, [stage, overlay, hold, unlock, restoreFixed, releaseBlurs]);
 
   // Prepare the destination (e.g. its anchor position) while the puzzle is closed.
   const navigate = useCallback(async (next: Page, prepare?: () => void | Promise<void>) => {
@@ -167,7 +203,9 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
 
     // Leave: zoom away while the puzzle closes.
     page.style.transformOrigin = origin(page);
-    const leave = page.animate([full(), small()], { duration: puzzle.duration(), easing: live.current.easing, fill: 'forwards' });
+    const leaveTiming = { duration: puzzle.duration(), easing: live.current.easing, fill: 'forwards' } as const;
+    const leave = page.animate([full(), small()], leaveTiming);
+    counterZoom('scale(1)', unzoomed(), leaveTiming);
     await puzzle.cover();
     await leave.finished.catch(() => undefined);
 
@@ -175,6 +213,7 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
     Object.assign(page.style, small());
     leave.cancel();
     page.style.transform = '';
+    releaseBlurs();
     restoreFixed();
     flushSync(() => setPage(next));
     if (scroll) scroll.scrollTop = 0;
@@ -183,7 +222,7 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
     await Promise.all([new Promise(resolve => setTimeout(resolve, live.current.holdMs)), puzzle.settled()]);
 
     await enter();
-  }, [setPage, stage, scroller, overlay, lock, origin, enter, prepareZoom, restoreFixed]);
+  }, [setPage, stage, scroller, overlay, lock, origin, enter, prepareZoom, restoreFixed, releaseBlurs]);
 
   return { navigate, enter, hold, busy };
 }
