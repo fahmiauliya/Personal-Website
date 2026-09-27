@@ -56,6 +56,36 @@ const setDirection = (direction: 'open' | 'close' | null) => {
   root.toggle('project-vt-close', direction === 'close');
 };
 
+// The navigation never changes shape while visible: the current one (the home pill, or
+// the detail page's header controls) hides before the morph starts, the other stays
+// hidden through it, and only once the page has settled does it slide down into place.
+// `translate` and `filter`, not `transform`, so the navigation's own layout transforms are
+// untouched. The detail header's progressive blur is left out: a filtered or translucent
+// ancestor would switch its backdrop blur off.
+const NAV_SHOWN = { opacity: 1, translate: '0 0', filter: 'blur(0px)' };
+const NAV_HIDDEN = { opacity: 0, translate: '0 -12px', filter: 'blur(4px)' };
+const NAV_HIDE_MS = 160;
+const NAV_REVEAL_MS = 300;
+
+const homeNavigation = () => [...document.querySelectorAll<HTMLElement>('.portfolio .site-nav')];
+const detailNavigation = () => [...document.querySelectorAll<HTMLElement>('.project-layer [data-project-part="actions"] > :not(.progressive-blur)')];
+
+/** Hides the navigation; the returned animations hold it hidden until cancelled. */
+async function hideNavigation(elements: HTMLElement[]) {
+  const animations = elements.map(element => element.animate([NAV_SHOWN, NAV_HIDDEN], { duration: NAV_HIDE_MS, easing: 'cubic-bezier(0.4, 0, 1, 1)', fill: 'forwards' }));
+  await Promise.all(animations.map(animation => animation.finished.catch(() => undefined)));
+  return animations;
+}
+
+/** Keeps a navigation that is about to appear invisible, including in the new snapshot. */
+const concealNavigation = (elements: HTMLElement[]) => elements.forEach(element => { element.style.opacity = '0'; });
+
+/** Slides the navigation down into place: no overshoot, ease-out. */
+const revealNavigation = (elements: HTMLElement[]) => elements.forEach(element => {
+  element.animate([NAV_HIDDEN, NAV_SHOWN], { duration: NAV_REVEAL_MS, easing: 'cubic-bezier(0.22, 1, 0.36, 1)', fill: 'backwards' });
+  element.style.opacity = '';
+});
+
 // A timer, not requestAnimationFrame: rendering (and so rAF) is paused while a view
 // transition's update is pending.
 const tick = () => new Promise<void>(resolve => setTimeout(resolve, 16));
@@ -130,7 +160,8 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
   useEffect(() => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    const go = (next: string) => {
+    let running = false;
+    const go = async (next: string) => {
       const current = pathRef.current;
       if (next === current) return;
       const opening = isProjectPath(next);
@@ -155,28 +186,31 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
         const rect = card.getBoundingClientRect();
         if (rect.bottom < 0 || rect.top > window.innerHeight) card.scrollIntoView({ block: 'center' });
       }
+      running = true;
+      // Hide the current navigation first; the morph starts once it is gone.
+      const hidden = await hideNavigation(opening ? homeNavigation() : detailNavigation());
       const from = opening ? card : detailCover();
       // The card the image returns to may mount its motion during the close
       // (useNearView); every other motion waits for the transition to end.
       if (!opening) card.dataset.projectReturning = '';
-      const homeNavigation = document.querySelector<HTMLElement>('.portfolio .site-nav');
-      // Keep the navigation out of the root snapshot so it can leave/re-enter
-      // independently, without changing the cover's geometry or timing.
-      if (homeNavigation) homeNavigation.style.viewTransitionName = opening ? 'project-home-navigation' : '';
       setDirection(opening ? 'open' : 'close');
       setName(from, true);
       if (!opening) nameLayers(true);
       const transition = doc.startViewTransition(async () => {
         setName(from, false);
+        // The incoming navigation switches in hidden, before the new view is captured.
+        if (!opening) concealNavigation(homeNavigation());
         apply();
-        if (homeNavigation) homeNavigation.style.viewTransitionName = opening ? '' : 'project-home-navigation';
+        if (opening) concealNavigation(detailNavigation());
         const to = opening ? detailCover() : card;
         if (opening) await coverReady(to);
         setName(to, true);
         if (opening) nameLayers(true);
       });
       transition.finished.finally(() => {
-        if (homeNavigation) homeNavigation.style.viewTransitionName = '';
+        running = false;
+        hidden.forEach(animation => animation.cancel());
+        revealNavigation(opening ? detailNavigation() : homeNavigation());
         setName(card, false);
         setName(detailCover(), false);
         nameLayers(false);
@@ -191,16 +225,20 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
       const target = event.target as Element | null;
       const open = target?.closest<HTMLAnchorElement>('a.project-card-link[href^="/projects/"]');
       const close = target?.closest<HTMLAnchorElement>('a[data-project-close]');
+      if ((open || (close && isProjectPath(current))) && running) {
+        event.preventDefault();
+        return;
+      }
       if (open) {
         event.preventDefault();
         history.pushState({ fromGrid: true }, '', open.getAttribute('href'));
-        go(normalizePath(new URL(open.href).pathname));
+        void go(normalizePath(new URL(open.href).pathname));
       } else if (close && isProjectPath(current)) {
         event.preventDefault();
         if ((history.state as { fromGrid?: boolean } | null)?.fromGrid) history.back();
         else {
           history.pushState(null, '', '/');
-          go('/');
+          void go('/');
         }
       }
     };
@@ -210,7 +248,7 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
       // Project entry and project → Works history keep the existing cover morph.
       // All other regular page changes are handled by useSiteTransition.
       if (!isProjectPath(next) && !(isProjectPath(current) && next === '/')) return;
-      go(next);
+      void go(next);
     };
 
     if (isProjectPath(pathRef.current)) history.scrollRestoration = 'manual';

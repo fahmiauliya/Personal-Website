@@ -1164,8 +1164,3 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
 
 /* Keep home navigation out of the project handoff until the cover has landed. */
 html.project-open .portfolio .site-nav { visibility: hidden; }
-::view-transition-group(project-home-navigation) { z-index: 4; animation: none; }
-::view-transition-old(project-home-navigation) { animation: project-fade-out 120ms ease-out both; }
-::view-transition-new(project-home-navigation) {
-  animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 715ms both;
-}
