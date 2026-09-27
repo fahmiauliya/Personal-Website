@@ -1,4 +1,4 @@
-import type { CSSProperties, KeyboardEvent } from 'react';
+import { useRef, type CSSProperties, type KeyboardEvent } from 'react';
 import aboutIcon from '../assets/icons/nav-about.svg';
 import homeIcon from '../assets/icons/logo.svg';
 import contactIcon from '../assets/icons/nav-contact.svg';
@@ -6,6 +6,7 @@ import worksIcon from '../assets/icons/nav-works.svg';
 import NavigationMaterial from './NavigationMaterial';
 import ProgressiveBlur from './ProgressiveBlur';
 import { materialPath, useNavigationProgress } from './navigationMotion';
+import { useScrollRoll } from './useScrollRoll';
 import { setWorkTab, useWorkTab, type WorkTab } from './workTab';
 
 const NAVIGATION_CONTROL_HEIGHT = 28;
@@ -15,6 +16,8 @@ const TAB_TRACK_WIDTH = 242;
 export default function Header({ isAboutPage = false }: { isAboutPage?: boolean }) {
   const progress = useNavigationProgress();
   const activeTab = useWorkTab();
+  const logo = useRef<HTMLSpanElement>(null);
+  useScrollRoll(logo);
   const centerLeft = 110 - 46 * progress;
   const centerWidth = 155 + 92 * progress;
   const aboutLeft = 186.5 + 128.5 * progress;
@@ -51,7 +54,7 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
 
   return (
     <header className="site-header">
-      <ProgressiveBlur />
+      <ProgressiveBlur revealOnScroll />
       {/* The SVG material is the one persistent surface for the pill and the About bubble,
           at rest and mid-morph, so their fill, border, shadow and highlight never swap
           renderers or restart; only the geometry animates, in both directions. */}
@@ -60,7 +63,7 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
 
         <a className="nav-circle nav-surface nav-home" style={{ transform: `translateX(${78 - 46 * progress}px)` }} href="/" aria-label="Back to introduction">
           <span className="nav-icon nav-icon--logo" aria-hidden="true">
-            <span><img src={homeIcon} alt="" /></span>
+            <span ref={logo}><img src={homeIcon} alt="" /></span>
           </span>
         </a>
 

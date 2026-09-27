@@ -6,15 +6,6 @@
   font-display: swap;
 }
 
-/* The ASCII covers and scrambled text of projects without a page yet (Ascii.tsx). */
-@font-face {
-  font-family: 'Geist Mono';
-  src: url('../assets/geist-mono-latin-400.woff2') format('woff2');
-  font-style: normal;
-  font-weight: 400 700;
-  font-display: swap;
-}
-
 * { box-sizing: border-box; }
 
 html {
@@ -221,10 +212,10 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   flex-direction: column;
   padding: 61px 0 24px;
   overflow: hidden;
-  border-right: 0.5px solid rgba(0, 0, 0, 0.1);
-  border-left: 0.5px solid rgba(0, 0, 0, 0.1);
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  border-left: 1px solid rgba(0, 0, 0, 0.1);
   background: var(--color-canvas);
-  box-shadow: 0 0 0 0.5px #fff;
+  box-shadow: -1px 0 0 #fff, 1px 0 0 #fff;
 }
 
 .site-header {
@@ -617,8 +608,14 @@ button.nav-circle { cursor: pointer; }
 
 .nav-icon--logo > span {
   position: absolute;
-  inset: 4.85% 3.56% 3.15% 3.68%;
+  inset: 0;
+  /* Rolled with the scroll (useScrollRoll.ts), about its centre. */
+  transform-origin: 50% 50%;
+  will-change: transform;
 }
+
+/* Render the Figma logo at its native 14px size. */
+.nav-icon--logo img { width: auto; height: auto; }
 
 .nav-icon--works > span {
   position: absolute;
@@ -774,6 +771,9 @@ button.nav-circle { cursor: pointer; }
 .works-grid {
   display: grid;
   width: 100%;
+  /* Four 343px cards, three 12px gaps, and the existing outer gutters. */
+  max-width: calc(1408px + 2 * var(--page-gutter));
+  margin-inline: auto;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-auto-rows: 348px;
   column-gap: 12px;
@@ -826,6 +826,24 @@ button.nav-circle { cursor: pointer; }
 .project-meta div { display: flex; align-items: center; justify-content: space-between; }
 .project-meta p { opacity: 0.6; letter-spacing: -0.24px; }
 .project-meta time { opacity: 0.6; font-size: 10px; letter-spacing: -0.2px; }
+
+/* Locked "coming soon" cards (Works.tsx, Padlock.tsx; Motion Lab shared/site.module.css). */
+.project-meta h3.project-locked-title { display: flex; align-items: flex-start; gap: 2px; }
+.project-meta time.project-soon { opacity: 0.2; }
+.project-locked-grid {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(calc(-50% + 61.43px), calc(-50% + 0.25px));
+  pointer-events: none;
+}
+.project-locked-padlock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  transform: translate(-50%, -50%);
+}
 
 /* Motions from the shared bundle (src/components/MotionPreview.tsx) fill their box: the
    stage is the frame at its design size, scaled from its top-left corner. */
@@ -924,6 +942,7 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
    borders under 1px up to 1px, so the outline is a 1px border on an overlay drawn
    at 1/0.5 size and scaled down by 0.5. */
 .project-image--media { border: 0; border-radius: 0; }
+.project-image--locked { border: 1px solid rgb(0 0 0 / 10%); border-radius: 0; background: #fafafa; }
 .project-image--media::after {
   position: absolute;
   top: 0;
@@ -1141,3 +1160,12 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
 .works-section { position: relative; }
 .works-panel[data-active='false'] { position: absolute; top: 0; left: 0; width: 100%; visibility: hidden; pointer-events: none; }
 .works-panel[data-active='false'] * { animation-play-state: paused !important; }
+
+
+/* Keep home navigation out of the project handoff until the cover has landed. */
+html.project-open .portfolio .site-nav { visibility: hidden; }
+::view-transition-group(project-home-navigation) { z-index: 4; animation: none; }
+::view-transition-old(project-home-navigation) { animation: project-fade-out 120ms ease-out both; }
+::view-transition-new(project-home-navigation) {
+  animation: project-part-in 385ms cubic-bezier(0, 1, 0.4, 1) 715ms both;
+}

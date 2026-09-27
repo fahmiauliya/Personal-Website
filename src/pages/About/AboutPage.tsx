@@ -1,4 +1,3 @@
-import profileImage from '../../assets/about/profile.png';
 import timeline from '../../assets/about/experience-timeline.svg';
 import ContactCta from '../../components/ContactCta';
 import Header from '../../components/Header';
@@ -16,21 +15,26 @@ export default function AboutPage() {
         <section className="introduction" aria-labelledby="about-title">
           <div className="introduction-content">
             <div className="introduction-label">
-              <h1 id="about-title" className="introduction-title">
-                <span>Hello, i’,m</span>
-                <span className="profile-image-frame">
-                  <img src={profileImage} alt="" width="20" height="20" />
-                </span>
-                <span>Fahmi Auliya</span>
-              </h1>
-              <p>A product designer with a focus on Web3</p>
+              <h1 id="about-title" className="introduction-title">Fahmi Auliya</h1>
+              <p>Product Designer</p>
             </div>
             <div className="about-copy">
+              <p>I’m a product designer focused on simplifying complex product problems into clear solutions.</p>
               <p>
-                I’m a product designer focused on turning<br />
-                complex product problems into simpler flows and interfaces.
-                <br /><br />
-                I’m especially interested in what happens after Figma. I work closer to implementation through motion, code, Framer, and AI-assisted workflows to test ideas earlier and bring the design closer to the final product.
+                I usually start by understanding the problem, shaping the flow, and designing the interface. I stay involved
+                beyond Figma through prototyping, motion, design systems, code implementation, and Framer implementation.
+              </p>
+              <p>
+                Working closely with engineering helps me test ideas earlier, understand constraints, and make design
+                decisions that are closer to what actually gets shipped.
+              </p>
+              <p>
+                Previously, I worked at <strong>Blissful Design</strong>, where I worked across websites, web apps, mobile products,
+                brand identity, and other digital experiences.
+              </p>
+              <p>
+                More recently, I’ve been focused on product design, design systems, interaction, and design-to-code —
+                finding better ways for design and engineering to work together.
               </p>
             </div>
           </div>

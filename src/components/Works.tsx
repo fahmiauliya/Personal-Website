@@ -1,12 +1,11 @@
 import { projects, recentWorks, type Project } from '../data/portfolio';
-import { ASCII_GROUND, AsciiImage, AsciiText, asciiDefaults, type AsciiOptions } from './Ascii';
 import MotionPreview from './MotionPreview';
+import { LockIcon, LockedGrid, Padlock } from './Padlock';
 import { useWorkTab, type WorkTab } from './workTab';
 
-// Projects without a page yet show their image as animated ASCII and their details as
-// scrambled ASCII text (Motion Lab website-content, motion-works-cards). Values are the
-// lab's saved dials (motion-works-cards/settings.json).
-const ascii: AsciiOptions = { ...asciiDefaults, CellPx: 6, Contrast: 0.5, Brightness: -0.05, Saturation: 0, Cutoff: 0.08, Flicker: 0.06, Sweep: 0.35, SweepSeconds: 3.2, Fps: 24 };
+// Projects without a page yet are locked "coming soon" cards (Motion Lab website-content,
+// shared/site.tsx): a small lock after the title, "(soon)" for the date, and the cover
+// under a dotted grid with a padlock on it, or the padlock alone on an empty box.
 
 // Each navigation tab shows its own cards in the same grid, with its own placement
 // (.project-card--N for Selected Project, .recent-card--N for Recent Work).
@@ -25,8 +24,6 @@ export default function Works() {
 
 function WorksPanel({ category, active }: { category: WorkTab; active: boolean }) {
   const { heading, cards, placement } = categories[category];
-  /** ASCII cards in order, for the sweep that travels across the grid one card after another. */
-  const asciiCards = cards.filter(project => !project.href && project.coverImage).map(project => project.id);
   return (
     <div className="works-panel" data-work-panel={category} data-active={active} aria-hidden={!active} inert={!active}>
       <h2 className="visually-hidden">{heading}</h2>
@@ -43,27 +40,34 @@ function WorksPanel({ category, active }: { category: WorkTab; active: boolean }
                   </div>
                 </header>
               : <header className="project-meta" aria-label={`${project.title}, coming soon`}>
-                  <h3><AsciiText text={project.title} /></h3>
+                  <h3 className="project-locked-title">{project.title}<LockIcon /></h3>
                   <div>
-                    <p><AsciiText text={project.description} /></p>
-                    <time><AsciiText text={project.date} /></time>
+                    <p>{project.description}</p>
+                    <time className="project-soon">(soon)</time>
                   </div>
                 </header>}
             <div
-              className={`project-image${project.cover || project.coverScene || project.coverImage ? ' project-image--media' : ''}`}
+              className={`project-image${project.cover || project.coverScene || project.coverImage ? ' project-image--media' : project.href ? '' : ' project-image--locked'}`}
               role="img"
               aria-label={`${project.title}: ${project.imageLabel}`}
-              style={!project.href && project.coverImage ? { background: ASCII_GROUND } : undefined}
             >
               {project.cover
                 ? <MotionPreview scene={project.cover} fit="cover" />
                 : project.coverScene
                 ? <project.coverScene />
-                : project.coverImage && !project.href
-                ? <AsciiImage src={project.coverImage} options={ascii} order={asciiCards.indexOf(project.id)} />
                 : project.coverImage
-                ? <img className={`project-cover-image${project.coverImageFit === 'width' ? ' project-cover-image--fill-width' : ''}`} src={project.coverImage} alt="" loading="lazy" decoding="async" />
-                : <span>{project.imageLabel}</span>}
+                ? <>
+                    {project.coverVideo
+                      ? <video className="project-cover-image" src={project.coverVideo} poster={project.coverImage} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />
+                      : <img className={`project-cover-image${project.coverImageFit === 'width' ? ' project-cover-image--fill-width' : ''}`} src={project.coverImage} alt="" loading="lazy" decoding="async" />}
+                    {!project.href && <>
+                      <LockedGrid className="project-locked-grid" />
+                      <span className="project-locked-padlock"><Padlock width={53.354} /></span>
+                    </>}
+                  </>
+                : project.href
+                ? <span>{project.imageLabel}</span>
+                : <Padlock />}
             </div>
           </article>
         ))}

@@ -5,6 +5,7 @@ import Intro from './components/Intro';
 import Works from './components/Works';
 import { useIntroCoverMotion } from './components/introCoverMotion';
 import { isProjectPath, normalizePath, useProjectTransitions } from './components/projectTransition';
+import { handoffDefaults } from './components/transition/HandoffLogo';
 import { LoaderMark } from './components/transition/LoaderMark';
 import { PuzzleOverlay } from './components/transition/PuzzleOverlay';
 import { useSiteTransition } from './components/transition/useSiteTransition';
@@ -86,8 +87,10 @@ export default function App() {
           </>
         )}
       </div>
-      <PuzzleOverlay ref={overlay} startCovered={startCovered} settings={puzzleSettings}>
-        {loading && <LoaderMark name="Loading, please wait ..." progress={progress} complete={ready} onFinished={revealFirstLoad} />}
+      {/* The logo turning while covered is the loader's own mark (Motion Lab's saved Logo
+          values are its defaults), so the loader and page changes read as one system. */}
+      <PuzzleOverlay ref={overlay} startCovered={startCovered} settings={puzzleSettings} logo={handoffDefaults}>
+        {loading && <LoaderMark label="Loading, please wait ..." initials="F . A" progress={progress} complete={ready} onFinished={revealFirstLoad} />}
       </PuzzleOverlay>
     </>
   );

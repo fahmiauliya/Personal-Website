@@ -123,7 +123,7 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
       document.querySelectorAll<HTMLElement>('.project-card .project-image').forEach(card => {
         card.style.visibility = '';
       });
-      history.scrollRestoration = 'auto';
+      history.scrollRestoration = 'manual';
     }
   }, [path]);
 
@@ -136,13 +136,13 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
       const opening = isProjectPath(next);
       const card = cardImage(opening ? next : current);
       // While a layer is open the layer owns scrolling, so the browser must not restore
-      // window scroll on back/forward; normal restoration returns once it closes.
+      // window scroll on back/forward; regular pages also restore under their puzzle.
       // The card's image is "lifted" into the detail page while it is open, so the grid
       // shows its empty slot as the cover flies out and back.
       const apply = () => {
         pathRef.current = next;
         flushSync(() => setPath(next));
-        history.scrollRestoration = opening ? 'manual' : 'auto';
+        history.scrollRestoration = 'manual';
         if (card) card.style.visibility = opening ? 'hidden' : '';
       };
       const doc = document as ViewTransitionDocument;
@@ -159,18 +159,24 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
       // The card the image returns to may mount its motion during the close
       // (useNearView); every other motion waits for the transition to end.
       if (!opening) card.dataset.projectReturning = '';
+      const homeNavigation = document.querySelector<HTMLElement>('.portfolio .site-nav');
+      // Keep the navigation out of the root snapshot so it can leave/re-enter
+      // independently, without changing the cover's geometry or timing.
+      if (homeNavigation) homeNavigation.style.viewTransitionName = opening ? 'project-home-navigation' : '';
       setDirection(opening ? 'open' : 'close');
       setName(from, true);
       if (!opening) nameLayers(true);
       const transition = doc.startViewTransition(async () => {
         setName(from, false);
         apply();
+        if (homeNavigation) homeNavigation.style.viewTransitionName = opening ? '' : 'project-home-navigation';
         const to = opening ? detailCover() : card;
         if (opening) await coverReady(to);
         setName(to, true);
         if (opening) nameLayers(true);
       });
       transition.finished.finally(() => {
+        if (homeNavigation) homeNavigation.style.viewTransitionName = '';
         setName(card, false);
         setName(detailCover(), false);
         nameLayers(false);

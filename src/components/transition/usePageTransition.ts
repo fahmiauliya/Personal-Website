@@ -28,7 +28,7 @@ export type PageMotion = {
  * container, locked while the overlay is up and returned to the top for a new page. One
  * transition at a time; with reduced motion the page just switches.
  */
-export function usePageTransition<Page>({ setPage, stage, scroller, overlay, motion, caption, startCovered = false }: {
+export function usePageTransition<Page>({ setPage, stage, scroller, overlay, motion, startCovered = false }: {
   setPage: (page: Page) => void;
   // | null: React 19's useRef(null) types the ref itself as possibly-null (a ref that
   // hasn't attached yet, or a plain object ref like the scroller below), unlike the
@@ -37,15 +37,11 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
   scroller: RefObject<HTMLElement | null>;
   overlay: RefObject<PuzzleHandle | null>;
   motion: PageMotion;
-  /** The small note shown while covered, for going to `next` (e.g. "01 → 02 · Beam"). */
-  caption?: (next: Page) => string;
   /** The overlay starts closed (first load): the first thing to run is enter(). */
   startCovered?: boolean;
 }) {
   const live = useRef(motion);
   live.current = motion;
-  const captionFor = useRef(caption);
-  captionFor.current = caption;
   const running = useRef(false);
   const [busy, setBusy] = useState(startCovered);
   const lockedOverflow = useRef<string | null>(null);
@@ -172,7 +168,7 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
     // Leave: zoom away while the puzzle closes.
     page.style.transformOrigin = origin(page);
     const leave = page.animate([full(), small()], { duration: puzzle.duration(), easing: live.current.easing, fill: 'forwards' });
-    await puzzle.cover(captionFor.current?.(next));
+    await puzzle.cover();
     await leave.finished.catch(() => undefined);
 
     // Fully covered: change the page. The new one mounts small, behind the puzzle.
@@ -183,7 +179,8 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
     flushSync(() => setPage(next));
     if (scroll) scroll.scrollTop = 0;
     await prepare?.();
-    await new Promise(resolve => setTimeout(resolve, live.current.holdMs));
+    // The hold, and the covered logo's turns: whichever is longer.
+    await Promise.all([new Promise(resolve => setTimeout(resolve, live.current.holdMs)), puzzle.settled()]);
 
     await enter();
   }, [setPage, stage, scroller, overlay, lock, origin, enter, prepareZoom, restoreFixed]);

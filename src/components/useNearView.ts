@@ -27,8 +27,7 @@ const isTransitioning = () => {
 const isReturning = (element: Element) => Boolean(element.closest('[data-project-returning]'));
 
 // When a transition ends, held motions are released one at a time, starting shortly
-// after it, so the ones that need to mount (or the ASCII covers resuming, Ascii.tsx)
-// don't all start in the frame the transition finishes. Releases that change nothing
+// after it, so the ones that need to mount don't all start in the frame the transition finishes. Releases that change nothing
 // don't take a turn.
 export const RESUME_DELAY_MS = 250;
 export const RESUME_STAGGER_MS = 80;

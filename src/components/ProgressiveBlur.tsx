@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useLayoutEffect, useRef, type CSSProperties } from 'react';
 
 // The progressive blur behind the navigation, used by every header (home intro and
 // works states, and the project pages) so the treatment is identical everywhere: it
@@ -10,7 +10,7 @@ import type { CSSProperties } from 'react';
 // The radius doubles from one layer to the next (12px at the top down to 0.75px at the
 // bottom), and each band fades in over one step, holds for one, and fades out over
 // the next, so neighbouring layers cross-fade and the blur ramps down smoothly to none.
-// Few, far-apart radii show as visible steps over high-contrast content (the ASCII cards).
+// Few, far-apart radii show as visible steps over high-contrast content (the cover images).
 const MAX_BLUR = 12;
 // Five layers: each one is re-filtered every frame the page scrolls under it, and radii
 // below 0.75px can't be seen, so more layers cost frame time for nothing.
@@ -31,15 +31,33 @@ function band(from: number) {
   return `linear-gradient(to top, transparent ${from}%, #000 ${from + STEP}%, ${end})`;
 }
 
-export default function ProgressiveBlur() {
+export default function ProgressiveBlur({ revealOnScroll = false }: { revealOnScroll?: boolean }) {
+  const root = useRef<HTMLSpanElement>(null);
+  useLayoutEffect(() => {
+    if (!revealOnScroll) return;
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const progress = Math.max(0, Math.min(1, window.scrollY / 80));
+      const strength = progress * progress * (3 - 2 * progress);
+      root.current?.style.setProperty('--progressive-blur-strength', String(strength));
+    };
+    const onScroll = () => { if (!frame) frame = requestAnimationFrame(update); };
+    update();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      cancelAnimationFrame(frame);
+    };
+  }, [revealOnScroll]);
   return (
-    <span className="progressive-blur" aria-hidden="true">
+    <span ref={root} className="progressive-blur" aria-hidden="true" style={{ '--progressive-blur-strength': revealOnScroll ? 0 : 1 } as CSSProperties}>
       {LAYERS.map(({ blur, from }) => (
         <span
           key={blur}
           style={{
-            backdropFilter: `blur(${blur}px)`,
-            WebkitBackdropFilter: `blur(${blur}px)`,
+            backdropFilter: `blur(calc(${blur}px * var(--progressive-blur-strength, 1)))`,
+            WebkitBackdropFilter: `blur(calc(${blur}px * var(--progressive-blur-strength, 1)))`,
             maskImage: band(from),
             WebkitMaskImage: band(from),
           } as CSSProperties}

@@ -33,21 +33,14 @@
 }
 
 /* The small note shown while covered: low contrast, in the lower middle, in its own window. */
-.caption {
+/* The handoff logo, centred on the covered screen. */
+.logo {
   position: absolute;
+  top: 50%;
   left: 50%;
-  bottom: 9%;
-  overflow: hidden;
-  transform: translateX(-50%);
-  font-family: Geist, Arial, sans-serif;
-  font-size: 11px;
-  line-height: 16px;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
-  color: rgb(255 255 255 / 30%);
+  transform: translate(-50%, -50%);
   pointer-events: none;
 }
-.caption span { display: block; transform: translate3d(0, 110%, 0); }
 
 /* Content shown above the pieces (the loader's identity note). */
 .content { position: absolute; inset: 0; pointer-events: none; }

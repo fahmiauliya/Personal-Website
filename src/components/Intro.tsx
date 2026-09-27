@@ -15,11 +15,15 @@ export default function Intro() {
 
             <div className="intro-copy">
               <p className="intro-lead">
-                I’m a product designer focused on turning complex product problems into simpler flows and interfaces.
+                I design digital products by simplifying complex problems into clear solutions.
               </p>
               <p>
-                I’m especially interested in what happens after Figma. I work closer to implementation through motion,
-                code, Framer, and AI-assisted workflows to test ideas earlier and bring the design closer to the final product.
+                I work closely with engineering and stay involved beyond Figma through prototyping, motion, code
+                implementation, and Framer implementation.
+              </p>
+              <p>
+                Recently, I’ve been working across product design, design systems, websites, web apps, and interaction
+                — carrying designs closer to the final product through code and engineering collaboration.
               </p>
             </div>
 

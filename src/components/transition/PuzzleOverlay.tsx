@@ -1,5 +1,7 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef, type CSSProperties, type ReactNode } from 'react';
+import { forwardRef, useImperativeHandle, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { HandoffLogo, type HandoffHandle, type HandoffSettings } from './HandoffLogo';
 import styles from './PuzzleOverlay.module.css';
+import { grain } from '../surfaceGrain';
 
 /** Timing and shape of the puzzle. Times in ms. */
 export type PuzzleSettings = {
@@ -20,10 +22,12 @@ export type PuzzleSettings = {
 
 export type PuzzleHandle = {
   /**
-   * Brings the pieces in until the screen is fully covered. Resolves when it is. `caption` is a
-   * small, low-contrast note (e.g. "01 → 02 · Beam") shown while the screen is covered.
+   * Brings the pieces in until the screen is fully covered. Resolves when it is. With `logo` set,
+   * the mark appears in the middle once the lower middle is covered and turns while covered.
    */
-  cover: (caption?: string) => Promise<void>;
+  cover: () => Promise<void>;
+  /** Resolves once the covered logo has made its turns (at once without a logo). */
+  settled: () => Promise<void>;
   /** Takes the pieces away, uncovering the screen. Resolves when it is clear. */
   reveal: () => Promise<void>;
   /** Opens at once, without motion (reduced motion). */
@@ -44,36 +48,25 @@ function pieceWidths(column: number, pieces: number) {
   return weights.map(weight => weight / total);
 }
 
-// The caption's timing, as shares of one cover/reveal: it rolls in once the lower middle of the
-// screen is covered, and rolls out early in the reveal, well before the page is fully back. The
-// pieces rise from below and drop back down, so the lower middle is covered first and freed last.
-const CAPTION_IN = 0.55;
-const CAPTION_OUT = 0.12;
-const CAPTION_MS = 380;
+// The logo appears once the lower middle of the screen is covered (a share of one cover): the
+// pieces rise from below, so the middle is covered first. It leaves faster than it arrives, and
+// turns LOGO_TURNS steps while covered before the reveal may start (settled()).
+const LOGO_IN = 0.55;
+const LOGO_LEAVE = { GatherMs: 180, ExitMs: 220 };
+const LOGO_TURNS = 2;
+
+type Deferred = { promise: Promise<void>; resolve: () => void };
+const deferred = (): Deferred => {
+  let resolve = () => {};
+  const promise = new Promise<void>(done => { resolve = done; });
+  return { promise, resolve };
+};
 
 /**
  * A still grain tile for the pieces: faint light and dark specks, about 2% at most, so the dark
  * surface is less flat without any visible texture. Made once; it moves with the pieces, never
  * flickers.
  */
-let grainUrl: string | undefined;
-function grain() {
-  if (grainUrl !== undefined || typeof document === 'undefined') return grainUrl ?? '';
-  const size = 128;
-  const canvas = document.createElement('canvas');
-  canvas.width = size;
-  canvas.height = size;
-  const context = canvas.getContext('2d');
-  if (!context) return (grainUrl = '');
-  const image = context.createImageData(size, size);
-  for (let index = 0; index < size * size; index += 1) {
-    const light = Math.random() < 0.5;
-    const alpha = Math.round(Math.random() * 6);
-    image.data.set(light ? [255, 255, 255, alpha] : [0, 0, 0, alpha], index * 4);
-  }
-  context.putImageData(image, 0, 0);
-  return (grainUrl = canvas.toDataURL());
-}
 
 /**
  * The page-transition overlay: dark vertical columns, each split into a few full-height
@@ -88,14 +81,22 @@ function grain() {
 export const PuzzleOverlay = forwardRef<PuzzleHandle, {
   settings: PuzzleSettings;
   startCovered?: boolean;
+  /** The handoff logo shown in the middle while covered (Motion Lab's Logo values). */
+  logo?: Partial<HandoffSettings>;
   children?: ReactNode;
   className?: string;
-}>(function PuzzleOverlay({ settings, startCovered = false, children, className }, ref) {
+}>(function PuzzleOverlay({ settings, startCovered = false, logo, children, className }, ref) {
   const root = useRef<HTMLDivElement>(null);
   const live = useRef(settings);
   live.current = settings;
 
-  const caption = useRef<HTMLSpanElement>(null);
+  const logoHandle = useRef<HandoffHandle>(null);
+  const [logoKey, setLogoKey] = useState(0);
+  // Resolved until the first cover(): settled() before any cover never waits.
+  const settled = useRef<Deferred>({ promise: Promise.resolve(), resolve: () => {} });
+  const logoTimer = useRef<number | undefined>(undefined);
+  const hasLogo = useRef(Boolean(logo));
+  hasLogo.current = Boolean(logo);
   const layout = useMemo(() => Array.from({ length: settings.columns }, (_, column) => pieceWidths(column, settings.pieces)), [settings.columns, settings.pieces]);
   const surface = useMemo(() => ({ '--puzzle-grain': `url(${grain()})` }) as CSSProperties, []);
 
@@ -141,30 +142,22 @@ export const PuzzleOverlay = forwardRef<PuzzleHandle, {
         if (phase === 'reveal') delete element.dataset.active;
       });
     };
-    // The caption rolls up into its small window, and later rolls up out of it: a slide, not a fade.
-    const rollCaption = (phase: 'in' | 'out', delay: number) => {
-      const text = caption.current;
-      if (!text) return;
-      const keyframes = phase === 'in'
-        ? [{ transform: 'translate3d(0, 110%, 0)' }, { transform: 'translate3d(0, 0, 0)' }]
-        : [{ transform: 'translate3d(0, 0, 0)' }, { transform: 'translate3d(0, -110%, 0)' }];
-      const animation = text.animate(keyframes, { duration: CAPTION_MS, delay, easing: live.current.easing, fill: 'both' });
-      animation.finished.then(() => {
-        text.style.transform = keyframes[1].transform;
-        animation.cancel();
-      }).catch(() => undefined);
-    };
     return {
-      cover: (label?: string) => {
-        if (caption.current) {
-          caption.current.textContent = label ?? '';
-          caption.current.style.transform = 'translate3d(0, 110%, 0)';
-          if (label) rollCaption('in', duration() * CAPTION_IN);
-        }
+      cover: () => {
+        settled.current.resolve();
+        settled.current = deferred();
+        window.clearTimeout(logoTimer.current);
+        if (hasLogo.current) logoTimer.current = window.setTimeout(() => setLogoKey(key => key + 1), duration() * LOGO_IN);
+        else settled.current.resolve();
         return run('cover');
       },
+      settled: () => settled.current.promise,
       reveal: () => {
-        if (caption.current?.textContent) rollCaption('out', duration() * CAPTION_OUT);
+        window.clearTimeout(logoTimer.current);
+        settled.current.resolve();
+        const leaving = logoHandle.current;
+        if (leaving) void leaving.leave().then(() => setLogoKey(0));
+        else setLogoKey(0);
         return run('reveal');
       },
       clear: () => {
@@ -191,7 +184,16 @@ export const PuzzleOverlay = forwardRef<PuzzleHandle, {
         style={{ flexGrow: width }}
       />)}
     </div>)}
-    <div className={styles.caption} aria-hidden><span ref={caption} /></div>
+    {logo && logoKey > 0 && <div className={styles.logo} aria-hidden>
+      <HandoffLogo
+        key={logoKey}
+        ref={logoHandle}
+        settings={{ ...logo, ...LOGO_LEAVE }}
+        turns={LOGO_TURNS}
+        turnAfterEnter
+        onTurns={() => settled.current.resolve()}
+      />
+    </div>}
     {children && <div className={styles.content}>{children}</div>}
   </div>;
 });

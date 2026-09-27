@@ -17,8 +17,8 @@ import { usePageTransition } from './usePageTransition';
 //   links and explicit project-close controls retain their shared-element transition.
 //   History navigation into a project, or from a project back to Works, belongs to
 //   that system; other page navigation belongs here.
-const CAPTION_OF: Record<string, string> = { '/': 'Works', '/about': 'About' };
-export const isSitePath = (path: string) => Object.prototype.hasOwnProperty.call(CAPTION_OF, path);
+const SITE_PATHS = new Set(['/', '/about']);
+export const isSitePath = (path: string) => SITE_PATHS.has(path);
 
 // Motion Lab's saved dial values (motion-page-transition/settings.json, "Puzzle" group);
 // the loader uses the same settings, so the two transitions read as one system.
@@ -78,7 +78,7 @@ export function useSiteTransition(path: string, setPath: (path: string) => void)
   // and the effect below can register its listeners once instead of on every render.
   const setPage = useCallback((next: string) => {
     pathRef.current = next;
-    history.scrollRestoration = 'auto';
+    history.scrollRestoration = 'manual';
     setPath(next);
   }, [setPath]);
   const { navigate, enter, hold, busy } = usePageTransition<string>({
@@ -87,7 +87,6 @@ export function useSiteTransition(path: string, setPath: (path: string) => void)
     scroller,
     overlay,
     motion: PAGE_MOTION,
-    caption: next => CAPTION_OF[next],
     startCovered: !skipLoader,
   });
 
@@ -126,32 +125,39 @@ export function useSiteTransition(path: string, setPath: (path: string) => void)
   busyRef.current = busy || loading;
 
   useEffect(() => {
-    let pending: string | null = null;
+    let pending: { next: string; hash: string; scrollTop?: number } | null = null;
     let active = false;
     let disposed = false;
-    const go = async (next: string, hash = '') => {
-      if (active) { pending = next; return; }
+    // The browser must not restore scroll on the outgoing page during the wipe.
+    history.scrollRestoration = 'manual';
+    const rememberScroll = () => {
+      if (active || busyRef.current || isProjectPath(pathRef.current)) return;
+      const state = history.state ?? {};
+      if (state.siteScrollY !== window.scrollY) {
+        history.replaceState({ ...state, siteScrollY: window.scrollY }, '');
+      }
+    };
+    const go = async (next: string, hash = '', scrollTop?: number) => {
+      if (active) { pending = { next, hash, scrollTop }; return; }
       active = true;
       busyRef.current = true;
       try {
         await navigate(next, async () => {
           if (disposed) return;
-          if (!hash) {
-            if (next === '/') await worksReady();
-            return;
+          let top = scrollTop ?? 0;
+          if (scrollTop === undefined && hash) {
+            let anchor = '';
+            try { anchor = decodeURIComponent(hash.slice(1)); } catch { /* Invalid anchor: show the page top. */ }
+            const target = document.getElementById(anchor);
+            if (target) {
+              // Layout offsets ignore the temporary transition scale.
+              for (let element: HTMLElement | null = target; element; element = element.offsetParent as HTMLElement | null) {
+                top += element.offsetTop;
+              }
+              top -= parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+            }
           }
-          let anchor: string;
-          try { anchor = decodeURIComponent(hash.slice(1)); } catch { return; }
-          const target = document.getElementById(anchor);
-          if (!target) return;
-          // Layout offsets ignore the stage's temporary 0.96 transition scale.
-          // scrollIntoView would align the scaled bounds and shift when it returns to 1.
-          let top = 0;
-          for (let element: HTMLElement | null = target; element; element = element.offsetParent as HTMLElement | null) {
-            top += element.offsetTop;
-          }
-          const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
-          window.scrollTo({ top: Math.max(0, top - margin), behavior: 'instant' });
+          window.scrollTo({ top: Math.max(0, top), behavior: 'instant' });
           // The destination viewport can contain more cards than the home hero did.
           if (next === '/') await worksReady();
           // Let scroll-driven navigation and the intro handoff update behind the cover.
@@ -162,7 +168,8 @@ export function useSiteTransition(path: string, setPath: (path: string) => void)
         busyRef.current = false;
         const queued = pending;
         pending = null;
-        if (!disposed && queued && queued !== pathRef.current) void go(queued, window.location.hash);
+        if (!disposed && queued && queued.next !== pathRef.current) void go(queued.next, queued.hash, queued.scrollTop);
+        else if (!disposed) rememberScroll();
       }
     };
     const onClick = (event: MouseEvent) => {
@@ -179,22 +186,39 @@ export function useSiteTransition(path: string, setPath: (path: string) => void)
       if (next === pathRef.current) return;
       event.preventDefault();
       if (busyRef.current || active) return;
+      rememberScroll();
       history.pushState({ siteTransition: true }, '', url.pathname + url.search + url.hash);
       void go(next, url.hash);
     };
     const onPopState = () => {
       const current = pathRef.current;
       const next = normalizePath(window.location.pathname);
-      if (!isSitePath(next) || next === current) return;
+      if (!isSitePath(next)) return;
+      // Same-page anchor history has no page wipe, but still needs manual restoration.
+      if (next === current && !active) {
+        const saved = history.state?.siteScrollY;
+        if (typeof saved === 'number' && Number.isFinite(saved)) {
+          window.scrollTo({ top: Math.max(0, saved), behavior: 'instant' });
+        } else if (!window.location.hash) {
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        } else {
+          try { document.getElementById(decodeURIComponent(window.location.hash.slice(1)))?.scrollIntoView({ behavior: 'instant' }); } catch { /* Invalid anchor. */ }
+        }
+        return;
+      }
       // Back/close from project to Works retains the project-cover morph.
       if (isProjectPath(current) && next === '/') return;
-      void go(next, window.location.hash);
+      const saved = history.state?.siteScrollY;
+      void go(next, window.location.hash, typeof saved === 'number' && Number.isFinite(saved) ? saved : undefined);
     };
 
+    rememberScroll();
+    window.addEventListener('scroll', rememberScroll, { passive: true });
     document.addEventListener('click', onClick);
     window.addEventListener('popstate', onPopState);
     return () => {
       disposed = true;
+      window.removeEventListener('scroll', rememberScroll);
       document.removeEventListener('click', onClick);
       window.removeEventListener('popstate', onPopState);
     };

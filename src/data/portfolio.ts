@@ -13,6 +13,8 @@ export interface Project {
   coverImage?: string;
   /** Which side of the card the cover image fills (ratio locked, centred, overflow cropped). Defaults to height. */
   coverImageFit?: 'height' | 'width';
+  /** A looping video in place of the cover image (the image is its poster). */
+  coverVideo?: string;
 }
 
 export interface SocialLink {
@@ -57,6 +59,7 @@ export const projects: Project[] = Array.from({ length: 8 }, (_, index) => {
     cover: projectNumber === 1 ? beamProject.cover : projectNumber === 2 ? bifrostProject.cover : undefined,
     coverImage: projectNumber === 3 ? lastingLearnCover : projectNumber === 4 ? talentPlutoCover : projectNumber === 5 ? aveaCover : projectNumber === 6 ? almanacMarketCover : projectNumber === 7 ? edenAiCover : projectNumber === 8 ? tikaSecurityCover : undefined,
     coverImageFit: projectNumber === 3 || projectNumber === 6 ? 'width' : undefined,
+    coverVideo: projectNumber === 4 ? '/talentpluto/cover.mp4' : undefined,
   };
 });
 
