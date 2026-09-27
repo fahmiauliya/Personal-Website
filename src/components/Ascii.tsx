@@ -189,6 +189,7 @@ export function AsciiImage({ src, options, order = 0 }: { src: string; options: 
     // Draw one frame of glyphs at time `seconds`.
     const paint = (seconds: number) => {
       if (!grid) return;
+      element.dataset.coverReady = 'ready';
       const { cols, rows, cellW, cellH, width, height, level, hue } = grid;
       const { Cutoff, Flicker, Sweep, SweepSeconds, SweepStagger, Fps, order: place } = motion.current;
       context.fillStyle = ASCII_GROUND;
@@ -266,9 +267,9 @@ export function AsciiImage({ src, options, order = 0 }: { src: string; options: 
       if (reduced) { paint(0); return; }
       if (!raf && !sleep && active()) raf = requestAnimationFrame(loop);
     };
-    const refresh = () => { sample(); lastPaint = -Infinity; if (reduced) paint(0); else run(); };
+    const refresh = () => { sample(); paint(0); lastPaint = -Infinity; if (reduced) paint(0); else run(); };
 
-    image.decode().then(refresh).catch(() => {});
+    image.decode().then(refresh).catch(() => { element.dataset.coverReady = 'error'; });
     document.fonts?.ready.then(refresh).catch(() => {});
     const resize = new ResizeObserver(refresh);
     resize.observe(element);
@@ -295,7 +296,7 @@ export function AsciiImage({ src, options, order = 0 }: { src: string; options: 
     };
   }, [src, CellPx, Contrast, Brightness, Saturation]);
 
-  return <canvas ref={canvas} style={{ position: 'absolute', inset: 0, display: 'block', width: '100%', height: '100%' }} aria-hidden="true" />;
+  return <canvas ref={canvas} data-cover-ready="pending" style={{ position: 'absolute', inset: 0, display: 'block', width: '100%', height: '100%' }} aria-hidden="true" />;
 }
 
 // Glyphs for scrambled text: printable ASCII that reads as "encoded" rather than words.

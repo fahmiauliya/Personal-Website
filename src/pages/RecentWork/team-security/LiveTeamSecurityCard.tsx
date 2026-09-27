@@ -13,7 +13,7 @@ export default function LiveTeamSecurityCard({ eager = false }: { eager?: boolea
   return (
     <div className="recent-work-card-viewport" ref={ref}>
       <SceneFit width={536} height={410.2040710449219}>
-        {live && <Suspense fallback={null}><TeamSecurityCard /></Suspense>}
+        {live && <Suspense fallback={<span data-cover-ready="pending" />}><TeamSecurityCard /></Suspense>}
       </SceneFit>
     </div>
   );

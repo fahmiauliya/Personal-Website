@@ -21,7 +21,7 @@ export default function LiveCompaiCard({ eager = false }: { eager?: boolean }) {
     <div className="recent-work-card-viewport" ref={ref}>
       <SceneFit width={536} height={410.2040710449219}>
         {live && (
-          <Suspense fallback={null}>
+          <Suspense fallback={<span data-cover-ready="pending" />}>
             <CompaiCard position={position} values={{ Rive: { Scale: 0.89 } }} />
           </Suspense>
         )}

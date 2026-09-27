@@ -21,7 +21,7 @@ export default function LiveCareerAgentCard({ eager = false }: { eager?: boolean
   return (
     <div className="recent-work-card-viewport" ref={ref}>
       <SceneFit width={536} height={410.2040710449219}>
-        {live && <Suspense fallback={null}><CareerAgentCard position={position} /></Suspense>}
+        {live && <Suspense fallback={<span data-cover-ready="pending" />}><CareerAgentCard position={position} /></Suspense>}
       </SceneFit>
     </div>
   );

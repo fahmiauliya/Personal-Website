@@ -17,15 +17,21 @@ const categories: Record<WorkTab, { heading: string; cards: Project[]; placement
 
 export default function Works() {
   const tab = useWorkTab();
-  const { heading, cards, placement } = categories[tab];
+  return <section className="works-section" id="works">
+    <span className="works-navigation-trigger" id="works-navigation-trigger" aria-hidden="true" />
+    {(Object.keys(categories) as WorkTab[]).map(category => <WorksPanel key={category} category={category} active={category === tab} />)}
+  </section>;
+}
+
+function WorksPanel({ category, active }: { category: WorkTab; active: boolean }) {
+  const { heading, cards, placement } = categories[category];
   /** ASCII cards in order, for the sweep that travels across the grid one card after another. */
   const asciiCards = cards.filter(project => !project.href && project.coverImage).map(project => project.id);
   return (
-    <section className="works-section" id="works">
-      <span className="works-navigation-trigger" id="works-navigation-trigger" aria-hidden="true" />
+    <div className="works-panel" data-work-panel={category} data-active={active} aria-hidden={!active} inert={!active}>
       <h2 className="visually-hidden">{heading}</h2>
-      {/* Keyed by tab, so switching remounts the grid and it fades in with its own cards. */}
-      <div className="works-grid" id="works-panel" role="tabpanel" aria-labelledby={`nav-tab-${tab}`} key={tab}>
+      {/* Both panels retain their ready covers when the navigation tab changes. */}
+      <div className="works-grid" id={active ? "works-panel" : undefined} role="tabpanel" aria-labelledby={`nav-tab-${category}`}>
         {cards.map((project) => (
           <article className={`project-card ${placement}--${project.id}`} key={project.id}>
             {project.href
@@ -62,6 +68,6 @@ export default function Works() {
           </article>
         ))}
       </div>
-    </section>
+    </div>
   );
 }

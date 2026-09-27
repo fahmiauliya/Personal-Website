@@ -786,7 +786,8 @@ button.nav-circle { cursor: pointer; }
 
 @keyframes works-grid-in { from { opacity: 0; } }
 
-.project-card { position: relative; display: flex; min-width: 0; flex-direction: column; gap: 12px; }
+/* Keep the design-size cards in their grid slots on wide screens. */
+.project-card { position: relative; display: flex; width: 100%; max-width: 343px; min-width: 0; align-self: start; flex-direction: column; gap: 12px; }
 .project-card-link::after { position: absolute; inset: 0; z-index: 1; content: ''; }
 .project-card-link:focus-visible { outline: none; }
 .project-card-link:focus-visible::after { outline: 2px solid var(--color-ink); outline-offset: 4px; }
@@ -835,7 +836,9 @@ button.nav-circle { cursor: pointer; }
   position: relative;
   display: grid;
   width: 100%;
-  height: 300px;
+  height: auto;
+  aspect-ratio: 343 / 300;
+  flex: none;
   place-items: center;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.6);
@@ -1133,3 +1136,8 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   .intro-copy { font-size: 13px; }
   .contact-pill p { max-width: 180px; font-size: 12px; }
 }
+
+/* Inactive Works stays laid out for loading and fitting, without affecting page height. */
+.works-section { position: relative; }
+.works-panel[data-active='false'] { position: absolute; top: 0; left: 0; width: 100%; visibility: hidden; pointer-events: none; }
+.works-panel[data-active='false'] * { animation-play-state: paused !important; }

@@ -16,7 +16,7 @@ export default function LiveFinovaCard({ eager = false }: { eager?: boolean }) {
   return (
     <div className="recent-work-card-viewport" ref={ref}>
       <SceneFit width={536} height={410.2040710449219}>
-        {live && <Suspense fallback={null}><FinovaCard position={position} /></Suspense>}
+        {live && <Suspense fallback={<span data-cover-ready="pending" />}><FinovaCard position={position} /></Suspense>}
       </SceneFit>
     </div>
   );

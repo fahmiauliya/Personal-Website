@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 
 // Lays out a scene at its fixed design size (Figma px) and scales it uniformly to cover
 // its box, cropping the overflow, centred: the same maths as MotionPreview's `cover` fit,
@@ -7,14 +7,15 @@ export default function SceneFit({ width, height, children }: { width: number; h
   const viewportRef = useRef<HTMLDivElement>(null);
   const [transform, setTransform] = useState('none');
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
-    const observer = new ResizeObserver(([entry]) => {
-      const { width: boxWidth, height: boxHeight } = entry.contentRect;
+    const fit = (boxWidth: number, boxHeight: number) => {
       const scale = Math.max(boxWidth / width, boxHeight / height);
       setTransform(`translate(${(boxWidth - width * scale) / 2}px, ${(boxHeight - height * scale) / 2}px) scale(${scale})`);
-    });
+    };
+    fit(viewport.clientWidth, viewport.clientHeight);
+    const observer = new ResizeObserver(([entry]) => fit(entry.contentRect.width, entry.contentRect.height));
     observer.observe(viewport);
     return () => observer.disconnect();
   }, [height, width]);

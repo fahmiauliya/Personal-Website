@@ -46,7 +46,7 @@ function HeroAnimation({ time }: { time?: number }) {
     if (rive && driven) rive.scrub(TIMELINE, Math.min(TIMELINE_SECONDS, Math.max(0, time)));
   }, [rive, driven, time]);
 
-  return <RiveComponent className={styles.riveCanvas} />;
+  return <RiveComponent className={styles.riveCanvas} data-cover-ready={rive ? "ready" : "pending"} />;
 }
 
 /** `position` is the time in Timeline 1, in seconds, when the lab's timeline drives it. */

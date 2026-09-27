@@ -20,7 +20,7 @@ export default function LiveAgentWalkthroughCard({ eager = false }: { eager?: bo
   return (
     <div className="recent-work-card-viewport" ref={ref}>
       <SceneFit width={536} height={410.2040710449219}>
-        {live && <Suspense fallback={null}><AgentWalkthroughCard values={BACKGROUND_VALUES} /></Suspense>}
+        {live && <Suspense fallback={<span data-cover-ready="pending" />}><AgentWalkthroughCard values={BACKGROUND_VALUES} /></Suspense>}
       </SceneFit>
     </div>
   );

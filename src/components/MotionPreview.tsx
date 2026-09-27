@@ -86,6 +86,7 @@ export default function MotionPreview({ scene, fit = 'fill', eager = false }: { 
   useEffect(() => {
     const stage = stageRef.current;
     if (!stage || !live) return;
+    stage.dataset.coverReady = 'pending';
     const shadow = stage.shadowRoot ?? stage.attachShadow({ mode: 'open' });
     const container = document.createElement('div');
     let motion: ReturnType<MotionBundle['mount']> | undefined;
@@ -102,11 +103,13 @@ export default function MotionPreview({ scene, fit = 'fill', eager = false }: { 
       }
       shadow.append(container);
       motion = motions.mount(container, scene.id);
-    }).catch(() => {});
+      void motion.ready.then(() => { if (!cancelled) stage.dataset.coverReady = 'ready'; }).catch(() => { if (!cancelled) stage.dataset.coverReady = 'error'; });
+    }).catch(() => { if (!cancelled) stage.dataset.coverReady = 'error'; });
     return () => {
       cancelled = true;
       motion?.unmount();
       container.remove();
+      delete stage.dataset.coverReady;
     };
   }, [live, scene.id]);
 

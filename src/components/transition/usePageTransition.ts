@@ -1,5 +1,6 @@
 import { useCallback, useRef, useState, type RefObject } from 'react';
 import { flushSync } from 'react-dom';
+import { pinViewportLayers } from './pinViewportLayers';
 import type { PuzzleHandle } from './PuzzleOverlay';
 
 export type PageMotion = {
@@ -48,17 +49,46 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
   const running = useRef(false);
   const [busy, setBusy] = useState(startCovered);
   const lockedOverflow = useRef<string | null>(null);
+  const lockedPadding = useRef<{ value: string; priority: string } | null>(null);
+  const releaseFixed = useRef<(() => void) | null>(null);
+  const restoreFixed = useCallback(() => {
+    releaseFixed.current?.();
+    releaseFixed.current = null;
+  }, []);
+  const prepareZoom = useCallback((page: HTMLElement) => {
+    // This synchronous reset is either before the first animation frame or under
+    // the closed puzzle. Measure viewport-fixed layers before the containing block changes.
+    page.style.transform = '';
+    restoreFixed();
+    releaseFixed.current = pinViewportLayers(page);
+  }, [restoreFixed]);
 
   const lock = useCallback(() => {
     const scroll = scroller.current;
     if (!scroll || lockedOverflow.current !== null) return;
     lockedOverflow.current = scroll.style.overflow;
+    lockedPadding.current = {
+      value: scroll.style.getPropertyValue('padding-right'),
+      priority: scroll.style.getPropertyPriority('padding-right'),
+    };
+    const width = scroll.getBoundingClientRect().width;
+    const padding = parseFloat(getComputedStyle(scroll).paddingRight) || 0;
     scroll.style.overflow = 'hidden';
+    // Reserve only the space actually freed by hiding a desktop scrollbar.
+    // Overlay scrollbars free no space, so their layout stays untouched.
+    const gutter = scroll.getBoundingClientRect().width - width;
+    if (gutter > 0) scroll.style.paddingRight = `${padding + gutter}px`;
   }, [scroller]);
   const unlock = useCallback(() => {
     const scroll = scroller.current;
-    if (scroll && lockedOverflow.current !== null) scroll.style.overflow = lockedOverflow.current;
+    if (scroll && lockedOverflow.current !== null) {
+      scroll.style.overflow = lockedOverflow.current;
+      const padding = lockedPadding.current;
+      if (padding?.value) scroll.style.setProperty('padding-right', padding.value, padding.priority);
+      else scroll.style.removeProperty('padding-right');
+    }
     lockedOverflow.current = null;
+    lockedPadding.current = null;
   }, [scroller]);
 
   // Zoom about the middle of what is on screen, wherever the page is scrolled to.
@@ -66,17 +96,27 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
     const scroll = scroller.current;
     return `50% ${(scroll?.scrollTop ?? 0) + (scroll?.clientHeight ?? page.clientHeight) / 2}px`;
   }, [scroller]);
-  const small = () => ({ transform: `scale(${live.current.scale})`, opacity: live.current.opacity });
-  const full = { transform: 'scale(1)', opacity: 1 };
+  // Omit transform from the animation entirely at scale 1: even a none → none
+  // transform animation establishes a containing block for fixed descendants.
+  const small = () => live.current.scale === 1
+    ? { opacity: live.current.opacity }
+    : { transform: `scale(${live.current.scale})`, opacity: live.current.opacity };
+  const full = () => live.current.scale === 1
+    ? { opacity: 1 }
+    : { transform: 'scale(1)', opacity: 1 };
 
   /** Holds the page small behind a closed overlay: the state enter() starts from. */
   const hold = useCallback(() => {
     const page = stage.current;
     if (!page) return;
+    // Under the closed puzzle, measure the incoming fixed layers with the
+    // normal scrollbar present, then lock and zoom in the same frame.
+    unlock();
+    prepareZoom(page);
     lock();
     page.style.transformOrigin = origin(page);
     Object.assign(page.style, small());
-  }, [stage, lock, origin]);
+  }, [stage, lock, unlock, origin, prepareZoom]);
 
   /** The puzzle opens while the page (held small) comes toward the viewer. */
   const enter = useCallback(async () => {
@@ -91,23 +131,25 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
       page.style.transform = '';
       page.style.opacity = '';
       page.style.transformOrigin = '';
+      restoreFixed();
       unlock();
       running.current = false;
       setBusy(false);
       return;
     }
     await new Promise(requestAnimationFrame);
-    const animation = page.animate([small(), full], { duration: puzzle.duration(), easing: live.current.easing, fill: 'forwards' });
+    const animation = page.animate([small(), full()], { duration: puzzle.duration(), easing: live.current.easing, fill: 'forwards' });
     await puzzle.reveal();
     await animation.finished.catch(() => undefined);
     page.style.transform = '';
     page.style.opacity = '';
     page.style.transformOrigin = '';
     animation.cancel();
+    restoreFixed();
     unlock();
     running.current = false;
     setBusy(false);
-  }, [stage, overlay, hold, unlock]);
+  }, [stage, overlay, hold, unlock, restoreFixed]);
 
   // Prepare the destination (e.g. its anchor position) while the puzzle is closed.
   const navigate = useCallback(async (next: Page, prepare?: () => void | Promise<void>) => {
@@ -123,24 +165,28 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
     }
     running.current = true;
     setBusy(true);
+    // Capture fixed layers before hiding the scrollbar changes viewport width.
+    prepareZoom(page);
     lock();
 
     // Leave: zoom away while the puzzle closes.
     page.style.transformOrigin = origin(page);
-    const leave = page.animate([full, small()], { duration: puzzle.duration(), easing: live.current.easing, fill: 'forwards' });
+    const leave = page.animate([full(), small()], { duration: puzzle.duration(), easing: live.current.easing, fill: 'forwards' });
     await puzzle.cover(captionFor.current?.(next));
     await leave.finished.catch(() => undefined);
 
     // Fully covered: change the page. The new one mounts small, behind the puzzle.
     Object.assign(page.style, small());
     leave.cancel();
+    page.style.transform = '';
+    restoreFixed();
     flushSync(() => setPage(next));
     if (scroll) scroll.scrollTop = 0;
     await prepare?.();
     await new Promise(resolve => setTimeout(resolve, live.current.holdMs));
 
     await enter();
-  }, [setPage, stage, scroller, overlay, lock, origin, enter]);
+  }, [setPage, stage, scroller, overlay, lock, origin, enter, prepareZoom, restoreFixed]);
 
   return { navigate, enter, hold, busy };
 }

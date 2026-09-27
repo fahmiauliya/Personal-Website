@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { isProjectPath, normalizePath } from '../projectTransition';
 import { firstViewportReady } from './firstViewportReady';
+import { worksReady } from './worksReady';
 import { PuzzleHandle } from './PuzzleOverlay';
 import { usePageTransition } from './usePageTransition';
 
@@ -30,6 +31,7 @@ const PUZZLE_SETTINGS = {
   revealThrough: 1,
   easing: 'cubic-bezier(0.76, 0, 0.24, 1)',
 };
+// Original zoom timing; fixed descendants are compensated while the stage scales.
 const PAGE_MOTION = { scale: 0.96, opacity: 0.9, holdMs: 120, easing: PUZZLE_SETTINGS.easing };
 
 // "First load" means the first time this browser tab visits the site, not every reload:
@@ -104,7 +106,7 @@ export function useSiteTransition(path: string, setPath: (path: string) => void)
     let cancelled = false;
     const viewport = stage.current;
     if (!viewport) return;
-    firstViewportReady(viewport, { onProgress: share => { progress.current = share; } }).then(() => {
+    firstViewportReady(viewport, { extra: [worksReady()], capMs: 12500, onProgress: share => { progress.current = share; } }).then(() => {
       if (!cancelled) setReady(true);
     });
     return () => { cancelled = true; };
@@ -133,7 +135,11 @@ export function useSiteTransition(path: string, setPath: (path: string) => void)
       busyRef.current = true;
       try {
         await navigate(next, async () => {
-          if (!hash || disposed) return;
+          if (disposed) return;
+          if (!hash) {
+            if (next === '/') await worksReady();
+            return;
+          }
           let anchor: string;
           try { anchor = decodeURIComponent(hash.slice(1)); } catch { return; }
           const target = document.getElementById(anchor);
@@ -146,6 +152,8 @@ export function useSiteTransition(path: string, setPath: (path: string) => void)
           }
           const margin = parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
           window.scrollTo({ top: Math.max(0, top - margin), behavior: 'instant' });
+          // The destination viewport can contain more cards than the home hero did.
+          if (next === '/') await worksReady();
           // Let scroll-driven navigation and the intro handoff update behind the cover.
           await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
         });
