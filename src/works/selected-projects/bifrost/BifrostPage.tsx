@@ -1,4 +1,4 @@
-import attachmentIcon from './assets/attachment.svg';
+import attachmentIcon from '../../../assets/icons/attachment.svg';
 import ContactFooter from '../../../components/contact/ContactFooter';
 import MotionPreview from '../../../components/motion/MotionPreview';
 import BifrostHeader from './BifrostHeader';

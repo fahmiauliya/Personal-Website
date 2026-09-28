@@ -41,14 +41,14 @@ for (const motion of ['motion-01', 'motion-02', 'motion-03', 'motion-05', 'motio
   await cp(new URL(`dist/${motion}/`, root), new URL(`${motion}/`, root), { recursive: true });
 }
 // public/motions/ is the shared Motion Lab motion bundle (npm run sync:motions);
-// public/talentpluto/ holds the TalentPluto cover video and poster;
 // public/fonts/ holds fonts shared by the Beam gallery motions (TikTok Sans).
-for (const folder of ['motions/', 'talentpluto/', 'fonts/', 'rive/']) {
+for (const folder of ['motions/', 'fonts/']) {
   await rm(new URL(folder, root), { recursive: true, force: true });
   await cp(new URL(`dist/${folder}`, root), new URL(folder, root), { recursive: true });
 }
 // The per-motion iframe exports the bundle replaced.
-for (const legacy of ['bifrost/', 'beam/']) await rm(new URL(legacy, root), { recursive: true, force: true });
+// Folders earlier builds published that now ship inside assets/.
+for (const legacy of ['bifrost/', 'beam/', 'talentpluto/', 'rive/']) await rm(new URL(legacy, root), { recursive: true, force: true });
 await copyFile(new URL('dist/favicon.svg', root), new URL('favicon.svg', root));
 await copyFile(new URL('dist/index.html', root), new URL('index.html', root));
 // Every route needs its own entry page on a static host, or a direct link (or a reload)

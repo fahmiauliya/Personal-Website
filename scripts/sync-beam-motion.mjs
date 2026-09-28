@@ -37,7 +37,7 @@ try {
 
   await rm(output, { recursive: true, force: true });
   await cp(exportDir, output, { recursive: true });
-  await cp(join(website, 'src/assets/geist-regular.woff2'), join(output, 'assets/geist-regular.woff2'));
+  await cp(join(website, 'src/assets/fonts/geist-regular.woff2'), join(output, 'assets/geist-regular.woff2'));
   if (number === '03') {
     await cp(join(motionLab, 'public/assets/hero'), join(output, 'assets/hero'), { recursive: true });
   }

@@ -1,6 +1,6 @@
 /* Figma geometry converted to scoped CSS modules. */
-@font-face { font-family: 'Finova Outfit'; src: url('./assets/outfit-variable.ttf') format('truetype'); font-style: normal; font-weight: 100 900; font-display: swap; }
-@font-face { font-family: 'Finova Inter'; src: url('./assets/inter-variable.ttf') format('truetype'); font-style: normal; font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Finova Outfit'; src: url('../../../../assets/fonts/outfit-variable.ttf') format('truetype'); font-style: normal; font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Finova Inter'; src: url('../../../../assets/fonts/inter-variable.ttf') format('truetype'); font-style: normal; font-weight: 100 900; font-display: swap; }
 .card { width: 536px; height: 410.2040710449219px; position: relative; overflow: hidden; isolation: isolate; }
 .card, .card * { box-sizing: border-box; border-width: 0; border-style: solid; }
 .card p { margin: 0; }

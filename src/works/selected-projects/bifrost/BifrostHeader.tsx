@@ -1,11 +1,16 @@
+import { useRef } from 'react';
+import { useScrollRoll } from '../../../components/navigation/useScrollRoll';
 import CloseRing from '../../../components/navigation/CloseRing';
 import ProgressiveBlur from '../../../components/navigation/ProgressiveBlur';
 import homeIcon from '../../../assets/icons/logo.svg';
 import contactIcon from '../../../assets/icons/nav-contact.svg';
 import { CONTACT_MAILTO } from '../../../data/portfolio';
-import closeIcon from './assets/close.svg';
+import closeIcon from '../../../assets/icons/close.svg';
 
 export default function BifrostHeader() {
+  // The logo rolls with this page's scroll, like the main navigation's.
+  const logo = useRef<HTMLSpanElement>(null);
+  useScrollRoll(logo);
   return (
     <header className="bifrost-header" data-project-part="actions">
       <ProgressiveBlur />
@@ -13,7 +18,7 @@ export default function BifrostHeader() {
       <nav className="bifrost-header-center" aria-label="Project navigation">
         <a className="nav-circle nav-surface" href="/" aria-label="Back to introduction">
           <span className="nav-icon nav-icon--logo" aria-hidden="true">
-            <span><img src={homeIcon} alt="" /></span>
+            <span ref={logo}><img src={homeIcon} alt="" /></span>
           </span>
         </a>
         <div className="bifrost-header-title"><span>Bifrost</span></div>

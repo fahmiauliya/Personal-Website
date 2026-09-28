@@ -36,6 +36,7 @@ import lastingLearnCover from '../works/selected-projects/lasting-learn/cover.jp
 import almanacMarketCover from '../works/selected-projects/almanac-market/cover.jpg';
 // TalentPluto card image: a still of its cover video, from Motion Lab website-content/shared/assets.
 import talentPlutoCover from '../works/selected-projects/talentpluto/cover.jpg';
+import talentPlutoVideo from '../works/selected-projects/talentpluto/cover.mp4';
 // Eden AI (7) and Tika Security (8) covers: Figma Portfolio-2026 nodes 271:309 and 272:488 at 4x, resized for the web (600px tall, 2x the card).
 import edenAiCover from '../works/selected-projects/eden-ai/cover.jpg';
 import tikaSecurityCover from '../works/selected-projects/tika-security/cover.jpg';
@@ -60,7 +61,7 @@ export const projects: Project[] = Array.from({ length: 8 }, (_, index) => {
     cover: projectNumber === 1 ? beamProject.cover : projectNumber === 2 ? bifrostProject.cover : undefined,
     coverImage: projectNumber === 3 ? lastingLearnCover : projectNumber === 4 ? talentPlutoCover : projectNumber === 5 ? aveaCover : projectNumber === 6 ? almanacMarketCover : projectNumber === 7 ? edenAiCover : projectNumber === 8 ? tikaSecurityCover : undefined,
     coverImageFit: projectNumber === 3 || projectNumber === 6 ? 'width' : undefined,
-    coverVideo: projectNumber === 4 ? '/talentpluto/cover.mp4' : undefined,
+    coverVideo: projectNumber === 4 ? talentPlutoVideo : undefined,
   };
 });
 

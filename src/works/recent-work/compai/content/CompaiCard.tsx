@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Alignment, Fit, Layout, RuntimeLoader, useRive } from '@rive-app/react-canvas';
+import riveWasm from '@rive-app/canvas/rive.wasm?url';
 import heroAnimation from './assets/compai_hero_animation.riv?url';
 import styles from './CompaiCard.module.css';
 
@@ -8,12 +9,12 @@ import styles from './CompaiCard.module.css';
 // "Timeline 1"), centred and fitted inside the card. The .riv here is patched so its gray
 // background fill stays transparent and the card's #979797 shows through (see README).
 
-// Site addition: Rive fetches its runtime (~2MB of WASM) from the unpkg CDN by default —
-// a slow external round trip, and part of why the detail cover's Rive canvas used to take
-// most of a second to draw its first frame after opening. public/rive/rive.wasm is the
-// same file, copied from this package's own node_modules (a different Rive version than
-// Motion Lab's shared motion bundle, which sets its own copy at /motions/rive.wasm).
-RuntimeLoader.setWasmUrl('/rive/rive.wasm');
+// Site addition: Rive fetches its runtime (~2MB of WASM) from the unpkg CDN by default, a
+// slow external round trip. The build serves the installed package's own copy instead
+// (@rive-app/canvas, pinned by @rive-app/react-canvas), so it always matches the runtime
+// and there is no second copy to keep in sync. Motion Lab's shared motion bundle ships its
+// own, different Rive version at /motions/rive.wasm.
+RuntimeLoader.setWasmUrl(riveWasm);
 
 /** Rive dial defaults. Scale 1 fits the artboard to the card; below 1 shrinks it, centred. */
 export const riveDefaults = { Scale: 1 };

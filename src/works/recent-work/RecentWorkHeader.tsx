@@ -1,13 +1,18 @@
+import { useRef } from 'react';
+import { useScrollRoll } from '../../components/navigation/useScrollRoll';
 import CloseRing from '../../components/navigation/CloseRing';
 import ProgressiveBlur from '../../components/navigation/ProgressiveBlur';
 import homeIcon from '../../assets/icons/logo.svg';
 import contactIcon from '../../assets/icons/nav-contact.svg';
 import { CONTACT_MAILTO } from '../../data/portfolio';
-import closeIcon from '../selected-projects/beam/assets/close.svg';
+import closeIcon from '../../assets/icons/close.svg';
 
 // Same shell as BeamHeader/BifrostHeader, parameterized by title, so every Recent Work
 // project shares one header instead of duplicating it per project.
 export default function RecentWorkHeader({ title }: { title: string }) {
+  // The logo rolls with this page's scroll, like the main navigation's.
+  const logo = useRef<HTMLSpanElement>(null);
+  useScrollRoll(logo);
   return (
     <header className="recent-work-header" data-project-part="actions">
       <ProgressiveBlur />
@@ -15,7 +20,7 @@ export default function RecentWorkHeader({ title }: { title: string }) {
       <nav className="recent-work-header-center" aria-label="Project navigation">
         <a className="nav-circle nav-surface" href="/" aria-label="Back to introduction">
           <span className="nav-icon nav-icon--logo" aria-hidden="true">
-            <span><img src={homeIcon} alt="" /></span>
+            <span ref={logo}><img src={homeIcon} alt="" /></span>
           </span>
         </a>
         <div className="recent-work-header-title"><span>{title}</span></div>
