@@ -1,0 +1,62 @@
+{
+  "values": {
+    "Shape": {
+      "Size": 0.94,
+      "Width": 1.18,
+      "Height": 1.15,
+      "Depth": 1.15,
+      "OffsetX": 0,
+      "OffsetY": 0
+    },
+    "Logo": {
+      "Size": 0.5,
+      "OffsetX": 0,
+      "OffsetY": 0
+    },
+    "Glass": {
+      "Index": 2.09,
+      "Dispersion": 0.0065,
+      "Distance": 0.2,
+      "Milk": 0.38,
+      "Tint": "#dfe4e8",
+      "Reflection": 0.55,
+      "Sheen": 0.35,
+      "Edges": 0,
+      "Rim": 0,
+      "Round": 0.6,
+      "Blur": 0
+    },
+    "Light": {
+      "Glow": 0,
+      "Inner": 0.44,
+      "Glints": 0
+    },
+    "Liquid": {
+      "Ripple": 0.18,
+      "Noise": 0,
+      "Flow": 0.69
+    },
+    "Shadow": {
+      "Shadow": 0.025,
+      "Caustic": 0,
+      "Drop": 0.3
+    },
+    "Rotation": {
+      "Yaw": 45,
+      "Pitch": 0,
+      "Roll": 0
+    },
+    "Motion": {
+      "Spin": 0.205,
+      "Sway": 0.4,
+      "Speed": 0.22,
+      "Scroll": 0.0045,
+      "Lean": 0.225,
+      "Cant": 0.4,
+      "Bob": 0.175,
+      "Float": 0.7,
+      "PointerRoll": 0,
+      "PointerPitch": 0
+    }
+  }
+}

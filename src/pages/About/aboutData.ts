@@ -7,28 +7,34 @@ export type ExperienceItem = {
 
 export const experience: ExperienceItem[] = [
   {
-    year: '2026',
-    company: 'Natuno.Lab',
-    period: '12/12 - 12/12',
-    role: 'Product Designer | UI/UX Designer',
+    year: '2025–2026',
+    company: 'Blissful Design',
+    period: '06/2025 – 09/2026',
+    role: 'Full-time • Product Design',
   },
   {
-    year: '2026',
-    company: 'Natuno.Lab',
-    period: '12/12 - 12/12',
-    role: 'Product Designer | UI/UX Designer',
+    year: '2025',
+    company: 'Blissful Design',
+    period: '04/2025 – 06/2025',
+    role: 'Part-time • Product Design',
   },
   {
-    year: '2026',
-    company: 'Natuno.Lab',
-    period: '12/12 - 12/12',
-    role: 'Product Designer | UI/UX Designer',
+    year: '2024–2025',
+    company: 'Natuno',
+    period: '07/2024 – 06/2025',
+    role: 'Product Design',
   },
   {
-    year: '2026',
+    year: '2024',
+    company: 'Nija works',
+    period: '05/2024 – 06/2024',
+    role: 'Interface Designer',
+  },
+  {
+    year: '2021–2023',
     company: 'Illiyin Studio',
-    period: '12/12 - 12/12',
-    role: 'Fulltime • User Interface Designer',
+    period: '10/2021 – 10/2023',
+    role: 'User Interface Designer',
   },
 ];
 

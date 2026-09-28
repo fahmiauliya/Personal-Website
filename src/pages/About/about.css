@@ -100,7 +100,7 @@
 .experience-section {
   display: flex;
   width: 100%;
-  height: 540px;
+  height: 608px;
   justify-content: center;
   padding-block: 120px;
   overflow: hidden;
@@ -108,7 +108,7 @@
 
 .experience-content {
   width: 852px;
-  height: 300px;
+  height: 368px;
   padding-inline: 32px;
 }
 
@@ -123,20 +123,20 @@
 .experience-timeline {
   display: flex;
   width: 788px;
-  height: 260px;
+  height: 328px;
   margin-top: 20px;
   align-items: flex-start;
 }
 
 .experience-track {
   width: 20px;
-  height: 228px;
+  height: 296px;
   flex: 0 0 20px;
 }
 
 .experience-list {
   width: 768px;
-  height: 260px;
+  height: 328px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -174,7 +174,8 @@
   display: grid;
   width: 100%;
   height: 20px;
-  grid-template-columns: minmax(0, 1fr) 166px;
+  /* Align dates with the fourth skill card label: two 194px column steps + its border. */
+  grid-template-columns: 388.5px minmax(0, 1fr);
   align-items: center;
 }
 
@@ -635,6 +636,8 @@
     height: auto;
   }
 
+  .experience-heading { grid-template-columns: minmax(0, 1fr) 166px; }
+  .about-copy-break { display: none; }
   .introduction-content { gap: 64px; }
   .experience-content { padding-inline: 0; }
   .experience-content > h2 { padding-inline: 20px; }
@@ -704,7 +707,6 @@
   .experience-section { padding-block: 72px; }
   .introduction-label { width: 100%; }
   .about-copy { height: auto; }
-  .about-copy p br:first-of-type { display: none; }
 
   .experience-heading {
     display: flex;
@@ -721,4 +723,18 @@
     padding-inline: 8px;
     font-size: 11px;
   }
+}
+
+.about-copy .about-studio-link {
+  color: inherit;
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: currentColor;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.about-copy .about-studio-link:focus-visible {
+  outline: 1px dashed currentColor;
+  outline-offset: 4px;
 }

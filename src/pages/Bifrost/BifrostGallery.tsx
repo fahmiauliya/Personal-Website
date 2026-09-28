@@ -12,11 +12,7 @@ function MotionFrame({ id }: { id: MotionId }) {
       style={{ '--frame-width': slot.width, '--frame-ratio': `${slot.width} / ${slot.height}`, background: slot.background } as CSSProperties}
     >
       <MotionPreview scene={slot.motion} />
-      {slot.label && (
-        <figcaption className={`bifrost-motion-label bifrost-motion-label--${slot.label.color}`} style={{ top: `${slot.label.top / slot.height * 100}%` }}>
-          Motion {id.slice(-2)}
-        </figcaption>
-      )}
+
     </figure>
   );
 }

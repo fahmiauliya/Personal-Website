@@ -21,20 +21,27 @@ export default function AboutPage() {
             <div className="about-copy">
               <p>I’m a product designer focused on simplifying complex product problems into clear solutions.</p>
               <p>
-                I usually start by understanding the problem, shaping the flow, and designing the interface. I stay involved
-                beyond Figma through prototyping, motion, design systems, code implementation, and Framer implementation.
+                I usually start by understanding the problem, shaping the flow, and designing the interface.{' '}
+                <br className="about-copy-break" />
+                I stay involved beyond Figma through prototyping, motion, design systems, code implementation,{' '}
+                <br className="about-copy-break" />
+                and Framer implementation.
               </p>
               <p>
-                Working closely with engineering helps me test ideas earlier, understand constraints, and make design
-                decisions that are closer to what actually gets shipped.
+                Working closely with engineering helps me test ideas earlier,{' '}
+                <br className="about-copy-break" />
+                understand constraints, and make design decisions that are closer to what actually gets shipped.
               </p>
               <p>
-                Previously, I worked at <strong>Blissful Design</strong>, where I worked across websites, web apps, mobile products,
-                brand identity, and other digital experiences.
+                Previously, I worked at{' '}
+                <a className="about-studio-link" href="https://blissful-studio.com/" target="_blank" rel="noopener noreferrer">Blissful Studio</a>,{' '}
+                <br className="about-copy-break" />
+                where I worked across websites, web apps, mobile products, brand identity, and other digital experiences.
               </p>
               <p>
-                More recently, I’ve been focused on product design, design systems, interaction, and design-to-code —
-                finding better ways for design and engineering to work together.
+                More recently, I’ve been focused on product design,{' '}
+                <br className="about-copy-break" />
+                design systems, interaction, and design-to-code, finding better ways for design and engineering to work together.
               </p>
             </div>
           </div>

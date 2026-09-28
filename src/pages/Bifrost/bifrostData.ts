@@ -3,7 +3,7 @@ import type { MotionScene } from '../../components/MotionPreview';
 // Placeholder copy duplicated from Beam; replace it with Bifrost content.
 export const bifrostProject = {
   title: 'Bifrost',
-  category: 'Website, Web app (Design + Implementation',
+  category: 'Website Design + Implementation',
   details: [
     { label: 'Year', lines: ['2022'] },
     { label: 'Role', lines: ['Product Designer + Developer (Vibe Code)'] },

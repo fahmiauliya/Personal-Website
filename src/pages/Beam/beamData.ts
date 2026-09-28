@@ -9,7 +9,7 @@ import content13Artwork from '../../assets/projects/beam/content-13.svg';
 // empty media areas as supplied; replace them here when final assets are ready.
 export const beamProject = {
   title: 'Beam',
-  category: 'Website, Web app (Design + Implementation',
+  category: 'Logo, Website, Web App Design + Implementation',
   details: [
     { label: 'Year', lines: ['2022'] },
     { label: 'Role', lines: ['Product Designer + Developer (Vibe Code)'] },

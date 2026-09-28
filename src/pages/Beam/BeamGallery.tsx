@@ -11,7 +11,6 @@ import UploadProgressLoop from './motion-14';
 
 function Visual({ visual }: { visual: BeamVisual }) {
   const { preview } = visual;
-  const labelStyle = { top: `${visual.labelTop / visual.height * 100}%` };
   return (
     <figure id={`content-${String(visual.id).padStart(2, '0')}`} className={`beam-visual${visual.dark ? ' beam-visual--dark' : ''}`} style={{ '--visual-ratio': `${visual.width} / ${visual.height}` } as CSSProperties}>
       {visual.artwork && <img className="beam-visual-artwork" src={visual.artwork} alt="Beam project illustration" width={visual.width} height={visual.height} />}
@@ -31,8 +30,6 @@ function Visual({ visual }: { visual: BeamVisual }) {
           {visual.id === 1 || visual.id === 2 || visual.id === 3 || visual.id === 5 || visual.id === 6 ? <BeamMotionPreview motion={visual.id} /> : preview.src && <img src={preview.src} alt={preview.alt ?? ''} loading="lazy" width={preview.width} height={preview.height} />}
         </div>
       )}
-      {visual.id !== 1 && visual.id !== 2 && visual.id !== 3 && visual.id !== 5 && visual.id !== 6 && visual.id !== 14 && !visual.artwork && <figcaption className="beam-visual-label" style={labelStyle}>img {visual.id}</figcaption>}
-      {visual.overlappingLabel && <span className="beam-visual-label beam-visual-label--overlap" style={labelStyle} aria-hidden="true">{visual.overlappingLabel}</span>}
     </figure>
   );
 }
