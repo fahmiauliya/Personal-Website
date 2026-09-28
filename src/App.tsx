@@ -1,19 +1,19 @@
 import { useEffect, useLayoutEffect, useState } from 'react';
-import ContactFooter from './components/ContactFooter';
-import Header from './components/Header';
-import Intro from './components/Intro';
-import Works from './components/Works';
-import { useIntroCoverMotion } from './components/introCoverMotion';
-import { isProjectPath, normalizePath, useProjectTransitions } from './components/projectTransition';
+import ContactFooter from './components/contact/ContactFooter';
+import Header from './components/navigation/Header';
+import Intro from './pages/home/Intro';
+import Works from './pages/home/Works';
+import { useIntroCoverMotion } from './pages/home/introCoverMotion';
+import { isProjectPath, normalizePath, useProjectTransitions } from './components/transition/projectTransition';
 import { handoffDefaults } from './components/transition/HandoffLogo';
 import { LoaderMark } from './components/transition/LoaderMark';
 import { PuzzleOverlay } from './components/transition/PuzzleOverlay';
 import { useSiteTransition } from './components/transition/useSiteTransition';
-import AboutPage from './pages/About/AboutPage';
-import BeamPage from './pages/Beam/BeamPage';
-import BifrostPage from './pages/Bifrost/BifrostPage';
-import RecentWorkPage from './pages/RecentWork/RecentWorkPage';
-import { recentWorkProjectBySlug } from './pages/RecentWork/recentWorkData';
+import AboutPage from './pages/about/AboutPage';
+import BeamPage from './works/selected-projects/beam/BeamPage';
+import BifrostPage from './works/selected-projects/bifrost/BifrostPage';
+import RecentWorkPage from './works/recent-work/RecentWorkPage';
+import { recentWorkProjectBySlug } from './works/recent-work/recentWorkData';
 
 function PortfolioPage() {
   useIntroCoverMotion();

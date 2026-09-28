@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { isProjectPath, normalizePath } from '../projectTransition';
-import { markFirstLoadRevealed } from '../firstLoad';
+import { isProjectPath, normalizePath } from './projectTransition';
+import { markFirstLoadRevealed } from './firstLoad';
 import { firstViewportReady } from './firstViewportReady';
 import { worksReady } from './worksReady';
 import { PuzzleHandle } from './PuzzleOverlay';

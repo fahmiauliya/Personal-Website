@@ -1,7 +1,7 @@
 import { forwardRef, useImperativeHandle, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { HandoffLogo, type HandoffHandle, type HandoffSettings } from './HandoffLogo';
 import styles from './PuzzleOverlay.module.css';
-import { grain } from '../surfaceGrain';
+import { grain } from './surfaceGrain';
 
 /** Timing and shape of the puzzle. Times in ms. */
 export type PuzzleSettings = {

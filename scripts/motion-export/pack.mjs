@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 // Builds every Motion Lab frame the website shows into ONE motion bundle at
 // public/motions/: one copy of React and one Rive runtime shared by all of them, with
 // each motion in its own chunk that loads only when the page mounts it. The website
-// mounts motions straight into the page (src/components/MotionPreview.tsx), inside a
+// mounts motions straight into the page (src/components/motion/MotionPreview.tsx), inside a
 // shadow root so its CSS can't reach them, instead of one iframe (and one React and
 // Rive per motion) each.
 //

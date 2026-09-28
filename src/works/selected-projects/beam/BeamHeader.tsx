@@ -1,0 +1,30 @@
+import CloseRing from '../../../components/navigation/CloseRing';
+import ProgressiveBlur from '../../../components/navigation/ProgressiveBlur';
+import homeIcon from '../../../assets/icons/logo.svg';
+import contactIcon from '../../../assets/icons/nav-contact.svg';
+import { CONTACT_MAILTO } from '../../../data/portfolio';
+import closeIcon from './assets/close.svg';
+
+export default function BeamHeader() {
+  return (
+    <header className="beam-header" data-project-part="actions">
+      <ProgressiveBlur />
+      <span className="beam-header-spacer" aria-hidden="true" />
+      <nav className="beam-header-center" aria-label="Project navigation">
+        <a className="nav-circle nav-surface" href="/" aria-label="Back to introduction">
+          <span className="nav-icon nav-icon--logo" aria-hidden="true">
+            <span><img src={homeIcon} alt="" /></span>
+          </span>
+        </a>
+        <div className="beam-header-title"><span>Beam</span></div>
+        <a className="nav-circle nav-surface" href={CONTACT_MAILTO} aria-label="Send an email">
+          <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={contactIcon} alt="" /></span>
+        </a>
+      </nav>
+      <a className="beam-close" href="/#works" data-project-close aria-label="Close project and return to Works">
+        <CloseRing />
+        <img src={closeIcon} alt="" width="14" height="14" />
+      </a>
+    </header>
+  );
+}

@@ -3,8 +3,8 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 
 // Dev server only: "Save to local" in the footer glass's parameter panel
-// (src/components/FooterGlassDials.tsx) posts its values here, and they are written to
-// src/components/footerGlass.settings.json, which the site reads. Same shape as Motion
+// (src/components/contact/FooterGlassDials.tsx) posts its values here, and they are written to
+// src/components/contact/footerGlass.settings.json, which the site reads. Same shape as Motion
 // Lab's settings files: groups of numbers, or colours as #rrggbb.
 function footerGlassSettingsPlugin() {
   return {
@@ -38,7 +38,7 @@ function footerGlassSettingsPlugin() {
               values[group][name] = value;
             }
           }
-          const target = fileURLToPath(new URL('src/components/footerGlass.settings.json', import.meta.url));
+          const target = fileURLToPath(new URL('src/components/contact/footerGlass.settings.json', import.meta.url));
           await writeFile(target, `${JSON.stringify({ values }, null, 2)}\n`);
           res.writeHead(200, { 'Content-Type': 'application/json' }).end('{"ok":true}');
         } catch (error) {

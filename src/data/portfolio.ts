@@ -24,21 +24,21 @@ export interface SocialLink {
 }
 
 import type { ComponentType } from 'react';
-import type { MotionScene } from '../components/MotionPreview';
-import { beamProject } from '../pages/Beam/beamData';
-import { bifrostProject } from '../pages/Bifrost/bifrostData';
-import { recentWorkPath, recentWorkProjects } from '../pages/RecentWork/recentWorkData';
+import type { MotionScene } from '../components/motion/MotionPreview';
+import { beamProject } from '../works/selected-projects/beam/beamData';
+import { bifrostProject } from '../works/selected-projects/bifrost/bifrostData';
+import { recentWorkPath, recentWorkProjects } from '../works/recent-work/recentWorkData';
 // Avea Robotics cover: ~/Documents/avea-robotics-2.jpg, resized for the web (600px tall, 2x the card).
-import aveaCover from '../assets/projects/avea/cover.jpg';
+import aveaCover from '../works/selected-projects/avea/cover.jpg';
 // Lasting Learn cover: Figma Portfolio-2026 node 265:4229 at 4x, resized for the web (600px tall, 2x the card).
-import lastingLearnCover from '../assets/projects/lasting-learn/cover.jpg';
+import lastingLearnCover from '../works/selected-projects/lasting-learn/cover.jpg';
 // Almanac Market cover: Figma Portfolio-2026 node 267:4640 at 4x, resized for the web (600px tall, 2x the card).
-import almanacMarketCover from '../assets/projects/almanac-market/cover.jpg';
+import almanacMarketCover from '../works/selected-projects/almanac-market/cover.jpg';
 // TalentPluto card image: a still of its cover video, from Motion Lab website-content/shared/assets.
-import talentPlutoCover from '../assets/projects/talentpluto/cover.jpg';
+import talentPlutoCover from '../works/selected-projects/talentpluto/cover.jpg';
 // Eden AI (7) and Tika Security (8) covers: Figma Portfolio-2026 nodes 271:309 and 272:488 at 4x, resized for the web (600px tall, 2x the card).
-import edenAiCover from '../assets/projects/eden-ai/cover.jpg';
-import tikaSecurityCover from '../assets/projects/tika-security/cover.jpg';
+import edenAiCover from '../works/selected-projects/eden-ai/cover.jpg';
+import tikaSecurityCover from '../works/selected-projects/tika-security/cover.jpg';
 import githubIcon from '../assets/icons/social-github.svg';
 import linkedinIcon from '../assets/icons/social-linkedin.svg';
 import xIcon from '../assets/icons/social-x.svg';

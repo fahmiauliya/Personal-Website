@@ -47,7 +47,7 @@ p, h1, h2, h3 { margin: 0; }
   background: var(--color-canvas);
 }
 
-/* Project detail layer (src/components/projectTransition.ts). The detail page opens
+/* Project detail layer (src/components/transition/projectTransition.ts). The detail page opens
    over the home page, which stays mounted and locked at its scroll position. */
 .project-layer {
   position: fixed;
@@ -61,7 +61,7 @@ p, h1, h2, h3 { margin: 0; }
 
 html.project-open { overflow: hidden; }
 
-/* Project open/close (src/components/projectTransition.ts), tuned in Motion Lab
+/* Project open/close (src/components/transition/projectTransition.ts), tuned in Motion Lab
    (website-content/motion-project-open/settings.json). One 1300ms timeline, one ease,
    overlapping layers, in % of the total:
 
@@ -164,7 +164,7 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
 /* As the Works surface covers it, the intro recedes slightly: its content column moves
    up and shrinks, and the full-width layer dims. Only the column is scaled, so the
    layer's full-bleed background never pulls in from the viewport edges.
-   --intro-cover (0 → 1) is written by src/components/introCoverMotion.ts. */
+   --intro-cover (0 → 1) is written by src/pages/home/introCoverMotion.ts. */
 .intro-layer {
   --intro-cover: 0;
   position: fixed;
@@ -840,7 +840,7 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   transform: translate(-50%, -50%);
 }
 
-/* Motions from the shared bundle (src/components/MotionPreview.tsx) fill their box: the
+/* Motions from the shared bundle (src/components/motion/MotionPreview.tsx) fill their box: the
    stage is the frame at its design size, scaled from its top-left corner. */
 .motion-preview { position: absolute; inset: 0; overflow: hidden; }
 .motion-preview-stage { position: absolute; top: 0; left: 0; display: block; overflow: hidden; transform-origin: top left; pointer-events: none; }
@@ -863,7 +863,7 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   letter-spacing: 0.24px;
 }
 
-/* Progressive blur behind the sticky project headers (src/components/ProgressiveBlur.tsx).
+/* Progressive blur behind the sticky project headers (src/components/navigation/ProgressiveBlur.tsx).
    Without backdrop-filter the header keeps its solid canvas background instead. */
 .progressive-blur { position: absolute; z-index: -1; inset: 0; pointer-events: none; }
 .progressive-blur > span { position: absolute; inset: 0; }
@@ -927,7 +927,7 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   transform: translateY(-50%);
 }
 
-/* Covers built in code (src/components/SceneFit.tsx) fill their box like the motion
+/* Covers built in code (src/components/motion/SceneFit.tsx) fill their box like the motion
    covers: the scene keeps its design size and is scaled from the top-left corner. */
 .scene-fit { position: absolute; inset: 0; overflow: hidden; }
 .scene-fit-stage { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
