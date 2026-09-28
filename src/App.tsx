@@ -46,7 +46,8 @@ const recentWorkSlug = (path: string) => {
 
 export default function App() {
   const [path, setPath] = useState(() => normalizePath(window.location.pathname));
-  useProjectTransitions(path, setPath);
+  const [preparedPath, setPreparedPath] = useState<string | null>(null);
+  useProjectTransitions(path, setPath, setPreparedPath);
   // The site's first-load reveal and regular page navigation, both through Motion
   // Lab's puzzle wipe (transition-content). `stage` wraps whichever page is current; the
   // project system above is unaffected and keeps its own transition, since only one of
@@ -54,9 +55,10 @@ export default function App() {
   // projectTransition.ts).
   const { stage, overlay, puzzleSettings, startCovered, loading, ready, progress, revealFirstLoad } = useSiteTransition(path, setPath);
   const isAboutPage = path === '/about';
-  const isBeamPage = path === '/projects/beam';
-  const isBifrostPage = path === '/projects/bifrost';
-  const recentWork = recentWorkProjectBySlug.get(recentWorkSlug(path) ?? '');
+  const detailPath = preparedPath ?? path;
+  const isBeamPage = detailPath === '/projects/beam';
+  const isBifrostPage = detailPath === '/projects/bifrost';
+  const recentWork = recentWorkProjectBySlug.get(recentWorkSlug(detailPath) ?? '');
 
   useEffect(() => {
     document.title = isBeamPage
@@ -79,8 +81,8 @@ export default function App() {
             {/* Project pages open as a layer over the home page, which stays mounted
                 underneath so the shared-element transition and the return scroll
                 position work (projectTransition.ts). */}
-            {isProjectPath(path) && (
-              <div className="project-layer">
+            {isProjectPath(detailPath) && (
+              <div className={`project-layer${preparedPath ? ' project-layer--preparing' : ''}`} aria-hidden={preparedPath ? true : undefined} inert={preparedPath ? true : undefined}>
                 {isBeamPage ? <BeamPage /> : isBifrostPage ? <BifrostPage /> : recentWork ? <RecentWorkPage project={recentWork} /> : null}
               </div>
             )}

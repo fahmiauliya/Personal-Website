@@ -1,5 +1,4 @@
-import ContactCta from '../../components/ContactCta';
-import SocialLinks from '../../components/SocialLinks';
+import ContactFooter from '../../components/ContactFooter';
 import RecentWorkHeader from './RecentWorkHeader';
 import type { RecentWorkProject } from './recentWorkData';
 import './recentWork.css';
@@ -38,10 +37,7 @@ export default function RecentWorkPage({ project }: { project: RecentWorkProject
           </div>
         </section>
       </main>
-      <footer className="recent-work-footer">
-        <ContactCta />
-        <div className="recent-work-socials"><SocialLinks /></div>
-      </footer>
+      <ContactFooter />
     </div>
   );
 }

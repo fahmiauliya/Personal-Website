@@ -1,7 +1,6 @@
 import timeline from '../../assets/about/experience-timeline.svg';
-import ContactCta from '../../components/ContactCta';
+import ContactFooter from '../../components/ContactFooter';
 import Header from '../../components/Header';
-import SocialLinks from '../../components/SocialLinks';
 import { capabilities, experience } from './aboutData';
 import CapabilityCard from './CapabilityCard';
 import CapabilityGuides from './CapabilityGuides';
@@ -89,12 +88,7 @@ export default function AboutPage() {
         </section>
       </main>
 
-      <section className="about-bottom" aria-label="Contact and social links">
-        <ContactCta />
-        <footer className="about-footer">
-          <SocialLinks />
-        </footer>
-      </section>
+      <ContactFooter />
     </div>
   );
 }

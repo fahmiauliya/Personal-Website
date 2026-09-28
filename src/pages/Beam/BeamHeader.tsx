@@ -2,6 +2,7 @@ import CloseRing from '../../components/CloseRing';
 import ProgressiveBlur from '../../components/ProgressiveBlur';
 import homeIcon from '../../assets/icons/logo.svg';
 import contactIcon from '../../assets/icons/nav-contact.svg';
+import { CONTACT_MAILTO } from '../../data/portfolio';
 import closeIcon from '../../assets/projects/beam/close.svg';
 
 export default function BeamHeader() {
@@ -16,9 +17,9 @@ export default function BeamHeader() {
           </span>
         </a>
         <div className="beam-header-title"><span>Beam</span></div>
-        <button className="nav-circle nav-surface" type="button" aria-label="Send an email">
+        <a className="nav-circle nav-surface" href={CONTACT_MAILTO} aria-label="Send an email">
           <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={contactIcon} alt="" /></span>
-        </button>
+        </a>
       </nav>
       <a className="beam-close" href="/#works" data-project-close aria-label="Close project and return to Works">
         <CloseRing />

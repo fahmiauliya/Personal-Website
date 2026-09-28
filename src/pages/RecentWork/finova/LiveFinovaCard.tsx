@@ -1,6 +1,6 @@
 import { lazy, Suspense, useRef } from 'react';
 import SceneFit from '../../../components/SceneFit';
-import { useNearView } from '../../../components/useNearView';
+import { useRetainedPreview } from '../../../components/useRetainedPreview';
 import { useLoopClock } from '../useCardClock';
 import { LOOP_SECONDS } from './content/motion';
 
@@ -11,12 +11,12 @@ const FinovaCard = lazy(() => import('./content/FinovaCard'));
 // looping, matching how the lab's clock drives it with no saved timeline.
 export default function LiveFinovaCard({ eager = false }: { eager?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
-  const live = useNearView(ref, eager);
-  const position = useLoopClock(LOOP_SECONDS, live);
+  const { mounted, playing: live } = useRetainedPreview(ref, eager);
+  const position = useLoopClock(LOOP_SECONDS, live, 0, LOOP_SECONDS, 'finova');
   return (
     <div className="recent-work-card-viewport" ref={ref}>
       <SceneFit width={536} height={410.2040710449219}>
-        {live && <Suspense fallback={<span data-cover-ready="pending" />}><FinovaCard position={position} /></Suspense>}
+        {mounted && <Suspense fallback={<span data-cover-ready="pending" />}><FinovaCard position={position} /></Suspense>}
       </SceneFit>
     </div>
   );

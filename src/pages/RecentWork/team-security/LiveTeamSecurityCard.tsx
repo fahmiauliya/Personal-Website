@@ -1,19 +1,21 @@
 import { lazy, Suspense, useRef } from 'react';
 import SceneFit from '../../../components/SceneFit';
-import { useNearView } from '../../../components/useNearView';
+import { useRetainedPreview } from '../../../components/useRetainedPreview';
+
+import { useLoopClock } from '../useCardClock';
 
 const TeamSecurityCard = lazy(() => import('./content/TeamSecurityCard'));
 
-// Team Security (Figma 284:18514, 536 × 410.204071): the 8s light loop runs on its own CSS
-// animation when `position` is left undefined (TeamSecurityCard.tsx), so no JS driver is
-// needed here — only the usual near-view mount/unmount.
+// Team Security: drive its existing 8s CSS light loop from the shared clock, so the
+// thumbnail and detail retain the same phase across project navigation.
 export default function LiveTeamSecurityCard({ eager = false }: { eager?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
-  const live = useNearView(ref, eager);
+  const { mounted, playing: live } = useRetainedPreview(ref, eager);
+  const position = useLoopClock(8, live, 0, 8, 'team-security');
   return (
     <div className="recent-work-card-viewport" ref={ref}>
       <SceneFit width={536} height={410.2040710449219}>
-        {live && <Suspense fallback={<span data-cover-ready="pending" />}><TeamSecurityCard /></Suspense>}
+        {mounted && <Suspense fallback={<span data-cover-ready="pending" />}><TeamSecurityCard position={position} /></Suspense>}
       </SceneFit>
     </div>
   );

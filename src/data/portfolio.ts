@@ -44,7 +44,8 @@ import linkedinIcon from '../assets/icons/social-linkedin.svg';
 import xIcon from '../assets/icons/social-x.svg';
 import dribbbleIcon from '../assets/icons/social-dribbble.svg';
 
-export const CONTACT_EMAIL = 'hello@fahmiauliya.com';
+export const CONTACT_EMAIL = 'fahmiauliyarohman@gmail.com';
+export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}`;
 
 export const projects: Project[] = Array.from({ length: 8 }, (_, index) => {
   const projectNumber = index + 1;
@@ -92,6 +93,6 @@ export const recentWorks: Project[] = Array.from({ length: 8 }, (_, index) => {
 export const socialLinks: SocialLink[] = [
   { label: 'GitHub', href: 'https://github.com/fahmiauliya', icon: githubIcon },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/in/fahmiauliya/', icon: linkedinIcon },
-  { label: 'X', href: 'https://x.com/fahmiauliya', icon: xIcon },
-  { label: 'Dribbble', href: 'https://dribbble.com/fahmiauliya', icon: dribbbleIcon },
+  { label: 'X', href: 'https://x.com/fahmiauliyaa', icon: xIcon },
+  { label: 'Dribbble', href: 'https://dribbble.com/FahmiAuliya', icon: dribbbleIcon },
 ];

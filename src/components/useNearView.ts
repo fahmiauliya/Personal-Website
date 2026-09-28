@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type RefObject } from 'react';
+import { backgroundReady, isBackgroundReady } from './firstLoad';
 
 // Whether a motion should be running: near the screen (within one screen height of it)
 // and not under an open project page. Motions mount when this turns true and unmount
@@ -50,6 +51,9 @@ export function useNearView(ref: RefObject<Element | null>, always = false) {
   const [covered, setCovered] = useState(false);
   // Motions created mid-transition (the project page's gallery) start out held too.
   const [held, setHeld] = useState(isTransitioning);
+  // Cards in the hidden Works tab wait until the first screen is done (firstLoad.ts),
+  // then load in the background; opening the tab before that releases them at once.
+  const [waiting, setWaiting] = useState(false);
   const live = useRef(false);
   // The latest values, for the release queue, which runs outside of rendering.
   const latest = useRef({ near, covered, held });
@@ -58,6 +62,17 @@ export function useNearView(ref: RefObject<Element | null>, always = false) {
   useEffect(() => {
     const element = ref.current;
     if (!element || always) return;
+    const panel = element.closest<HTMLElement>('.works-panel');
+    const hidden = () => panel?.dataset.active === 'false';
+    let released = !hidden() || isBackgroundReady();
+    const panelWatch = new MutationObserver(() => {
+      if (!released && !hidden()) { released = true; setWaiting(false); }
+    });
+    if (!released) {
+      setWaiting(true);
+      if (panel) panelWatch.observe(panel, { attributes: true, attributeFilter: ['data-active'] });
+      void backgroundReady.then(() => { if (!released) { released = true; setWaiting(false); } });
+    }
     const intersection = new IntersectionObserver(([entry]) => setNear(entry?.isIntersecting ?? false), {
       root: element.closest('.project-layer'),
       rootMargin: NEAR,
@@ -85,6 +100,8 @@ export function useNearView(ref: RefObject<Element | null>, always = false) {
     const cover = new MutationObserver(update);
     cover.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
     return () => {
+      released = true;
+      panelWatch.disconnect();
       intersection.disconnect();
       cover.disconnect();
       window.clearTimeout(timer);
@@ -93,6 +110,6 @@ export function useNearView(ref: RefObject<Element | null>, always = false) {
   }, [ref, always]);
 
   // During a transition keep the last value; take the new one once it ends.
-  if (!held) live.current = near && !covered;
+  if (!held) live.current = near && !covered && !waiting;
   return always || live.current;
 }

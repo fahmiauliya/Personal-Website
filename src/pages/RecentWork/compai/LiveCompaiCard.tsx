@@ -1,6 +1,6 @@
 import { lazy, Suspense, useRef } from 'react';
 import SceneFit from '../../../components/SceneFit';
-import { useNearView } from '../../../components/useNearView';
+import { useRetainedPreview } from '../../../components/useRetainedPreview';
 import { useLoopClock } from '../useCardClock';
 
 // @rive-app/react-canvas (and its RuntimeLoader.setWasmUrl call) live inside this lazy
@@ -15,12 +15,12 @@ const CompaiCard = lazy(() => import('./content/CompaiCard'));
 // .riv file only load once this mounts (lazy + near-view).
 export default function LiveCompaiCard({ eager = false }: { eager?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
-  const live = useNearView(ref, eager);
-  const position = useLoopClock(12.01, live, 0, 15);
+  const { mounted, playing: live } = useRetainedPreview(ref, eager);
+  const position = useLoopClock(12.01, live, 0, 15, 'compai');
   return (
     <div className="recent-work-card-viewport" ref={ref}>
       <SceneFit width={536} height={410.2040710449219}>
-        {live && (
+        {mounted && (
           <Suspense fallback={<span data-cover-ready="pending" />}>
             <CompaiCard position={position} values={{ Rive: { Scale: 0.89 } }} />
           </Suspense>

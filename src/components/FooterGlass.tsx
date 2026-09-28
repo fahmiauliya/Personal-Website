@@ -421,7 +421,10 @@ export default function FooterGlass({ anchor, settings }: { anchor: React.RefObj
     };
 
     let phase = 0.8, spin = 0, flow = 0, floating = 0, pitch = 0, pitchTarget = 0, roll = 0, rollTarget = 0;
-    let frame = 0, last = 0, lastScroll = window.scrollY;
+    // A project page scrolls its own layer; every other page scrolls the window.
+    const layer = area.closest<HTMLElement>('.project-layer');
+    const scrollTop = () => (layer ? layer.scrollTop : window.scrollY);
+    let frame = 0, last = 0, lastScroll = scrollTop();
     const draw = () => {
       const s = live.current;
       const half = [s.Shape.Width * s.Shape.Size, s.Shape.Height * s.Shape.Size, s.Shape.Depth * s.Shape.Size];
@@ -486,7 +489,7 @@ export default function FooterGlass({ anchor, settings }: { anchor: React.RefObj
     const start = () => { if (!frame && !document.hidden) { last = 0; frame = requestAnimationFrame(tick); } };
     const stop = () => { cancelAnimationFrame(frame); frame = 0; };
     const onScroll = () => {
-      const y = window.scrollY;
+      const y = scrollTop();
       phase += (y - lastScroll) * live.current.Motion.Scroll;
       lastScroll = y;
     };
@@ -499,7 +502,8 @@ export default function FooterGlass({ anchor, settings }: { anchor: React.RefObj
     };
     const onLeave = () => { pitchTarget = 0; rollTarget = 0; };
     const onVisibility = () => (document.hidden ? stop() : start());
-    window.addEventListener('scroll', onScroll, { passive: true });
+    const scroller: HTMLElement | Window = layer ?? window;
+    scroller.addEventListener('scroll', onScroll, { passive: true });
     area.addEventListener('pointermove', onPointer);
     area.addEventListener('pointerleave', onLeave);
     document.addEventListener('visibilitychange', onVisibility);
@@ -508,7 +512,7 @@ export default function FooterGlass({ anchor, settings }: { anchor: React.RefObj
       stop();
       redraw.current = () => undefined;
       observer.disconnect();
-      window.removeEventListener('scroll', onScroll);
+      scroller.removeEventListener('scroll', onScroll);
       area.removeEventListener('pointermove', onPointer);
       area.removeEventListener('pointerleave', onLeave);
       document.removeEventListener('visibilitychange', onVisibility);

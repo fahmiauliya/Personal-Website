@@ -1,5 +1,5 @@
 import ctaIcon from '../assets/icons/cta-small.svg';
-import copyIcon from '../assets/icons/copy-email.svg';
+import CopyEmailButton from './CopyEmailButton';
 import SocialLinks from './SocialLinks';
 
 export default function Intro() {
@@ -32,10 +32,7 @@ export default function Intro() {
                 <span>Let’s Talk</span>
                 <img src={ctaIcon} alt="" />
               </button>
-              <button className="pill-button pill-button--light skeuo-button" type="button">
-                <span>Copy Email</span>
-                <img src={copyIcon} alt="" />
-              </button>
+              <CopyEmailButton />
               <SocialLinks className="intro-socials" />
             </div>
           </div>

@@ -1,6 +1,5 @@
 import { lazy, Suspense, useRef, useState } from 'react';
 import ctaIcon from '../assets/icons/cta-footer.svg';
-import ContactBeam from './ContactBeam';
 import SocialLinks from './SocialLinks';
 import type { GlassSettings } from './FooterGlass';
 import { useNearView } from './useNearView';
@@ -21,16 +20,14 @@ export default function ContactFooter() {
       <div className="contact-area" ref={area}>
         {live && <Suspense fallback={null}><FooterGlass anchor={pill} settings={tuned} /></Suspense>}
         {live && FooterGlassDials && <Suspense fallback={null}><FooterGlassDials onChange={setTuned} /></Suspense>}
-        <ContactBeam className="contact-pill-beam">
-          <div className="contact-pill" ref={pill}>
-            <p>Have something that want to discuss</p>
-            {/* No action yet; enabled so its hover and pressed states can be checked. */}
-            <button className="pill-button pill-button--dark skeuo-button" type="button">
-              <span>Let’s Talk</span>
-              <img src={ctaIcon} alt="" />
-            </button>
-          </div>
-        </ContactBeam>
+        <div className="contact-pill" ref={pill}>
+          <p>Have something that want to discuss</p>
+          {/* No action yet; enabled so its hover and pressed states can be checked. */}
+          <button className="pill-button pill-button--dark skeuo-button" type="button">
+            <span>Let’s Talk</span>
+            <img src={ctaIcon} alt="" />
+          </button>
+        </div>
       </div>
       <div className="footer-socials">
         <SocialLinks />

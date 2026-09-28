@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { isProjectPath, normalizePath } from '../projectTransition';
+import { markFirstLoadRevealed } from '../firstLoad';
 import { firstViewportReady } from './firstViewportReady';
 import { worksReady } from './worksReady';
 import { PuzzleHandle } from './PuzzleOverlay';
@@ -118,7 +119,10 @@ export function useSiteTransition(path: string, setPath: (path: string) => void)
   const revealFirstLoad = useCallback(async () => {
     await enter();
     setLoading(false);
+    markFirstLoadRevealed();
   }, [enter]);
+  // No loader this visit: the page is revealed as soon as it mounts.
+  useEffect(() => { if (skipLoader) markFirstLoadRevealed(); }, [skipLoader]);
 
   // --- Regular page navigation ----------------------------------------------------
   const busyRef = useRef(false);

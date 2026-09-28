@@ -10,7 +10,8 @@ export async function worksReady(capMs = 12000): Promise<void> {
   const decoding = new WeakSet<HTMLImageElement>();
   let stable = 0;
   while (root.isConnected && performance.now() < deadline) {
-    const cards = [...root.querySelectorAll<HTMLElement>('.project-image')].filter(card => {
+    // Only the visible tab: the hidden one loads in the background later (firstLoad.ts).
+    const cards = [...root.querySelectorAll<HTMLElement>('.works-panel:not([data-active="false"]) .project-image')].filter(card => {
       const rect = card.getBoundingClientRect();
       return rect.bottom > -innerHeight && rect.top < innerHeight * 2;
     });

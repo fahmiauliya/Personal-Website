@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 
 // Drives the `position` prop of a Recent Work card the way Motion Lab's timeline dock
 // does (BifrostWorkspace.tsx), for the two shapes its cards use. Values match each
@@ -31,31 +31,66 @@ function cubicBezier(p: number, [x1, y1, x2, y2]: [number, number, number, numbe
   return axis(t, y1, y2);
 }
 
-/**
- * A straight track from `from` to `to` over `seconds` of wall-clock time, looping. This is
- * the lab's "clock" shape (BifrostWorkspace.tsx: a single linear step covering the frame's
- * `clockSeconds`), used by Compai (a custom 0→15 track played over 12.01s), Finova, and
- * Velocity (both 0→12 over 12s, matching their `LOOP_SECONDS` in real time).
- */
-export function useLoopClock(seconds: number, playing: boolean, from = 0, to = seconds): number {
-  const [position, setPosition] = useState(from);
-  useEffect(() => {
-    if (!playing || seconds <= 0) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setPosition(to);
-      return;
+// Grid and detail use the same clock. Hidden subscribers retain the exact frame;
+// only visible subscribers drive time. During a handoff both scenes hold that frame.
+type Clock = { elapsed: number; last: number | null; raf: number; listeners: Map<() => void, boolean> };
+const clocks = new Map<string, Clock>();
+function getClock(key: string) {
+  let clock = clocks.get(key);
+  if (!clock) {
+    clock = { elapsed: 0, last: null, raf: 0, listeners: new Map() };
+    clocks.set(key, clock);
+  }
+  return clock;
+}
+function start(clock: Clock) {
+  if (clock.raf || ![...clock.listeners.values()].some(Boolean)) return;
+  const frame = (now: number) => {
+    clock.raf = 0;
+    if (![...clock.listeners.values()].some(Boolean)) { clock.last = null; return; }
+    const root = document.documentElement.classList;
+    const frozen = root.contains('project-preparing') || root.contains('project-vt-open') || root.contains('project-vt-close');
+    if (frozen || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      clock.last = null;
+    } else {
+      if (clock.last !== null) clock.elapsed += (now - clock.last) / 1000;
+      clock.last = now;
+      clock.listeners.forEach((_, notify) => notify());
     }
-    let raf = 0;
-    const start = performance.now();
-    const tick = (now: number) => {
-      const elapsed = ((now - start) / 1000) % seconds;
-      setPosition(from + (to - from) * (elapsed / seconds));
-      raf = requestAnimationFrame(tick);
+    clock.raf = requestAnimationFrame(frame);
+  };
+  clock.raf = requestAnimationFrame(frame);
+}
+const reducedSnapshot = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const subscribeReduced = (notify: () => void) => {
+  const media = window.matchMedia('(prefers-reduced-motion: reduce)');
+  media.addEventListener('change', notify);
+  return () => media.removeEventListener('change', notify);
+};
+const useReduced = () => useSyncExternalStore(subscribeReduced, reducedSnapshot, () => false);
+
+function useElapsed(key: string, playing: boolean) {
+  const clock = getClock(key);
+  const subscribe = useCallback((notify: () => void) => {
+    clock.listeners.set(notify, playing);
+    start(clock);
+    return () => {
+      clock.listeners.delete(notify);
+      if (![...clock.listeners.values()].some(Boolean)) {
+        cancelAnimationFrame(clock.raf);
+        clock.raf = 0;
+        clock.last = null;
+      }
     };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [seconds, playing, from, to]);
-  return position;
+  }, [clock, playing]);
+  return useSyncExternalStore(subscribe, () => clock.elapsed, () => 0);
+}
+
+export function useLoopClock(seconds: number, playing: boolean, from = 0, to = seconds, key = `loop-${seconds}-${from}-${to}`): number {
+  const reduced = useReduced();
+  const elapsed = useElapsed(key, playing && !reduced);
+  if (reduced) return to;
+  return seconds > 0 ? from + (to - from) * ((elapsed % seconds) / seconds) : from;
 }
 
 const SLIDE_EASE: [number, number, number, number] = [0.65, 0, 0.35, 1];
@@ -65,32 +100,20 @@ const SLIDE_EASE: [number, number, number, number] = [0.65, 0, 0.35, 1];
  * sliding to the next over `slideSeconds` (eased), looping — the lab's default steps
  * shape (no saved timeline). Used by Career Agent's story carousel.
  */
-export function useStepClock(steps: number, holdSeconds: number, slideSeconds: number, playing: boolean): number {
-  const [position, setPosition] = useState(0);
-  useEffect(() => {
-    if (!playing || steps <= 0) return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      setPosition(0);
-      return;
-    }
-    const cycle = steps * (holdSeconds + slideSeconds);
-    let raf = 0;
-    const start = performance.now();
-    const tick = (now: number) => {
-      let elapsed = ((now - start) / 1000) % cycle;
-      const index = Math.floor(elapsed / (holdSeconds + slideSeconds));
-      elapsed -= index * (holdSeconds + slideSeconds);
-      if (elapsed < holdSeconds) {
-        // Holding: the previous slide already landed exactly on `index`, so this stays flat.
-        setPosition(index);
-      } else {
-        const slide = (elapsed - holdSeconds) / slideSeconds;
-        setPosition(index + cubicBezier(slide, SLIDE_EASE));
-      }
-      raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [steps, holdSeconds, slideSeconds, playing]);
-  return position;
+export function useStepClock(steps: number, holdSeconds: number, slideSeconds: number, playing: boolean, key = 'career-agent'): number {
+  const reduced = useReduced();
+  const elapsed = useElapsed(key, playing && !reduced);
+  if (reduced) return 0;
+  if (steps <= 0) return 0;
+  const stepDuration = holdSeconds + slideSeconds;
+  const time = elapsed % (steps * stepDuration);
+  const index = Math.floor(time / stepDuration);
+  const within = time % stepDuration;
+  return within < holdSeconds ? index : index + cubicBezier((within - holdSeconds) / slideSeconds, SLIDE_EASE);
+}
+
+export function useElapsedClock(key: string, playing: boolean) {
+  const reduced = useReduced();
+  const elapsed = useElapsed(key, playing && !reduced);
+  return reduced ? 0 : elapsed;
 }

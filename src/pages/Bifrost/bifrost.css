@@ -62,13 +62,6 @@
 .bifrost-motion-label--light { color: #fff; }
 .bifrost-motion-label--dark { color: #000; }
 
-.bifrost-footer { background: var(--color-footer); font-size: 14px; }
-.bifrost-footer .contact-grid { display: flex; height: 739px; align-items: center; justify-content: center; padding: 24px 16px; box-shadow: 0 0 0 0.5px #fff; }
-.bifrost-footer .contact-cta { height: 57px; }
-.bifrost-socials { display: grid; height: 77px; place-items: center; padding: 24px 16px; box-shadow: 0 0 0 0.5px #fff; }
-.bifrost-socials .social-links { display: flex; gap: 2px; }
-.bifrost-socials .social-links button { display: grid; width: 29px; height: 29px; padding: 0.5px; place-items: center; border-radius: 50%; }
-.bifrost-socials .social-links img { width: 14px; height: 14px; object-fit: contain; }
 
 @media (max-width: 1245px) {
   .bifrost-overview { grid-template-columns: minmax(0, 285fr) minmax(0, 542fr) minmax(0, 285fr); }
@@ -90,6 +83,4 @@
   .bifrost-gallery-rows, .bifrost-gallery-row, .bifrost-gallery-column { gap: 12px; }
   .bifrost-gallery-row { flex-direction: column; }
   .bifrost-motion { width: 100%; }
-  .bifrost-footer .contact-grid { height: auto; min-height: 360px; padding-inline: 16px; }
-  .bifrost-footer .contact-cta { height: auto; min-height: 57px; }
 }

@@ -1,7 +1,6 @@
 import attachmentIcon from '../../assets/projects/beam/attachment.svg';
-import ContactCta from '../../components/ContactCta';
+import ContactFooter from '../../components/ContactFooter';
 import MotionPreview from '../../components/MotionPreview';
-import SocialLinks from '../../components/SocialLinks';
 import BeamHeader from './BeamHeader';
 import BeamGallery from './BeamGallery';
 import { beamProject } from './beamData';
@@ -41,10 +40,7 @@ export default function BeamPage() {
         </section>
         <BeamGallery />
       </main>
-      <footer className="beam-footer">
-        <ContactCta />
-        <div className="beam-socials"><SocialLinks /></div>
-      </footer>
+      <ContactFooter />
     </div>
   );
 }

@@ -81,13 +81,8 @@ html.project-open { overflow: hidden; }
 ::view-transition-old(root) { animation: none; opacity: 0; }
 ::view-transition-new(root) { animation: none; }
 
-/* Image: only one snapshot is shown, so it is one object changing position and size,
-   not two images crossfading. It is only ever scaled uniformly, in both directions: it
-   spans the moving box's width at its own aspect ratio, centred vertically, and the box
-   clips it, so it is never stretched or shown larger than the box, in any browser (no
-   reliance on object-fit, which not every browser applies to these snapshots). The card
-   is always at least as wide for its height as the detail cover, so this is exactly the
-   card's crop at the card end and the whole cover at the detail end. */
+/* One snapshot moves between the grid and detail. The fitted geometry rules below
+   interpolate its uniform scale and centered crop to match SceneFit at both ends. */
 ::view-transition-group(project-cover) {
   z-index: 3;
   overflow: hidden;
@@ -460,7 +455,7 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   transition: box-shadow 180ms ease;
 }
 
-button.nav-circle { cursor: pointer; }
+.nav-circle:is(button, a) { cursor: pointer; }
 
 .nav-circle.nav-surface:hover {
   filter: brightness(1.12);
@@ -715,7 +710,7 @@ button.nav-circle { cursor: pointer; }
 }
 
 .social-links { display: flex; align-items: center; gap: 2px; }
-.social-links button {
+.social-links .social-button {
   display: grid;
   width: 29px;
   height: 29px;
@@ -988,35 +983,22 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
 .contact-glass { position: absolute; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
 .contact-glass-fallback { position: absolute; top: 50%; left: 50%; z-index: 0; transform: translate(-50%, -50%); pointer-events: none; }
 .contact-glass-fallback[hidden] { display: none; }
-.contact-pill-beam { position: relative; z-index: 1; }
 /* The dev panel's save status (FooterGlassDials.tsx, dev server only). */
 .contact-glass-save { position: fixed; right: 16px; bottom: 16px; z-index: 100; padding: 8px 12px; border-radius: 6px; background: #1b1b1b; color: #fff; font-size: 12px; }
 
-/* The light-theme beam preset is very faint (stroke ~6% opacity). These multipliers,
-   read by border-beam, raise it to a deep black stroke with a softer glow. */
-.contact-beam {
-  --beam-stroke-opacity: 15;
-  --beam-inner-opacity: 3;
-  --beam-bloom-opacity: 2.5;
-}
 
-/* Off screen, the beam's spin stops where it is (ContactBeam.tsx). The package's own
-   rules are injected later with equal specificity, hence !important. */
-.contact-beam[data-beam-paused] { animation-play-state: paused !important; }
-
-/* ContactBeam wraps the pill, so the wrapper takes its width and offset. */
-.contact-pill-beam {
-  width: min(var(--content-width), 100%);
-  transform: translateX(calc(-1 * var(--page-gutter)));
-}
-
+/* The footer pill hugs its content (the note and the button), centred under the glass,
+   above its canvas and clickable. */
 .contact-pill {
+  position: relative;
+  z-index: 1;
   display: flex;
-  width: 100%;
-  height: 57px;
+  width: auto;
+  max-width: 100%;
   align-items: center;
   justify-content: space-between;
-  padding: 12px;
+  gap: 32px;
+  padding: 8px;
   border-radius: 60px;
   background:
     linear-gradient(90deg, rgba(99, 99, 99, 0.08), rgba(99, 99, 99, 0.08)),
@@ -1025,7 +1007,7 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
 }
 
 .contact-pill p {
-  padding: 0 12px;
+  padding: 0 0 0 12px;
   color: #000;
   font-size: 14px;
   line-height: 1.4;
@@ -1049,7 +1031,7 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
 
    Dark ("Let's Talk", intro and footer): hover brightens the body, pressed darkens it.
    --skeuo-ring is the hairline around it, which differs with the surface it sits on. */
-:is(.contact-button, .pill-button--dark).skeuo-button {
+.pill-button--dark.skeuo-button {
   box-shadow:
     0 0 0 0.5px var(--skeuo-ring, rgb(214 214 214 / 8%)),
     inset 0 1px 1px rgb(255 255 255 / 15%),
@@ -1058,7 +1040,7 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   transition: box-shadow 180ms ease, filter 180ms ease, transform 120ms ease;
 }
 
-:is(.contact-button, .pill-button--dark).skeuo-button:hover {
+.pill-button--dark.skeuo-button:hover {
   box-shadow:
     0 0 0 0.5px var(--skeuo-ring, rgb(214 214 214 / 8%)),
     inset 0 1px 1px rgb(255 255 255 / 30%),
@@ -1066,7 +1048,7 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   filter: brightness(1.12);
 }
 
-:is(.contact-button, .pill-button--dark).skeuo-button:active {
+.pill-button--dark.skeuo-button:active {
   box-shadow:
     0 0 0 0.5px var(--skeuo-ring, rgb(214 214 214 / 8%)),
     inset 0 1.5px 3px rgb(0 0 0 / 55%),
@@ -1107,6 +1089,31 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
 }
 
 :is(.beam-visit, .bifrost-visit) { --skeuo-light-ring: transparent; }
+
+/* "Copy Email" (CopyEmailButton.tsx): both states share one grid cell, so the button
+   keeps the wider label's width. The swap blurs, fades and lifts the outgoing label out
+   and the incoming one in. */
+.copy-email-swap { display: grid; }
+.copy-email-state {
+  display: inline-flex;
+  grid-area: 1 / 1;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  transition: opacity 240ms ease, filter 240ms ease, transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.copy-email-state svg {
+  width: 14px;
+  height: 14px;
+  filter: drop-shadow(0.5px 0.5px 0.5px rgb(0 0 0 / 25%));
+}
+.copy-email-state--done { opacity: 0; filter: blur(4px); transform: translateY(5px); }
+.copy-email[data-copied] .copy-email-state--idle { opacity: 0; filter: blur(4px); transform: translateY(-5px); }
+.copy-email[data-copied] .copy-email-state--done { opacity: 1; filter: blur(0); transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .copy-email-state { transition: none; }
+}
 
 .skeuo-button:focus-visible { outline: 2px solid var(--color-ink); outline-offset: 3px; }
 
@@ -1161,8 +1168,6 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   .works-grid { grid-template-columns: 1fr; padding-top: 24px; padding-bottom: 24px; }
   .contact-footer { height: auto; flex-basis: auto; }
   .contact-area { padding: 64px var(--page-gutter) 48px; }
-  .contact-pill-beam { transform: none; }
-  .contact-pill { height: auto; min-height: 57px; }
 }
 
 @media (max-width: 479px) {
@@ -1178,3 +1183,17 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
 
 /* Keep home navigation out of the project handoff until the cover has landed. */
 html.project-open .portfolio .site-nav { visibility: hidden; }
+
+/* Prepared detail renders offscreen to the eye, with live canvas frames available. */
+.project-layer--preparing { opacity: 0; pointer-events: none; }
+
+@keyframes project-cover-fit {
+  from { width: var(--cover-from-width); height: var(--cover-from-height); left: var(--cover-from-left); top: var(--cover-from-top); }
+  to { width: var(--cover-to-width); height: var(--cover-to-height); left: var(--cover-to-left); top: var(--cover-to-top); }
+}
+html.project-cover-fitted.project-vt-open::view-transition-new(project-cover),
+html.project-cover-fitted.project-vt-close::view-transition-old(project-cover) {
+  max-width: none;
+  translate: none;
+  animation: project-cover-fit 715ms cubic-bezier(0, 1, 0.4, 1) both;
+}

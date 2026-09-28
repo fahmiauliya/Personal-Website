@@ -90,59 +90,56 @@ const revealNavigation = (elements: HTMLElement[]) => elements.forEach(element =
 // transition's update is pending.
 const tick = () => new Promise<void>(resolve => setTimeout(resolve, 16));
 
-// The detail cover is a freshly mounted motion: MotionPreview's (Bifrost/Beam), in its
-// shadow root, or a Recent Work project's own component, straight in the light DOM.
-// Before the new view is captured, wait for it to render, then until its canvases show
-// real content or a grace period has passed, so the expanding cover is never blank.
-//
-// "Real content" is pixel variance in a downsampled sample, not just non-zero alpha: a
-// canvas that hasn't drawn yet can be either fully transparent (alpha 0 everywhere) or
-// fully opaque in one flat colour (Rive clears its canvas to opaque black before its
-// first frame), and either way every sampled pixel is identical until real content
-// draws, which never is.
-//
-// MotionPreview's covers get no grace: their motions paint within a frame or two (Rive
-// draws on requestAnimationFrame, which is paused during the update, so it can't paint
-// here, but its file has had time to load by the time this runs), and the old view stays
-// frozen on screen while it waits, so there's no reason to hold it any longer. Recent
-// Work's own components (a large Rive file, a WebGL shader) can take longer to load and
-// compile on a fresh mount, so they get a real grace period. Either way the whole wait
-// is capped so a slow network or a stalled canvas can't stall the open indefinitely.
-async function coverReady(cover: HTMLElement | null, timeout = 700) {
-  if (!cover) return;
-  const stage = cover.querySelector('.motion-preview-stage');
-  const grace = stage ? 0 : 220;
+// Prepare before starting View Transitions: canvas/Rive need live animation frames,
+// which browsers suspend inside the transition's update callback.
+async function coverReady(cover: HTMLElement | null, timeout = 6000) {
+  if (!cover) return false;
+  const start = performance.now();
   const probe = document.createElement('canvas');
   probe.width = probe.height = 12;
-  const probeContext = probe.getContext('2d', { willReadFrequently: true });
-  const painted = (canvas: HTMLCanvasElement) => {
-    if (!probeContext || !canvas.width || !canvas.height) return false;
-    probeContext.clearRect(0, 0, 12, 12);
-    probeContext.drawImage(canvas, 0, 0, 12, 12);
-    const { data } = probeContext.getImageData(0, 0, 12, 12);
-    const [r, g, b, a] = data;
-    for (let i = 4; i < data.length; i += 4) {
-      if (data[i] !== r || data[i + 1] !== g || data[i + 2] !== b || data[i + 3] !== a) return true;
-    }
-    return false;
-  };
-  const start = performance.now();
-  let mountedAt = 0;
+  const context = probe.getContext('2d', { willReadFrequently: true });
   while (performance.now() - start < timeout) {
-    const frame = stage
-      ? (stage.shadowRoot?.querySelector('div')?.firstElementChild ? stage.shadowRoot!.querySelector('div') : null)
-      : (cover.firstElementChild ? cover : null);
-    if (frame) {
-      mountedAt ||= performance.now();
-      const canvases = [...frame.querySelectorAll('canvas')];
-      if (!canvases.length || canvases.every(painted)) return;
-      if (performance.now() - mountedAt >= grace) return;
+    const stage = cover.querySelector('.motion-preview-stage');
+    const frame = stage?.shadowRoot ?? cover;
+    const pending = cover.querySelector('[data-cover-ready="pending"]');
+    const content = frame.querySelector('figure, canvas, img, .scene-fit-stage > *');
+    const images = [...frame.querySelectorAll('img')];
+    const canvases = [...frame.querySelectorAll('canvas')];
+    const painted = canvases.every(canvas => {
+      if (!context || !canvas.width || !canvas.height) return false;
+      try {
+        context.clearRect(0, 0, 12, 12);
+        context.drawImage(canvas, 0, 0, 12, 12);
+        const { data } = context.getImageData(0, 0, 12, 12);
+        for (let i = 4; i < data.length; i += 4) {
+          if (data[i] !== data[0] || data[i + 1] !== data[1] || data[i + 2] !== data[2] || data[i + 3] !== data[3]) return true;
+        }
+        return false;
+      } catch { return true; } // Cross-origin canvases cannot be sampled.
+    });
+    if (content && !pending && images.every(image => image.complete && image.naturalWidth > 0) && painted) {
+      await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+      return true;
     }
     await tick();
   }
+  return false;
 }
 
-export function useProjectTransitions(path: string, setPath: (path: string) => void) {
+// Match SceneFit's cover crop at BOTH ends. Width-only snapshot scaling incorrectly
+// shrank the artwork at the narrow thumbnail end, then snapped on the live handoff.
+function setCoverGeometry(from: HTMLElement, to: HTMLElement, sceneRatio: number) {
+  for (const [label, element] of [['from', from], ['to', to]] as const) {
+    const rect = element.getBoundingClientRect();
+    const width = Math.max(rect.width, rect.height * sceneRatio);
+    const height = width / sceneRatio;
+    const values = { width, height, left: (rect.width - width) / 2, top: (rect.height - height) / 2 };
+    for (const [key, value] of Object.entries(values)) document.documentElement.style.setProperty(`--cover-${label}-${key}`, `${value}px`);
+  }
+  document.documentElement.classList.add('project-cover-fitted');
+}
+
+export function useProjectTransitions(path: string, setPath: (path: string) => void, setPreparedPath: (path: string | null) => void) {
   const pathRef = useRef(path);
   pathRef.current = path;
   // Lock the page underneath while a project layer is open; its scroll position stays.
@@ -172,7 +169,7 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
       // shows its empty slot as the cover flies out and back.
       const apply = () => {
         pathRef.current = next;
-        flushSync(() => setPath(next));
+        flushSync(() => { setPath(next); setPreparedPath(null); });
         history.scrollRestoration = 'manual';
         if (card) card.style.visibility = opening ? 'hidden' : '';
       };
@@ -187,23 +184,39 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
         if (rect.bottom < 0 || rect.top > window.innerHeight) card.scrollIntoView({ block: 'center' });
       }
       running = true;
+      document.documentElement.classList.add('project-preparing');
+      if (opening) {
+        flushSync(() => setPreparedPath(next));
+        const ready = await coverReady(detailCover());
+        if (!ready || normalizePath(window.location.pathname) !== next) {
+          flushSync(() => setPreparedPath(null));
+          document.documentElement.classList.remove('project-preparing');
+          if (normalizePath(window.location.pathname) === next) history.replaceState(null, '', current);
+          running = false;
+          return;
+        }
+      }
       // Hide the current navigation first; the morph starts once it is gone.
       const hidden = await hideNavigation(opening ? homeNavigation() : detailNavigation());
       const from = opening ? card : detailCover();
       // The card the image returns to may mount its motion during the close
       // (useNearView); every other motion waits for the transition to end.
       if (!opening) card.dataset.projectReturning = '';
+      const cover = detailCover();
+      if (from && cover) {
+        const rect = cover.getBoundingClientRect();
+        setCoverGeometry(from, opening ? cover : card, rect.width / rect.height);
+      }
       setDirection(opening ? 'open' : 'close');
       setName(from, true);
       if (!opening) nameLayers(true);
-      const transition = doc.startViewTransition(async () => {
+      const transition = doc.startViewTransition(() => {
         setName(from, false);
         // The incoming navigation switches in hidden, before the new view is captured.
         if (!opening) concealNavigation(homeNavigation());
         apply();
         if (opening) concealNavigation(detailNavigation());
         const to = opening ? detailCover() : card;
-        if (opening) await coverReady(to);
         setName(to, true);
         if (opening) nameLayers(true);
       });
@@ -216,6 +229,10 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
         nameLayers(false);
         delete card.dataset.projectReturning;
         setDirection(null);
+        document.documentElement.classList.remove('project-preparing', 'project-cover-fitted');
+        for (const end of ['from', 'to']) for (const property of ['width', 'height', 'left', 'top']) {
+          document.documentElement.style.removeProperty(`--cover-${end}-${property}`);
+        }
       });
     };
 

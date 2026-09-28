@@ -1,10 +1,11 @@
-import { useRef, type CSSProperties, type KeyboardEvent } from 'react';
+import { useRef, type CSSProperties, type KeyboardEvent, type MouseEvent } from 'react';
 import aboutIcon from '../assets/icons/nav-about.svg';
 import homeIcon from '../assets/icons/logo.svg';
 import contactIcon from '../assets/icons/nav-contact.svg';
 import worksIcon from '../assets/icons/nav-works.svg';
 import NavigationMaterial from './NavigationMaterial';
 import ProgressiveBlur from './ProgressiveBlur';
+import { CONTACT_MAILTO } from '../data/portfolio';
 import { materialPath, useNavigationProgress } from './navigationMotion';
 import { useScrollRoll } from './useScrollRoll';
 import { setWorkTab, useWorkTab, type WorkTab } from './workTab';
@@ -36,6 +37,19 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
     '--navigation-rim-top': 'var(--color-control-stroke-top)',
     '--navigation-rim-bottom': 'var(--color-control-stroke-bottom)',
   } as CSSProperties;
+
+  // Already on the home page, "Works" glides down to the grid instead of the browser's
+  // instant jump to #works (the navigation morphs along with the scroll). From another
+  // page the link keeps its normal behaviour (the page transition, useSiteTransition.ts).
+  const scrollToWorks = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const works = document.getElementById('works');
+    if (window.location.pathname !== '/' || !works) return;
+    event.preventDefault();
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    works.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth' });
+    if (window.location.hash !== '#works') history.pushState(history.state, '', '/#works');
+  };
 
   const handleTabKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     let nextTab: WorkTab | undefined;
@@ -69,7 +83,7 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
 
         <div className="nav-segments" style={{ width: centerWidth, transform: `translateX(${centerLeft}px)` }}>
           <div className="nav-segments-content nav-segments-content--intro" style={{ opacity: worksOpacity }} aria-hidden={worksOpacity === 0}>
-            <a href="/#works" tabIndex={isIntroSettled ? 0 : -1} style={{ pointerEvents: isIntroSettled ? 'auto' : 'none' }}>
+            <a href="/#works" onClick={scrollToWorks} tabIndex={isIntroSettled ? 0 : -1} style={{ pointerEvents: isIntroSettled ? 'auto' : 'none' }}>
               <span className="nav-icon nav-icon--works" aria-hidden="true">
                 <span><img src={worksIcon} alt="" /></span>
               </span>
@@ -91,9 +105,9 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
           <span className="nav-about-label" aria-hidden="true" style={{ width: labelWidth, opacity: 1 - collapse }}><span>About</span></span>
         </a>
 
-        <button className="nav-circle nav-surface nav-email" style={{ transform: `translateX(${269 + 78 * progress}px)` }} type="button" aria-label="Send an email">
+        <a className="nav-circle nav-surface nav-email" style={{ transform: `translateX(${269 + 78 * progress}px)` }} href={CONTACT_MAILTO} aria-label="Send an email">
           <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={contactIcon} alt="" /></span>
-        </button>
+        </a>
       </nav>
     </header>
   );

@@ -1,7 +1,6 @@
 import attachmentIcon from '../../assets/projects/bifrost/attachment.svg';
-import ContactCta from '../../components/ContactCta';
+import ContactFooter from '../../components/ContactFooter';
 import MotionPreview from '../../components/MotionPreview';
-import SocialLinks from '../../components/SocialLinks';
 import BifrostHeader from './BifrostHeader';
 import BifrostGallery from './BifrostGallery';
 import { bifrostProject } from './bifrostData';
@@ -41,10 +40,7 @@ export default function BifrostPage() {
         </section>
         <BifrostGallery />
       </main>
-      <footer className="bifrost-footer">
-        <ContactCta />
-        <div className="bifrost-socials"><SocialLinks /></div>
-      </footer>
+      <ContactFooter />
     </div>
   );
 }
