@@ -1,0 +1,100 @@
+/* Content 04 — the Beam website on an iPhone (Figma 339:4983), at design size 384 × 479.
+   Positions and sizes are Figma's; flex layout stands in for its auto-layout frames.
+   All text is outlines (../Outlined.tsx, glyphs.ts: TikTok Sans traced at the positions the
+   browser set it, opsz 14), so this tile loads no font. */
+
+.beam-phone {
+  position: relative;
+  width: 384px;
+  height: 479px;
+  font-weight: 400;
+  color: #0a0a0a;
+}
+.beam-phone *, .beam-phone *::before, .beam-phone *::after { box-sizing: border-box; }
+.beam-phone p, .beam-phone h1 { margin: 0; }
+.beam-phone img { display: block; max-width: none; }
+
+/* ---- Device ---- */
+.beam-phone__device { position: absolute; top: 79px; left: 63px; width: 257.69px; height: 540.689px; border-radius: 41.325px; }
+.beam-phone__body { position: absolute; inset: 0 0 3.74px 0; overflow: hidden; border-radius: 47.454px; background: #212121; }
+.beam-phone__screen { position: absolute; top: calc(50% - 1.87px); left: calc(50% + 0.29px); width: 249.637px; height: 529.472px; overflow: hidden; border-radius: 43.428px; background: #3e3e3e; transform: translate(-50%, -50%); }
+.beam-phone__display { position: absolute; inset: 5.75px 5.46px 6.33px 6.61px; overflow: hidden; border-radius: 37.388px; }
+/* Figma's #656565 backing is fully covered; the page colour here keeps the covered edges
+   (the status bar's, below the notch) from anti-aliasing into a grey seam. */
+.beam-phone__canvas { position: absolute; inset: -0.24px 0.18px -2.11px -0.98px; background: #fafafa; }
+.beam-phone__island { position: absolute; top: 7.52px; left: calc(50% - 0.72px + 0.29px); width: 75.351px; height: 22.72px; border-radius: 11.36px; background: #3e3e3e; transform: translateX(-50%); }
+.beam-phone__button { position: absolute; left: -1.85px; width: 2.112px; border-radius: 0.575px 0 0 0.575px; background: #212121; }
+.beam-phone__button--action { top: 110.36px; height: 24.817px; }
+.beam-phone__button--volume-up { top: 153.65px; height: 39.865px; }
+.beam-phone__button--volume-down { top: 204.08px; height: 40.129px; }
+.beam-phone__button--power { top: 167.1px; left: 257.69px; width: 1.726px; height: 63.272px; border-radius: 0 0.758px 0.758px 0; }
+
+/* ---- Status bar ---- */
+.beam-phone__status { position: absolute; top: -2.12px; left: calc(50% + 0.1px); width: 238.399px; height: 33.001px; background: #fafafa; transform: translateX(-50%); }
+.beam-phone__status img { position: absolute; }
+.beam-phone__battery { top: 48.59%; right: 9.47%; bottom: 29.58%; left: 84.05%; width: 6.48%; height: 21.83%; }
+.beam-phone__wifi { top: 48.58%; right: 17.29%; bottom: 30.3%; left: 78.63%; width: 4.08%; height: 21.12%; }
+.beam-phone__signal { top: 49.23%; right: 22.71%; bottom: 30.22%; left: 72.76%; width: 4.53%; height: 20.55%; }
+.beam-phone__time { position: absolute; top: 38.31%; right: 75.13%; bottom: 21.24%; left: 10.47%; }
+/* The SVG spans the text's own line box (advance × ascent–descent), so it sits where the
+   bottom-aligned, centred text line did. */
+.beam-phone__time span { position: absolute; inset: 9.52% 0 4.76% 0; display: flex; align-items: flex-end; justify-content: center; }
+.beam-phone__time img { width: 19.171px; height: 11.536px; }
+
+/* ---- Website ---- */
+.beam-site { position: absolute; top: 30.62px; left: 0.08px; display: flex; width: 238.36px; height: 496.277px; flex-direction: column; background: #fafafa; }
+.beam-site__nav { display: flex; align-items: center; justify-content: space-between; padding: 7.334px 12.224px; background: #fafafa; }
+.beam-site__brand { display: flex; align-items: center; gap: 3.056px; font-size: 10.207px; font-weight: 600; line-height: 15.279px; letter-spacing: -0.5073px; }
+.beam-site__brand img { width: 11.4261px; height: 11.4289px; }
+.beam-site__links { display: flex; align-items: center; gap: 7.334px; font-size: 8.557px; }
+.beam-site__signup { line-height: 12.224px; color: #353331; }
+.beam-site__login { padding: 4.767px 8.434px; border: 0.611px solid rgb(0 0 0 / 10%); border-radius: 999px; background: #fafafa; line-height: 8.557px; color: #000; box-shadow: inset 0 0.306px 0.306px rgb(255 255 255 / 60%), inset 0 -0.306px 0.306px rgb(0 0 0 / 50%); }
+
+.beam-site__section { display: flex; min-height: 0; flex: 1 0 0; flex-direction: column; justify-content: center; background: #fafafa; }
+.beam-site__hero { display: flex; flex-direction: column; justify-content: flex-end; padding: 29.337px 12.224px 39.115px; }
+.beam-site__intro { display: flex; flex-direction: column; gap: 4.889px; }
+.beam-site__offer { display: flex; flex-wrap: wrap; align-items: center; gap: 0 3.667px; }
+.beam-site__sale { padding: 1.222px 3.667px; border-radius: 999px; background: #141414; font-size: 6.112px; line-height: 9.168px; color: #fff; }
+.beam-site__offer-text { display: flex; align-items: center; gap: 2.445px; font-size: 8.557px; line-height: 8.557px; white-space: nowrap; }
+.beam-site__arrow { display: grid; width: 7.334px; height: 7.334px; place-items: center; }
+.beam-site__arrow img { width: 5.70436px; height: 4.07452px; }
+.beam-site__title { font-size: 17.113px; font-weight: 400; line-height: 22.002px; letter-spacing: -0.3423px; }
+.beam-site__lead { font-size: 8.557px; line-height: 1.4; color: #3d3d3d; }
+
+.beam-site__actions { display: flex; align-items: center; justify-content: center; gap: 7.334px; padding-top: 14.668px; }
+.beam-site__prompt,
+.beam-site__start { position: relative; border-radius: 999px; box-shadow: inset 0 0.306px 0.306px rgb(255 255 255 / 60%), inset 0 -0.306px 0.306px rgb(0 0 0 / 50%); }
+/* Label, divider and agent icons as one centred row, with the same space either side of the
+   divider, so the pill's content sits balanced within its 144px. */
+.beam-site__prompt { display: flex; width: 144.256px; height: 20.536px; flex: none; align-items: center; justify-content: center; gap: 6.112px; border: 0.611px solid rgb(0 0 0 / 10%); background: #fafafa; }
+.beam-site__prompt-label { font-size: 8.557px; line-height: 8.557px; color: #000; white-space: nowrap; }
+.beam-site__divider { width: 0.611px; height: 9.779px; flex: none; background: rgb(0 0 0 / 10%); }
+.beam-site__agents { display: flex; align-items: center; gap: 4.889px; }
+.beam-site__agent { display: grid; width: 8.557px; height: 8.557px; place-items: center; }
+.beam-site__agent img { width: auto; height: auto; }
+.beam-site__start { display: grid; height: 19.469px; min-width: 0; flex: 1 0 0; place-items: center; border: 0.611px solid rgb(0 0 0 / 20%); background: linear-gradient(180deg, rgb(0 0 0 / 0%), rgb(0 0 0 / 50%)), #3d3d3d; font-size: 8.557px; line-height: 8.557px; color: #fff; }
+
+/* The Beam app preview under the hero, faded out toward the bottom. */
+.beam-site__visual { position: relative; height: 210.246px; flex: none; overflow: hidden; background: #fafafa; opacity: 0.9; }
+.beam-site__fade { position: absolute; bottom: 0.06px; left: 0; width: 880.098px; height: 128.959px; background: linear-gradient(180deg, rgb(250 250 250 / 0%), #fafafa 66.064%); }
+.beam-app { position: absolute; top: 0; left: 12.22px; display: flex; width: 718.747px; height: 416.006px; flex-direction: column; padding: 3.355px; border-radius: 7.035px; background: linear-gradient(129.34deg, rgb(0 0 0 / 4%) 0%, rgb(0 0 0 / 0%) 101.21%); }
+.beam-app__window { position: relative; min-height: 0; flex: 1 0 0; overflow: hidden; border-radius: 3.518px; background: #fff; }
+.beam-app__content { position: absolute; top: 0.14px; left: -0.3px; display: flex; width: 589.4px; flex-direction: column; gap: 6.796px; padding: 9.061px 9.061px 9.061px 4.531px; font-size: 6.796px; line-height: 10.194px; white-space: nowrap; }
+.beam-app__heading { padding-left: 4.531px; color: #000; }
+.beam-app__panels { display: flex; align-items: flex-start; gap: 4.531px; }
+.beam-app__table { display: flex; width: 406.917px; flex-direction: column; }
+.beam-app__row { display: flex; align-items: center; overflow: hidden; border: 0.283px solid rgb(0 0 0 / 10%); border-top: 0; background: #fff; color: #0a0a0a; }
+.beam-app__row--head { border-top: 0.283px solid rgb(0 0 0 / 10%); border-radius: 2.265px 2.265px 0 0; background: #f0f0f0; color: #525252; }
+.beam-app__row:last-child { border-radius: 0 0 2.265px 2.265px; }
+.beam-app__cell { display: flex; align-items: center; overflow: hidden; padding: 2.265px 4.531px; }
+.beam-app__cell--name { min-width: 0; flex: 1 0 0; gap: 4.531px; }
+.beam-app__cell--size { width: 62.296px; justify-content: flex-end; }
+.beam-app__row--head .beam-app__cell--size { color: #5c5c5e; }
+.beam-app__cell--date { width: 62.296px; }
+.beam-app__cell--menu { width: 36.245px; align-self: stretch; justify-content: flex-end; }
+.beam-app__cell--menu img { width: 6.79595px; height: 6.79595px; }
+.beam-app__badge { padding: 2.265px 4.531px 2.265px 3.398px; border-radius: 999px; background: #f2f7f7; font-size: 3.21px; line-height: 1; color: #587174; }
+.beam-app__stats { display: flex; min-width: 0; flex: 1 0 0; flex-direction: column; overflow: hidden; color: #0a0a0a; }
+.beam-app__stat { display: flex; align-items: center; justify-content: space-between; padding: 2.265px 4.531px; border: 0.283px solid rgb(0 0 0 / 10%); border-top: 0; background: #fff; }
+.beam-app__stat:first-child { border-top: 0.283px solid rgb(0 0 0 / 10%); border-radius: 2.265px 2.265px 0 0; }
+.beam-app__stat:last-child { border-radius: 0 0 2.265px 2.265px; }

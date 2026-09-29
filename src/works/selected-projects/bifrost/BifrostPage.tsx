@@ -25,17 +25,15 @@ export default function BifrostPage() {
                 ))}
               </dl>
             </div>
-            <div className="bifrost-url" data-project-part="url">
-              <span>URL</span>
-              <span className="bifrost-visit-frame">
-                <button className="bifrost-visit skeuo-button" type="button"><span>Visit site</span><img src={attachmentIcon} alt="" width="14" height="14" /></button>
-              </span>
-            </div>
           </div>
           <div className="bifrost-cover" data-project-cover><MotionPreview scene={bifrostProject.cover} eager /></div>
           <div className="bifrost-description" data-project-part="description">
             <div>{bifrostProject.description.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div>
-            <p>{bifrostProject.note}</p>
+            <div className="bifrost-closing">
+              <span className="bifrost-visit-frame">
+                <a className="bifrost-visit skeuo-button" href={bifrostProject.url} target="_blank" rel="noopener noreferrer" aria-label="Visit the Bifrost site (opens in a new tab)"><span>Visit site</span><img src={attachmentIcon} alt="" width="14" height="14" /></a>
+              </span>
+            </div>
           </div>
         </section>
         <BifrostGallery />

@@ -36,15 +36,22 @@
    header and this section's 16px bottom margin. */
 .bifrost-overview { display: grid; min-height: calc(98vh - 79px); min-height: calc(98svh - 79px); grid-template-columns: 285px 542px 285px; justify-content: center; align-content: center; gap: 16px; padding-block: 120px; margin-bottom: 16px; }
 .bifrost-details, .bifrost-description { display: flex; min-width: 0; flex-direction: column; justify-content: space-between; }
+/* Same layout as Beam: the summary and the story share the middle row, so the two sides
+   are the same height (Visit site lines up with the last summary row), and the equal
+   flexible rows around it centre that block on the cover, which spans all three. */
+.bifrost-overview { grid-template-rows: 1fr auto 1fr; }
+.bifrost-details, .bifrost-description { grid-row: 2; }
+.bifrost-cover { grid-row: 1 / 4; align-self: center; }
 .bifrost-details h1 { font: inherit; letter-spacing: 0.24px; }
 .bifrost-category { margin-top: 2px; color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }
 .bifrost-facts { margin: 12px 0 0; letter-spacing: -0.24px; }
-.bifrost-fact { display: grid; grid-template-columns: 50px minmax(0, 1fr); gap: 20px; padding-block: 10px; border-bottom: 0.5px solid rgb(0 0 0 / 10%); }
-.bifrost-fact:last-child { border: 0; }
+/* Labels get room for the longest ("Deliverables") so none wraps. */
+.bifrost-fact { display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 20px; padding-block: 20px; border-bottom: 0.5px solid rgb(0 0 0 / 10%); }
+.bifrost-fact:last-child { padding-bottom: 0; border: 0; }
 .bifrost-fact dt, .bifrost-fact dd { margin: 0; color: rgb(0 0 0 / 60%); }
 .bifrost-fact dd > span { display: block; }
-.bifrost-url { display: flex; align-items: center; gap: 20px; padding-block: 6px; }
-.bifrost-url > span:first-child { width: 50px; flex: 0 0 50px; color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }
+/* The Visit site button, at the foot of the right column. */
+.bifrost-closing { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
 .bifrost-visit-frame { display: block; padding: 0.5px; border-radius: var(--radius-control); background: #f0f0f0; }
 .bifrost-visit { display: flex; height: 25px; align-items: center; justify-content: center; gap: 4px; padding: 4px 12px 4px 14px; border: 0.5px solid rgb(0 0 0 / 10%); border-radius: var(--radius-control); background: linear-gradient(180deg, rgb(255 255 255 / 20%) 50%, rgb(230 230 230 / 20%)), #fff; box-shadow: inset 0 0.5px 0.5px rgb(255 255 255 / 60%), inset 0 -0.5px 0.5px rgb(0 0 0 / 20%); text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 15%), 0.3px 0.3px 0.4px rgb(0 0 0 / 20%); white-space: nowrap; }
 /* Shows Motion Lab's cover frame background while the cover motion loads. */
@@ -72,7 +79,8 @@
 /* The supplied frame is desktop-only. Reflow the same content, in order,
    when its three columns no longer fit; no additional mobile content. */
 @media (max-width: 900px) {
-  .bifrost-overview { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); padding-block: 64px; }
+  .bifrost-overview { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); grid-template-rows: none; padding-block: 64px; }
+  .bifrost-details, .bifrost-description, .bifrost-cover { grid-row: auto; }
   .bifrost-description { grid-column: 1 / -1; gap: 24px; }
   .bifrost-cover { align-self: start; }
 }

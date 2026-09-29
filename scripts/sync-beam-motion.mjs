@@ -18,16 +18,40 @@ try {
   await access(join(motionLab, entry));
   const config = join(temporary, 'vite.config.mjs');
   const exportDir = join(temporary, 'export');
-  await writeFile(config, `export default ${JSON.stringify({
-    root: motionLab,
-    base: './',
-    publicDir: false,
-    build: {
-      outDir: exportDir,
-      emptyOutDir: true,
-      rollupOptions: { input: join(motionLab, entry) },
+  // Website overrides: Motion Lab files swapped for lighter website versions at export time,
+  // loaded in place of the original (so their relative imports still resolve beside it).
+  // Motion Lab keeps its own files. Motion 03's PDF preview draws the demo PDF's first page
+  // in code instead of loading the 1.7 MB pdf.js reader (scripts/motion-export/overrides/).
+  const overrides = number === '03' ? {
+    [join(motionLab, 'src/motion-lab/beam-content/motion-03/product-demo/PdfPreview.tsx')]: {
+      source: join(website, 'scripts/motion-export/overrides/PdfPreview.tsx'),
+      assets: {},
     },
-  })};\n`);
+  } : {};
+  await writeFile(config, `import { readFile } from 'node:fs/promises';
+const overrides = ${JSON.stringify(overrides)};
+export default {
+  root: ${JSON.stringify(motionLab)},
+  base: './',
+  publicDir: false,
+  plugins: [{
+    name: 'website-overrides',
+    enforce: 'pre',
+    async load(id) {
+      const override = overrides[id.split('?')[0]];
+      if (!override) return null;
+      let code = await readFile(override.source, 'utf8');
+      for (const [from, to] of Object.entries(override.assets)) code = code.replaceAll(JSON.stringify(from).slice(1, -1), to);
+      return code;
+    },
+  }],
+  build: {
+    outDir: ${JSON.stringify(exportDir)},
+    emptyOutDir: true,
+    rollupOptions: { input: ${JSON.stringify(join(motionLab, entry))} },
+  },
+};
+`);
 
   const build = spawnSync(join(motionLab, 'node_modules/.bin/vite'), ['build', '--config', config], {
     cwd: motionLab,

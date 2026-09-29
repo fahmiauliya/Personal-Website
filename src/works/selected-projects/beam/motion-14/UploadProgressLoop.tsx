@@ -5,6 +5,7 @@ import checkIcon from './assets/upload-check.svg';
 import chevronIcon from './assets/upload-chevron.svg';
 import separatorIcon from './assets/upload-separator.svg';
 import closeIcon from './assets/upload-close.svg';
+import { GLYPHS, PERCENTS, PERCENT_BASELINE, TITLE } from './glyphs';
 import { WalkingPattern, usePatternLoop } from './WalkingPattern';
 import './UploadProgressLoop.css';
 
@@ -18,6 +19,19 @@ export type UploadProgressLoopProps = {
   className?: string;
   style?: CSSProperties;
 };
+
+// The header text is drawn as outlines (glyphs.ts, traced from TikTok Sans at the positions
+// the browser set it), so the motion loads no font. Both texts sit on the baseline of their
+// 21.69px line box, 15px down.
+function Glyphs({ chars, baseline, fromRight }: { chars: [string, number][]; baseline: number; fromRight?: number }) {
+  return (
+    <svg className="uploadProgressLoop__glyphs" aria-hidden="true">
+      <g fill="currentColor" transform={`translate(${fromRight ?? 0} ${baseline})`}>
+        {chars.map(([char, x], index) => <path key={index} d={GLYPHS[char]} transform={`translate(${x} 0)`} />)}
+      </g>
+    </svg>
+  );
+}
 
 // Decorative, looping upload bar. The header controls are visuals only: they
 // cannot be clicked or focused, so the loop always plays as designed.
@@ -35,8 +49,14 @@ export default function UploadProgressLoop({ fileCount = 4, playing = true, play
     >
       <WalkingPattern {...loop} />
       <div className="uploadProgressLoop__header" aria-hidden="true">
-        <span className="uploadProgressLoop__title"><img src={titleIcon} alt="" />{label}</span>
-        <span className="uploadProgressLoop__percent">{percent}%</span>
+        <span className="uploadProgressLoop__title">
+          <img src={titleIcon} alt="" />
+          {/* Traced for the gallery's "Uploading 4 files"; any other count falls back to text. */}
+          {fileCount === 4 ? <Glyphs chars={TITLE.chars} baseline={TITLE.baseline} /> : label}
+        </span>
+        <span className="uploadProgressLoop__percent">
+          <Glyphs chars={PERCENTS[Math.min(100, Math.max(0, percent))]} baseline={PERCENT_BASELINE} fromRight={48.2} />
+        </span>
         <span className="uploadProgressLoop__actions">
           <span className="uploadProgressLoop__action">
             {loop.progress >= 100 ? <img className="uploadProgressLoop__check" src={checkIcon} alt="" /> : <img src={pauseIcon} alt="" />}

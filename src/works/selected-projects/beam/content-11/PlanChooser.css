@@ -1,0 +1,136 @@
+/* Content 11 — Beam's plan chooser (Figma 141:8699), at design size 593 × 473.
+   Positions, sizes, colours and shadows are Figma's; flex layout stands in for its
+   auto-layout frames. The text is outlines (glyphs.ts, set at 4.167 / 6.25 in TikTok Sans;
+   the prices at 8.333 / 9.722), so no font loads. Like Figma's (imported from the app's
+   page), each text box is its line height rounded up to a whole pixel: 7, 10 or 13. */
+/* Laid out at 4x and drawn at 1/4: the browser rounds each piece's position to a whole
+   layout pixel, which at design size (lines 7.639px apart, 0.174px borders) makes uneven
+   rows; at 4x the rounding is a quarter of a design pixel. */
+.beam-plans {
+  position: relative;
+  width: 593px;
+  height: 472.96px;
+  zoom: 4;
+  transform: scale(0.25);
+  transform-origin: 0 0;
+  font-size: 4.167px;
+  font-weight: 400;
+  line-height: 6.25px;
+  color: #fff;
+}
+.beam-plans *, .beam-plans *::before, .beam-plans *::after { box-sizing: border-box; }
+.beam-plans svg { display: block; flex: none; overflow: visible; }
+
+/* The app window: Figma's screenshot of the dashboard, under a 56% dim with a light blur. */
+.beam-plans__screen { position: absolute; top: 79.77px; left: 47px; width: 500px; height: 312.5px; overflow: hidden; background: #141414; }
+.beam-plans__app { position: absolute; top: 0.35px; left: 0; display: block; width: 500px; height: 312.5px; }
+.beam-plans__overlay {
+  position: absolute;
+  top: 0.35px;
+  left: 0;
+  display: flex;
+  width: 500px;
+  height: 312.5px;
+  align-items: center;
+  justify-content: center;
+  padding: 8.333px;
+  background: rgb(0 0 0 / 56%);
+  backdrop-filter: blur(0.868px);
+}
+
+.beam-plans__dialog {
+  position: relative;
+  display: flex;
+  width: 289.583px;
+  flex-direction: column;
+  overflow: hidden;
+  border: 0.347px solid rgb(255 255 255 / 10%);
+  border-radius: 2.778px;
+  background: #1f1f1f;
+  box-shadow:
+    0 0.347px 0.694px rgb(0 0 0 / 10%),
+    0 1.389px 2.778px -1.389px rgb(0 0 0 / 8%),
+    0 2.083px 4.167px -2.083px rgb(0 0 0 / 6%),
+    0 2.778px 5.556px -2.083px rgb(0 0 0 / 4%);
+}
+/* Figma's inner edge shadows sit over the content, so they are drawn on top. */
+.beam-plans__dialog::after, .beam-plans__body::after { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; }
+.beam-plans__dialog::after { box-shadow: inset 0 -0.174px 0.174px 0.347px rgb(0 0 0 / 10%); }
+.beam-plans__body::after { box-shadow: inset 0 -0.174px 0.174px rgb(0 0 0 / 10%); }
+
+.beam-plans__header { display: flex; height: 12.153px; align-items: center; justify-content: space-between; padding: 2.778px 2.778px 2.778px 4.167px; }
+.beam-plans__title { display: flex; align-items: center; gap: 2.083px; }
+.beam-plans__title-icon { opacity: 0.82; }
+.beam-plans__close { display: flex; width: 6.25px; height: 6.25px; flex-direction: column; align-items: center; padding: 1.042px; }
+
+.beam-plans__body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 6.944px;
+  padding: 4.167px;
+  border-top: 0.347px solid rgb(255 255 255 / 10%);
+  border-radius: 2.083px;
+  background: #292929;
+  box-shadow: 0 -0.694px 6.944px -2.083px rgb(0 0 0 / 50%);
+}
+
+.beam-plans__columns { display: flex; align-items: flex-start; justify-content: center; }
+.beam-plans__plan { display: flex; width: 93.517px; flex-direction: column; align-items: stretch; border-right: 0.347px solid rgb(255 255 255 / 10%); }
+.beam-plans__plan--free { padding-right: 4.167px; }
+.beam-plans__plan--pro { padding: 0 4.167px; }
+.beam-plans__plan--business { width: 93.521px; padding-left: 4.167px; border-right: 0; }
+
+.beam-plans__name { display: flex; min-height: 6.25px; flex-direction: column; }
+.beam-plans__blurb { display: flex; min-height: 12.5px; flex-direction: column; padding-bottom: 6.25px; color: #ccc; }
+.beam-plans__plan--pro .beam-plans__blurb { padding-bottom: 0; }
+.beam-plans__price { display: flex; flex-direction: column; align-items: flex-start; padding: 11.111px 0 4.167px; }
+.beam-plans__price-row { display: flex; align-items: baseline; gap: 0.694px; }
+.beam-plans__amount { font-size: 8.333px; line-height: 9.722px; }
+
+.beam-plans__action {
+  position: relative;
+  display: flex;
+  height: 9.132px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 3.472px 4.861px;
+  border: 0.174px solid rgb(255 255 255 / 70%);
+  border-radius: 1.389px;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0%), rgb(0 0 0 / 20%)), #ebebeb;
+  box-shadow:
+    0 0.347px 0.694px rgb(255 255 255 / 10%),
+    0 1.389px 2.778px -1.389px rgb(0 0 0 / 20%),
+    0 0.694px 6.944px -2.083px #000,
+    0 2.778px 5.556px -2.083px rgb(0 0 0 / 10%),
+    inset 0 -0.174px 0.174px rgb(255 255 255 / 10%);
+  color: #0a0a0a;
+}
+.beam-plans__action--current {
+  height: 9.028px;
+  padding: 1.389px 2.778px 0.694px;
+  border: 0.347px solid rgb(255 255 255 / 10%);
+  background: #3d3d3d;
+  box-shadow: none;
+  color: #fff;
+}
+
+.beam-plans__list { display: flex; flex-direction: column; gap: 1.389px; padding-top: 4.167px; }
+.beam-plans__include { display: flex; height: 6.25px; flex-direction: column; align-items: flex-start; color: #8f8f8f; }
+.beam-plans__item { position: relative; display: flex; min-height: 6.25px; flex-direction: column; padding-left: 6.597px; }
+.beam-plans__check { position: absolute; top: 1.04px; left: 0; }
+
+.beam-plans__contact {
+  display: flex;
+  min-height: 14.583px;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 4.167px;
+  border: 0.174px solid rgb(255 255 255 / 10%);
+  border-radius: 2.083px;
+  background: #1f1f1f;
+}
+.beam-plans__talk { display: flex; height: 6.25px; align-items: center; gap: 1.389px; }

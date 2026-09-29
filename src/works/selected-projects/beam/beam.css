@@ -35,15 +35,22 @@
    header and this section's 16px bottom margin. */
 .beam-overview { display: grid; min-height: calc(98vh - 79px); min-height: calc(98svh - 79px); grid-template-columns: 285px 542px 285px; justify-content: center; align-content: center; gap: 16px; padding-block: 120px; margin-bottom: 16px; }
 .beam-details, .beam-description { display: flex; min-width: 0; flex-direction: column; justify-content: space-between; }
+/* The summary and the story share the middle row, so the two sides are the same height
+   (the Visit site button lines up with the last summary row), and the equal flexible rows
+   around it centre that block on the cover, which spans all three. */
+.beam-overview { grid-template-rows: 1fr auto 1fr; }
+.beam-details, .beam-description { grid-row: 2; }
+.beam-cover { grid-row: 1 / 4; align-self: center; }
 .beam-details h1 { font: inherit; letter-spacing: 0.24px; }
 .beam-category { margin-top: 2px; color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }
 .beam-facts { margin: 12px 0 0; letter-spacing: -0.24px; }
-.beam-fact { display: grid; grid-template-columns: 50px minmax(0, 1fr); gap: 20px; padding-block: 10px; border-bottom: 0.5px solid rgb(0 0 0 / 10%); }
-.beam-fact:last-child { border: 0; }
+/* Labels get room for the longest ("Deliverables") so none wraps. */
+.beam-fact { display: grid; grid-template-columns: 80px minmax(0, 1fr); gap: 20px; padding-block: 20px; border-bottom: 0.5px solid rgb(0 0 0 / 10%); }
+.beam-fact:last-child { padding-bottom: 0; border: 0; }
 .beam-fact dt, .beam-fact dd { margin: 0; color: rgb(0 0 0 / 60%); }
 .beam-fact dd > span { display: block; }
-.beam-url { display: flex; align-items: center; gap: 20px; padding-block: 6px; }
-.beam-url > span:first-child { width: 50px; flex: 0 0 50px; color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }
+/* The Visit site button, at the foot of the right column. */
+.beam-closing { display: flex; flex-direction: column; align-items: flex-start; gap: 16px; }
 .beam-visit-frame { display: block; padding: 0.5px; border-radius: var(--radius-control); background: #f0f0f0; }
 .beam-visit { display: flex; height: 25px; align-items: center; justify-content: center; gap: 4px; padding: 4px 12px 4px 14px; border: 0.5px solid rgb(0 0 0 / 10%); border-radius: var(--radius-control); background: linear-gradient(180deg, rgb(255 255 255 / 20%) 50%, rgb(230 230 230 / 20%)), #fff; box-shadow: inset 0 0.5px 0.5px rgb(255 255 255 / 60%), inset 0 -0.5px 0.5px rgb(0 0 0 / 20%); text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 15%), 0.3px 0.3px 0.4px rgb(0 0 0 / 20%); white-space: nowrap; }
 /* Shows Motion Lab's cover frame background while the cover motion loads. */
@@ -68,11 +75,20 @@
 /* Motion 14: Motion Lab's frame as-is (593 × 473 with its #d9dcdf guides, bar 197.6px
    from the top, centred; from motion-14/preview.css), scaled to the slot by SceneFit. */
 .beam-motion-14 { position: absolute; inset: 0; }
+/* Content 04: the Beam website on an iPhone (content-04/BeamPhone.tsx), under the guides. */
+.beam-content-04 { position: absolute; inset: 0; }
+/* Figma's layer order: the horizontal guides pass behind the phone, the vertical ones over it. */
+#content-04 .beam-guide--vertical { z-index: 1; }
+/* Content 07, 08 and 11–13, built in code (content-07/ … content-13/), fill their tile
+   (11–13 draw their own guides). In 07 Figma draws every guide above the dialog's dim, so
+   its guides sit on top. */
+.beam-content-coded { position: absolute; inset: 0; }
+#content-07 .beam-guide { z-index: 1; }
 .beam-motion-14-frame {
   position: relative;
   width: 100%;
   height: 100%;
-  background: #f7f8fa;
+  background: var(--color-project);
 }
 /* The guides, as 1px borders centred on Motion Lab's lines (x 60 and 531; y 102 and 374
    from the bottom). Its half-pixel gradient stops don't paint once the frame is scaled. */
@@ -97,7 +113,8 @@
 /* The supplied frame is desktop-only. Reflow the same content, in order,
    when its three columns no longer fit; no additional mobile content. */
 @media (max-width: 900px) {
-  .beam-overview { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); padding-block: 64px; }
+  .beam-overview { grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); grid-template-rows: none; padding-block: 64px; }
+  .beam-details, .beam-description, .beam-cover { grid-row: auto; }
   .beam-description { grid-column: 1 / -1; gap: 24px; }
   .beam-cover { align-self: start; }
 }

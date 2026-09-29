@@ -1,20 +1,21 @@
 import type { MotionScene } from '../../../components/motion/MotionPreview';
 
-// Placeholder copy duplicated from Beam; replace it with Bifrost content.
+// The project summary (left) and story (right) on the Bifrost page.
 export const bifrostProject = {
   title: 'Bifrost',
-  category: 'Website Design + Implementation',
+  // The live site, opened by Visit site.
+  url: 'https://www.getmaxim.ai/',
+  category: 'Website Design · Motion · Framer Implementation',
   details: [
-    { label: 'Year', lines: ['2022'] },
-    { label: 'Role', lines: ['Product Designer + Developer (Vibe Code)'] },
-    { label: 'Role', lines: ['Product Designer + Developer (Vibe'] },
-    { label: 'Services', lines: ['HTML', 'CSS', 'JavaScript', 'Custom Tumblr theme'] },
+    { label: 'Year', lines: ['2026'] },
+    { label: 'Type', lines: ['AI Infrastructure · Marketing Website'] },
+    { label: 'Role', lines: ['Product Designer + Framer Implementation'] },
+    { label: 'Deliverables', lines: ['Website Design · Responsive Design · Framer Implementation'] },
   ],
   description: [
-    'Beam is a shared workspace that keeps your files and context available across laptops, cloud environments, CI, sandboxes, and AI agents.',
-    'It helps humans and agents work from the same up-to-date files without repeatedly copying, syncing, or rebuilding setup.',
+    'Bifrost is an open-source enterprise AI gateway built to help teams run AI workloads with reliability, governance, and scale.',
+    'It works across different models and SDKs, with features including governance, MCP gateway, guardrails, and drop-in integration into existing AI infrastructure.',
   ],
-  note: 'copying, syncing, or rebuilding setup.',
   // Motion Lab's bifrost-content/motion-cover (Figma 244:2284); refresh with `npm run sync:motions`.
   // The home page's Works card uses this same cover (src/data/portfolio.ts).
   cover: { id: 'bifrost/cover', width: 806, height: 706, title: 'Bifrost cover motion' } satisfies MotionScene,

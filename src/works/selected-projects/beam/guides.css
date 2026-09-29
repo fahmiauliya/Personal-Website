@@ -1,0 +1,5 @@
+/* Guides.tsx: each line centred on its Figma position. */
+.beam-guides__line { position: absolute; pointer-events: none; background: rgb(0 0 0 / 15%); }
+.beam-guides__line--dark { background: rgb(255 255 255 / 30%); }
+.beam-guides__line--horizontal { right: 0; left: 0; height: 0.34px; transform: translateY(-50%); }
+.beam-guides__line--vertical { top: 0; bottom: 0; width: 0.34px; transform: translateX(-50%); }

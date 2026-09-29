@@ -25,17 +25,15 @@ export default function BeamPage() {
                 ))}
               </dl>
             </div>
-            <div className="beam-url" data-project-part="url">
-              <span>URL</span>
-              <span className="beam-visit-frame">
-                <button className="beam-visit skeuo-button" type="button"><span>Visit site</span><img src={attachmentIcon} alt="" width="14" height="14" /></button>
-              </span>
-            </div>
           </div>
           <div className="beam-cover" data-project-cover><MotionPreview scene={beamProject.cover} eager /></div>
           <div className="beam-description" data-project-part="description">
             <div>{beamProject.description.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div>
-            <p>{beamProject.note}</p>
+            <div className="beam-closing">
+              <span className="beam-visit-frame">
+                <button className="beam-visit skeuo-button" type="button"><span>Visit site</span><img src={attachmentIcon} alt="" width="14" height="14" /></button>
+              </span>
+            </div>
           </div>
         </section>
         <BeamGallery />

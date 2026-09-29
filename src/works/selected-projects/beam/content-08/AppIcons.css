@@ -1,0 +1,37 @@
+/* Content 08 — Beam's app icon, dark and light (Figma 141:8249), at design size 593 × 473.
+   Positions, sizes, gradients and shadows are Figma's. */
+.beam-app-icons { position: relative; width: 593px; height: 473px; }
+.beam-app-icons *, .beam-app-icons *::before, .beam-app-icons *::after { box-sizing: border-box; }
+.beam-app-icons svg { display: block; overflow: visible; }
+
+/* The icons' own construction lines (0.515px, 15% black), longer than the frame: they run
+   past its edges and are clipped by the tile. */
+.beam-app-icons__guide { position: absolute; pointer-events: none; background: rgb(0 0 0 / 15%); }
+.beam-app-icons__guide--h { left: -225.02px; width: 1028.143px; height: 0.515px; transform: translateY(-50%); }
+.beam-app-icons__guide--v { top: -47.66px; width: 0.515px; height: 550.07px; transform: translateX(-50%); }
+
+.beam-app-icon {
+  position: absolute;
+  top: 150.06px;
+  width: 154.627px;
+  height: 154.627px;
+  overflow: hidden;
+  border-radius: 39.945px;
+  box-shadow: 0 2.577px 2.577px 0.258px rgb(0 0 0 / 4%), 0 0.515px 0.515px rgb(0 0 0 / 25%);
+}
+.beam-app-icon--dark { left: 92.74px; background: linear-gradient(180deg, #535353 0%, #222 50%, #1b1b1b 100%); }
+.beam-app-icon--light { left: 330.8px; border: 0.455px solid #c8c8c8; background: linear-gradient(180deg, #fff 0%, #fff 19.887%, #dedede 100%); }
+
+/* The inset frame with the icon grid, drawn twice (once turned 90°) to make the squares. */
+.beam-app-icon__frame { position: absolute; width: 138.134px; height: 138.134px; overflow: hidden; border-radius: 34.791px; }
+.beam-app-icon--dark .beam-app-icon__frame { top: 8.25px; left: 8.24px; border: 0.515px solid rgb(255 255 255 / 30%); }
+.beam-app-icon--light .beam-app-icon__frame { top: 8.02px; left: 8.02px; border: 0.515px solid rgb(0 0 0 / 60%); opacity: 0.2; }
+.beam-app-icon__grid { position: absolute; top: -0.52px; left: 50%; width: 138.134px; height: 138.134px; transform: translateX(-50%); }
+.beam-app-icon__grid--rotated { transform: translateX(-50%) rotate(-90deg); }
+.beam-app-icon__grid svg { position: absolute; top: 0; left: -0.19%; width: 100.38%; height: 100%; }
+
+/* The logo: four petals in a 93.467 × 92.519 group, each at its SVG's native size. */
+.beam-app-icon__logo { position: absolute; top: 31.18px; width: 93.467px; height: 92.519px; }
+.beam-app-icon--dark .beam-app-icon__logo { left: 31.05px; }
+.beam-app-icon--light .beam-app-icon__logo { left: 31.1px; }
+.beam-app-icon__petal { position: absolute; }

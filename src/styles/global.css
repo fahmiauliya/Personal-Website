@@ -825,6 +825,27 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
 /* Locked "coming soon" cards (Works.tsx, Padlock.tsx; Motion Lab shared/site.module.css). */
 .project-meta h3.project-locked-title { display: flex; align-items: flex-start; gap: 2px; }
 .project-meta time.project-soon { opacity: 0.2; }
+/* Locked covers are monochrome: a grey filter over the cover, with a round hole of true
+   colour at the cursor (Works.tsx writes --reveal-x/--reveal-y). The hole grows in when
+   the cursor enters and shrinks away when it leaves. backdrop-filter greys whatever is
+   under it, so the TalentPluto video keeps playing underneath, decoded once. */
+@property --reveal-radius { syntax: '<length>'; inherits: false; initial-value: 0px; }
+.project-colour-reveal {
+  --reveal-radius: 0px;
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-backdrop-filter: grayscale(1);
+  backdrop-filter: grayscale(1);
+  -webkit-mask-image: radial-gradient(circle at var(--reveal-x, 50%) var(--reveal-y, 50%), transparent calc(var(--reveal-radius) - 48px), #000 var(--reveal-radius));
+  mask-image: radial-gradient(circle at var(--reveal-x, 50%) var(--reveal-y, 50%), transparent calc(var(--reveal-radius) - 48px), #000 var(--reveal-radius));
+  transition: --reveal-radius 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.project-image[data-reveal] .project-colour-reveal { --reveal-radius: 150px; }
+@media (prefers-reduced-motion: reduce) {
+  .project-colour-reveal { transition: none; }
+}
+
 .project-locked-grid {
   position: absolute;
   top: 50%;

@@ -1,4 +1,5 @@
 import { projects, recentWorks, type Project } from '../../data/portfolio';
+import type { PointerEvent } from 'react';
 import MotionPreview from '../../components/motion/MotionPreview';
 import { LockIcon, LockedGrid, Padlock } from './Padlock';
 import { useWorkTab, type WorkTab } from '../../components/navigation/workTab';
@@ -6,6 +7,30 @@ import { useWorkTab, type WorkTab } from '../../components/navigation/workTab';
 // Projects without a page yet are locked "coming soon" cards (Motion Lab website-content,
 // shared/site.tsx): a small lock after the title, "(soon)" for the date, and the cover
 // under a dotted grid with a padlock on it, or the padlock alone on an empty box.
+
+// Locked covers are monochrome; a spotlight of true colour follows the cursor over them
+// (global.css, .project-colour-reveal). The pointer position is written as CSS variables
+// once per frame.
+let revealFrame = 0;
+function followCursor(event: PointerEvent<HTMLDivElement>) {
+  const box = event.currentTarget;
+  const { left, top } = box.getBoundingClientRect();
+  const x = event.clientX - left, y = event.clientY - top;
+  cancelAnimationFrame(revealFrame);
+  revealFrame = requestAnimationFrame(() => {
+    box.style.setProperty('--reveal-x', `${x}px`);
+    box.style.setProperty('--reveal-y', `${y}px`);
+  });
+}
+const revealHandlers = {
+  onPointerEnter: (event: PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== 'mouse') return;
+    followCursor(event);
+    event.currentTarget.dataset.reveal = '';
+  },
+  onPointerMove: (event: PointerEvent<HTMLDivElement>) => { if (event.pointerType === 'mouse') followCursor(event); },
+  onPointerLeave: (event: PointerEvent<HTMLDivElement>) => { delete event.currentTarget.dataset.reveal; },
+};
 
 // Each navigation tab shows its own cards in the same grid, with its own placement
 // (.project-card--N for Selected Project, .recent-card--N for Recent Work).
@@ -50,6 +75,7 @@ function WorksPanel({ category, active }: { category: WorkTab; active: boolean }
               className={`project-image${project.cover || project.coverScene || project.coverImage ? ' project-image--media' : project.href ? '' : ' project-image--locked'}`}
               role="img"
               aria-label={`${project.title}: ${project.imageLabel}`}
+              {...(!project.href && project.coverImage ? revealHandlers : {})}
             >
               {project.cover
                 ? <MotionPreview scene={project.cover} fit="cover" />
@@ -61,6 +87,7 @@ function WorksPanel({ category, active }: { category: WorkTab; active: boolean }
                       ? <video className="project-cover-image" src={project.coverVideo} poster={project.coverImage} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />
                       : <img className={`project-cover-image${project.coverImageFit === 'width' ? ' project-cover-image--fill-width' : ''}`} src={project.coverImage} alt="" loading="lazy" decoding="async" />}
                     {!project.href && <>
+                      <span className="project-colour-reveal" aria-hidden="true" />
                       <LockedGrid className="project-locked-grid" />
                       <span className="project-locked-padlock"><Padlock width={53.354} /></span>
                     </>}
