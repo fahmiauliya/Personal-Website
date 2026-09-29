@@ -1,5 +1,6 @@
 /* Outlined text (Outlined.tsx): a box of the text's measured size, the glyphs drawn in it. */
 .beam-outlined { position: relative; display: block; flex: none; }
 .beam-outlined > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-/* Live text, only until a piece is traced: lines break where the design breaks them. */
-[data-t] { white-space: nowrap; }
+/* Live text, only until a piece is traced: lines break where the design breaks them, and it
+   is a block, so the box measured is its lines' (line height), which the outlines keep. */
+[data-t] { display: block; white-space: nowrap; }

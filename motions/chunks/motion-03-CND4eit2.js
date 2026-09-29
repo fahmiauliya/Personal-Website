@@ -1,0 +1,1 @@
+import{j as e}from"./jsx-runtime-DkJNuDbM.js";import{d as o}from"./motions-CQmQAtKX.js";function s(){const{RiveComponent:t}=o.useRive({src:"/motions/rive/Hero-bg-home.riv",autoplay:!0});return e.jsx(t,{style:{position:"absolute",inset:0,width:"100%",height:"100%",transform:"translateY(-20px) scale(1.3)",transformOrigin:"center",pointerEvents:"none"}})}export{s as default};

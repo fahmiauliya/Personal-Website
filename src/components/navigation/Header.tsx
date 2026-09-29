@@ -36,6 +36,7 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
     '--navigation-control-height': `${NAVIGATION_CONTROL_HEIGHT}px`,
     '--navigation-rim-top': 'var(--color-control-stroke-top)',
     '--navigation-rim-bottom': 'var(--color-control-stroke-bottom)',
+    '--navigation-progress': progress,
   } as CSSProperties;
 
   // Already on the home page, "Works" glides down to the grid instead of the browser's
@@ -75,9 +76,11 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
       <nav className="site-nav" data-state={progress < 0.5 ? 'intro' : 'works'} data-works-settled={isWorksSettled || undefined} style={navigationStyle} aria-label="Primary navigation">
         <NavigationMaterial path={materialPath(centerLeft, centerWidth, aboutCenter, progress, NAVIGATION_CONTROL_HEIGHT / 2)} />
 
-        <a className="nav-circle nav-surface nav-home" style={{ transform: `translateX(${78 - 46 * progress}px)` }} href="/" aria-label="Back to introduction">
-          <span className="nav-icon nav-icon--logo" aria-hidden="true">
-            <span ref={logo}><img src={homeIcon} alt="" /></span>
+        <a className="nav-link nav-home" style={{ transform: `translateX(${78 - 46 * progress}px)` }} href="/" aria-label="Back to introduction">
+          <span className="nav-circle nav-surface">
+            <span className="nav-icon nav-icon--logo" aria-hidden="true">
+              <span ref={logo}><img src={homeIcon} alt="" /></span>
+            </span>
           </span>
         </a>
 
@@ -105,8 +108,10 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
           <span className="nav-about-label" aria-hidden="true" style={{ width: labelWidth, opacity: 1 - collapse }}><span>About</span></span>
         </a>
 
-        <a className="nav-circle nav-surface nav-email" style={{ transform: `translateX(${269 + 78 * progress}px)` }} href={CONTACT_MAILTO} aria-label="Send an email">
-          <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={contactIcon} alt="" /></span>
+        <a className="nav-link nav-email" style={{ transform: `translateX(${269 + 78 * progress}px)` }} href={CONTACT_MAILTO} aria-label="Send an email">
+          <span className="nav-circle nav-surface">
+            <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={contactIcon} alt="" /></span>
+          </span>
         </a>
       </nav>
     </header>

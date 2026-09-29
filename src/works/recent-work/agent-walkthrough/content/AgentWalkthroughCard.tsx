@@ -1,7 +1,7 @@
 import { useCallback, useRef } from 'react';
 import AgentOrb, { orbSettings } from './shaders/AgentOrb';
 import AnimatedBackground, { backgroundDefaults, type BackgroundSettings } from './shaders/AnimatedBackground';
-import background from './assets/background.png';
+import background from './assets/background.webp';
 import chevron from './assets/chevron.svg';
 import iconMaxAgent from './assets/icon-max-agent.svg';
 import iconNetwork from './assets/icon-network.svg';

@@ -93,7 +93,7 @@
 .beam-app__cell--date { width: 62.296px; }
 .beam-app__cell--menu { width: 36.245px; align-self: stretch; justify-content: flex-end; }
 .beam-app__cell--menu img { width: 6.79595px; height: 6.79595px; }
-.beam-app__badge { padding: 2.265px 4.531px 2.265px 3.398px; border-radius: 999px; background: #f2f7f7; font-size: 3.21px; line-height: 1; color: #587174; }
+.beam-app__badge { padding: 2.265px 4.531px 2.265px 3.398px; border-radius: 999px; background: #f2f7f7; font-size: 5.663px; line-height: 1; color: #587174; }
 .beam-app__stats { display: flex; min-width: 0; flex: 1 0 0; flex-direction: column; overflow: hidden; color: #0a0a0a; }
 .beam-app__stat { display: flex; align-items: center; justify-content: space-between; padding: 2.265px 4.531px; border: 0.283px solid rgb(0 0 0 / 10%); border-top: 0; background: #fff; }
 .beam-app__stat:first-child { border-top: 0.283px solid rgb(0 0 0 / 10%); border-radius: 2.265px 2.265px 0 0; }

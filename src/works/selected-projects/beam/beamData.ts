@@ -1,12 +1,10 @@
 import type { MotionScene } from '../../../components/motion/MotionPreview';
-import content09Artwork from './assets/content-09.svg';
-import content10Artwork from './assets/content-10.svg';
 
 // Geometry from Figma frame 142:95. The summary (left) and story (right) are final copy;
 // replace the gallery's empty media areas here when final assets are ready.
 export const beamProject = {
   title: 'Beam',
-  category: 'Product Design · Logo · Web App · Website · Implementation',
+  category: 'Product Design · Web App · Website · Implementation',
   details: [
     { label: 'Year', lines: ['2026'] },
     { label: 'Type', lines: ['Product + Marketing Website'] },
@@ -19,7 +17,8 @@ export const beamProject = {
   ],
   // Motion Lab's beam-content/motion-cover (Figma 248:3595); refresh with `npm run sync:motions`.
   // The home page's Works card uses this same cover (src/data/portfolio.ts).
-  cover: { id: 'beam/cover', width: 806, height: 706, title: 'Beam cover motion' } satisfies MotionScene,
+  // It draws no Rive, so it doesn't load the Rive runtime (MotionPreview).
+  cover: { id: 'beam/cover', width: 806, height: 706, title: 'Beam cover motion', rive: false } satisfies MotionScene,
 };
 
 export interface BeamVisual {
@@ -31,7 +30,6 @@ export interface BeamVisual {
   verticalGuides?: number[];
   horizontalGuides?: number[];
   overlappingLabel?: string;
-  artwork?: string;
   preview?: {
     x: number;
     y: number;
@@ -56,8 +54,8 @@ export const beamVisuals: BeamVisual[] = [
   // Content 07 and 08 are built in code (./content-07, ./content-08); their guides are Figma's.
   { id: 7, width: 593, height: squareHeight, dark: true, labelTop: 19.73, verticalGuides: [60.05, 531], horizontalGuides: [99.18, 371.57] },
   { id: 8, width: 593, height: squareHeight, labelTop: 19.73, verticalGuides: [60.05, 289, 531], horizontalGuides: [98.82, 371.21] },
-  { id: 9, width: 384, height: 479, labelTop: 19.77, artwork: content09Artwork },
-  { id: 10, width: 802, height: 479, labelTop: 19.77, artwork: content10Artwork },
+  { id: 9, width: 384, height: 479, labelTop: 19.77 },
+  { id: 10, width: 802, height: 479, labelTop: 19.77 },
   { id: 11, width: 593, height: squareHeight, labelTop: 19.77 },
   { id: 12, width: 593, height: squareHeight, dark: true, labelTop: 19.77 },
   { id: 13, width: 593, height: squareHeight, labelTop: 19.77 },

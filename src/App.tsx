@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useLayoutEffect, useState } from 'react';
 import ContactFooter from './components/contact/ContactFooter';
 import Header from './components/navigation/Header';
 import Intro from './pages/home/Intro';
@@ -10,10 +10,19 @@ import { LoaderMark } from './components/transition/LoaderMark';
 import { PuzzleOverlay } from './components/transition/PuzzleOverlay';
 import { useSiteTransition } from './components/transition/useSiteTransition';
 import AboutPage from './pages/about/AboutPage';
-import BeamPage from './works/selected-projects/beam/BeamPage';
+import { lazyPage } from './components/transition/lazyPages';
 import BifrostPage from './works/selected-projects/bifrost/BifrostPage';
 import RecentWorkPage from './works/recent-work/RecentWorkPage';
 import { recentWorkProjectBySlug } from './works/recent-work/recentWorkData';
+
+// The Beam page is its own file: its gallery is mostly code (outlined text, inline
+// artwork), which every other page would otherwise download. It loads when it's opened,
+// or as soon as a pointer or keyboard focus reaches a link to it, so opening stays instant.
+const loadBeamPage = lazyPage(() => import('./works/selected-projects/beam/BeamPage'));
+const BeamPage = lazy(loadBeamPage);
+const preloadBeamPage = (event: Event) => {
+  if ((event.target as Element | null)?.closest?.('a[href="/projects/beam"], a[href="/projects/beam/"]')) void loadBeamPage();
+};
 
 function PortfolioPage() {
   useIntroCoverMotion();
@@ -61,6 +70,15 @@ export default function App() {
   const recentWork = recentWorkProjectBySlug.get(recentWorkSlug(detailPath) ?? '');
 
   useEffect(() => {
+    document.addEventListener('pointerover', preloadBeamPage);
+    document.addEventListener('focusin', preloadBeamPage);
+    return () => {
+      document.removeEventListener('pointerover', preloadBeamPage);
+      document.removeEventListener('focusin', preloadBeamPage);
+    };
+  }, []);
+
+  useEffect(() => {
     document.title = isBeamPage
       ? 'Beam — Fahmi Auliya'
       : isBifrostPage
@@ -83,7 +101,7 @@ export default function App() {
                 position work (projectTransition.ts). */}
             {isProjectPath(detailPath) && (
               <div className={`project-layer${preparedPath ? ' project-layer--preparing' : ''}`} aria-hidden={preparedPath ? true : undefined} inert={preparedPath ? true : undefined}>
-                {isBeamPage ? <BeamPage /> : isBifrostPage ? <BifrostPage /> : recentWork ? <RecentWorkPage project={recentWork} /> : null}
+                {isBeamPage ? <Suspense fallback={null}><BeamPage /></Suspense> : isBifrostPage ? <BifrostPage /> : recentWork ? <RecentWorkPage project={recentWork} /> : null}
               </div>
             )}
           </>

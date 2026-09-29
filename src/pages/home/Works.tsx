@@ -1,6 +1,7 @@
 import { projects, recentWorks, type Project } from '../../data/portfolio';
-import type { PointerEvent } from 'react';
+import { useRef, useState, type PointerEvent } from 'react';
 import MotionPreview from '../../components/motion/MotionPreview';
+import { useNearView } from '../../components/motion/useNearView';
 import { LockIcon, LockedGrid, Padlock } from './Padlock';
 import { useWorkTab, type WorkTab } from '../../components/navigation/workTab';
 
@@ -71,34 +72,49 @@ function WorksPanel({ category, active }: { category: WorkTab; active: boolean }
                     <time className="project-soon">(soon)</time>
                   </div>
                 </header>}
-            <div
-              className={`project-image${project.cover || project.coverScene || project.coverImage ? ' project-image--media' : project.href ? '' : ' project-image--locked'}`}
-              role="img"
-              aria-label={`${project.title}: ${project.imageLabel}`}
-              {...(!project.href && project.coverImage ? revealHandlers : {})}
-            >
-              {project.cover
-                ? <MotionPreview scene={project.cover} fit="cover" />
-                : project.coverScene
-                ? <project.coverScene />
-                : project.coverImage
-                ? <>
-                    {project.coverVideo
-                      ? <video className="project-cover-image" src={project.coverVideo} poster={project.coverImage} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />
-                      : <img className={`project-cover-image${project.coverImageFit === 'width' ? ' project-cover-image--fill-width' : ''}`} src={project.coverImage} alt="" loading="lazy" decoding="async" />}
-                    {!project.href && <>
-                      <span className="project-colour-reveal" aria-hidden="true" />
-                      <LockedGrid className="project-locked-grid" />
-                      <span className="project-locked-padlock"><Padlock width={53.354} /></span>
-                    </>}
-                  </>
-                : project.href
-                ? <span>{project.imageLabel}</span>
-                : <Padlock />}
-            </div>
+            <ProjectImage project={project} />
           </article>
         ))}
       </div>
+    </div>
+  );
+}
+
+// The card's cover. Image and video covers load like the motion covers: once the card is
+// near the screen and not under an open project page (useNearView), so a visitor who
+// lands straight on a project page doesn't download the Works grid behind it. Once
+// shown, they stay.
+function ProjectImage({ project }: { project: Project }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const near = useNearView(ref);
+  const [shown, setShown] = useState(false);
+  if (near && !shown) setShown(true);
+  return (
+    <div
+      ref={ref}
+      className={`project-image${project.cover || project.coverScene || project.coverImage ? ' project-image--media' : project.href ? '' : ' project-image--locked'}`}
+      role="img"
+      aria-label={`${project.title}: ${project.imageLabel}`}
+      {...(!project.href && project.coverImage ? revealHandlers : {})}
+    >
+      {project.cover
+        ? <MotionPreview scene={project.cover} fit="cover" />
+        : project.coverScene
+        ? <project.coverScene />
+        : project.coverImage
+        ? <>
+            {shown && (project.coverVideo
+              ? <video className="project-cover-image" src={project.coverVideo} poster={project.coverImage} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />
+              : <img className={`project-cover-image${project.coverImageFit === 'width' ? ' project-cover-image--fill-width' : ''}`} src={project.coverImage} alt="" decoding="async" />)}
+            {!project.href && <>
+              <span className="project-colour-reveal" aria-hidden="true" />
+              <LockedGrid className="project-locked-grid" />
+              <span className="project-locked-padlock"><Padlock width={53.354} /></span>
+            </>}
+          </>
+        : project.href
+        ? <span>{project.imageLabel}</span>
+        : <Padlock />}
     </div>
   );
 }

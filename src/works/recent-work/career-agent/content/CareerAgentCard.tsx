@@ -1,12 +1,12 @@
 import type { CSSProperties } from 'react';
 import Halftone from './Halftone';
 import { pageGrain } from './pageGrain';
-import gradient1 from './assets/images/gradient-1.jpg';
-import gradient2 from './assets/images/gradient-2.jpg';
-import person1 from './assets/images/person-1.png';
-import person2 from './assets/images/person-2.png';
-import person3 from './assets/images/person-3.png';
-import person4 from './assets/images/person-4.png';
+import gradient1 from './assets/images/gradient-1.webp';
+import gradient2 from './assets/images/gradient-2.webp';
+import person1 from './assets/images/person-1.webp';
+import person2 from './assets/images/person-2.webp';
+import person3 from './assets/images/person-3.webp';
+import person4 from './assets/images/person-4.webp';
 import antimetal from './assets/logos/antimetal.svg';
 import attention from './assets/logos/attention.svg';
 import plutoLogomark from './assets/logos/pluto-logomark.svg';
@@ -18,7 +18,7 @@ import styles from './CareerAgentCard.module.css';
 
 // Figma: Portfolio-2026, "Hero - Career Agent" 285:19188 (536 × 410.204071). A Pluto landing
 // page in code, one element per Figma layer (node ids kept), over the halftone dots. Photos
-// are Figma's greyscale renders; gradients are the source JPEGs.
+// are Figma's greyscale renders; gradients are the source JPEGs, as WebP at 1280 px.
 
 const WIDTH = 536;
 const HEIGHT = 410.2040710449219;

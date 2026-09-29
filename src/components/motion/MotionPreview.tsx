@@ -8,6 +8,8 @@ export interface MotionScene {
   width: number;
   height: number;
   title: string;
+  /** false for a motion that doesn't draw with Rive: it doesn't warm the Rive runtime. */
+  rive?: false;
 }
 
 type MotionBundle = {
@@ -23,9 +25,11 @@ const BUNDLE_URL = '/motions/motions.js';
 let bundle: Promise<MotionBundle> | null = null;
 const loadBundle = () => (bundle ??= import(/* @vite-ignore */ new URL(BUNDLE_URL, window.location.href).href) as Promise<MotionBundle>);
 
-// On a page that shows motions, fetch the bundle and the Rive runtime once it's idle,
-// so the first motion to come into view doesn't wait for them (or compile them
-// mid-scroll). Pages without motions (About) never load them.
+// Once a motion that draws with Rive is showing, fetch the bundle and the Rive runtime
+// when the browser is idle, so the motions after it don't wait for them (or compile them
+// mid-scroll). Pages without motions (About) never load them, and neither does a page
+// whose showing motions don't use Rive (the Beam page's cover, with the Works grid
+// behind it covered and held back): the ~1.9 MB runtime would go unused.
 let warmed = false;
 function warmWhenIdle() {
   if (warmed) return;
@@ -56,7 +60,8 @@ export default function MotionPreview({ scene, fit = 'fill', eager = false }: { 
   const [transform, setTransform] = useState('none');
   const live = useNearView(viewportRef, eager);
 
-  useEffect(warmWhenIdle, []);
+  useEffect(() => { if (live && scene.rive !== false) warmWhenIdle(); }, [live, scene.rive]);
+
 
   // The scale is set before the first paint (layout effect), then follows the box as it
   // resizes. A ResizeObserver alone first reports a frame after the element appears, so

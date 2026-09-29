@@ -14,7 +14,7 @@
   grid-template-columns: 28px minmax(0, 1fr) 28px;
   height: 63px;
   align-items: center;
-  padding: 20px 16px 12px;
+  padding: 20px 16px 15px; /* a 28px row: the controls sit at y 20, as in Figma 185:7014 */
   background: var(--color-canvas);
 }
 
@@ -26,8 +26,6 @@
 .beam-header-center { display: flex; align-items: center; gap: 4px; justify-self: center; }
 .beam-header-spacer, .beam-close { width: 28px; height: 28px; }
 .beam-close { display: grid; place-items: center; }
-.beam-header-title { width: 109px; height: 31px; padding: 2px 4px 2px 2px; }
-.beam-header-title > span { display: grid; width: 103px; height: 27px; place-items: center; text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 25%), 0.3px 0.3px 0.4px rgb(0 0 0 / 25%); }
 
 .beam-main { width: calc(100% - 32px); margin-inline: auto; padding-bottom: 24px; }
 /* The intro (header + this) fills 98% of the screen height, content centred as before,
@@ -62,28 +60,30 @@
 .beam-gallery-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .beam-gallery-row--wide-left { grid-template-columns: minmax(0, 802fr) minmax(0, 384fr); aspect-ratio: 1198 / 479; }
 .beam-gallery-row--wide-right { grid-template-columns: minmax(0, 384fr) minmax(0, 802fr); aspect-ratio: 1198 / 479; }
-.beam-visual { position: relative; container-type: inline-size; min-width: 0; margin: 0; overflow: hidden; aspect-ratio: var(--visual-ratio); background: var(--color-project); }
+/* content-visibility: the browser skips drawing a tile while it's well off screen. Every
+   tile's size is fixed (its aspect ratio, or its row's), so skipping one never moves the page;
+   and a frame drawn by one animating tile then no longer re-sorts every tile on the page. */
+.beam-visual { position: relative; container-type: inline-size; min-width: 0; margin: 0; overflow: hidden; aspect-ratio: var(--visual-ratio); background: var(--color-project); content-visibility: auto; }
 .beam-gallery-row--wide-left .beam-visual, .beam-gallery-row--wide-right .beam-visual { aspect-ratio: auto; }
 .beam-visual--dark { background: #292929; color: #fff; }
-.beam-visual-artwork { display: block; width: 100%; height: 100%; object-fit: cover; }
 .beam-guide { position: absolute; pointer-events: none; }
 .beam-guide--vertical { top: 0; width: 0.334px; height: 100%; }
 .beam-guide--horizontal { left: 0; width: 0.334px; height: 100cqw; transform: rotate(-90deg); transform-origin: 0 0; }
+.beam-line-guides { position: absolute; inset: 0; display: block; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
 .beam-visual-preview { position: absolute; overflow: hidden; }
 .beam-visual-preview > img { display: block; width: 100%; height: 100%; object-fit: cover; }
-.beam-motion-preview { width: 100%; height: 100%; overflow: hidden; }
 /* Motion 14: Motion Lab's frame as-is (593 × 473 with its #d9dcdf guides, bar 197.6px
    from the top, centred; from motion-14/preview.css), scaled to the slot by SceneFit. */
 .beam-motion-14 { position: absolute; inset: 0; }
 /* Content 04: the Beam website on an iPhone (content-04/BeamPhone.tsx), under the guides. */
 .beam-content-04 { position: absolute; inset: 0; }
 /* Figma's layer order: the horizontal guides pass behind the phone, the vertical ones over it. */
-#content-04 .beam-guide--vertical { z-index: 1; }
-/* Content 07, 08 and 11–13, built in code (content-07/ … content-13/), fill their tile
-   (11–13 draw their own guides). In 07 Figma draws every guide above the dialog's dim, so
+#content-04 .beam-line-guides--vertical { z-index: 1; }
+/* Content 07–13, built in code (content-07/ … content-13/), fill their tile (09–13 draw
+   their own guides). In 07 Figma draws every guide above the dialog's dim, so
    its guides sit on top. */
 .beam-content-coded { position: absolute; inset: 0; }
-#content-07 .beam-guide { z-index: 1; }
+#content-07 .beam-line-guides { z-index: 1; }
 .beam-motion-14-frame {
   position: relative;
   width: 100%;
@@ -99,7 +99,6 @@
 /* The frame centre (296.5) is 1px right of the guides' centre (295.5): shift the bar 1px
    left so it sits exactly between them (60.5 to 530.5, inside the guides at 60 and 531). */
 .beam-motion-14-bar { position: absolute; top: 197.6px; left: 50%; transform: translateX(calc(-50% - 1px)); }
-.beam-motion-preview iframe { display: block; border: 0; transform-origin: top left; pointer-events: none; }
 .beam-visual-label { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 15%), 0.3px 0.3px 0.4px rgb(0 0 0 / 20%); }
 .beam-visual-label--overlap { color: #000; }
 

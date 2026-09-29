@@ -5,7 +5,7 @@
  * since Figma draws them inside a layer without changing its size. Hairlines are CSS lines: an
  * image under half a pixel wide can disappear.
  */
-@font-face { font-family: 'Velocity Outfit'; src: url('../../../../assets/fonts/outfit-variable.ttf') format('truetype'); font-style: normal; font-weight: 100 900; font-display: swap; }
+@font-face { font-family: 'Velocity Outfit'; src: url('../../../../assets/fonts/outfit-variable.woff2') format('woff2'); font-style: normal; font-weight: 100 900; font-display: swap; }
 
 .card {
   position: relative;

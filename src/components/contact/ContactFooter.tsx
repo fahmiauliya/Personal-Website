@@ -21,7 +21,10 @@ export default function ContactFooter() {
         {live && <Suspense fallback={null}><FooterGlass anchor={pill} settings={tuned} /></Suspense>}
         {live && FooterGlassDials && <Suspense fallback={null}><FooterGlassDials onChange={setTuned} /></Suspense>}
         <div className="contact-pill" ref={pill}>
-          <p>Have something that want to discuss</p>
+          <p>
+            <span className="contact-note--wide">Have something that want to discuss</span>
+            <span className="contact-note--phone">Have something you want to discuss?</span>
+          </p>
           {/* No action yet; enabled so its hover and pressed states can be checked. */}
           <button className="pill-button pill-button--dark skeuo-button" type="button">
             <span>Let’s Talk</span>

@@ -31,7 +31,7 @@ export default function BifrostPage() {
             <div>{bifrostProject.description.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div>
             <div className="bifrost-closing">
               <span className="bifrost-visit-frame">
-                <a className="bifrost-visit skeuo-button" href={bifrostProject.url} target="_blank" rel="noopener noreferrer" aria-label="Visit the Bifrost site (opens in a new tab)"><span>Visit site</span><img src={attachmentIcon} alt="" width="14" height="14" /></a>
+                <a className="bifrost-visit skeuo-button tap-target" href={bifrostProject.url} target="_blank" rel="noopener noreferrer" aria-label="Visit the Bifrost site (opens in a new tab)"><span>Visit site</span><img src={attachmentIcon} alt="" width="14" height="14" /></a>
               </span>
             </div>
           </div>

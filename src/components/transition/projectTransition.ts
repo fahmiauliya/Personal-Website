@@ -92,13 +92,16 @@ const tick = () => new Promise<void>(resolve => setTimeout(resolve, 16));
 
 // Prepare before starting View Transitions: canvas/Rive need live animation frames,
 // which browsers suspend inside the transition's update callback.
-async function coverReady(cover: HTMLElement | null, timeout = 6000) {
-  if (!cover) return false;
+// `cover` is looked up on every check: a page whose code is its own file (App.tsx) renders
+// its cover a moment after it's asked to open.
+async function coverReady(findCover: () => HTMLElement | null, timeout = 6000) {
   const start = performance.now();
   const probe = document.createElement('canvas');
   probe.width = probe.height = 12;
   const context = probe.getContext('2d', { willReadFrequently: true });
   while (performance.now() - start < timeout) {
+    const cover = findCover();
+    if (!cover) { await tick(); continue; }
     const stage = cover.querySelector('.motion-preview-stage');
     const frame = stage?.shadowRoot ?? cover;
     const pending = cover.querySelector('[data-cover-ready="pending"]');
@@ -187,7 +190,7 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
       document.documentElement.classList.add('project-preparing');
       if (opening) {
         flushSync(() => setPreparedPath(next));
-        const ready = await coverReady(detailCover());
+        const ready = await coverReady(detailCover);
         if (!ready || normalizePath(window.location.pathname) !== next) {
           flushSync(() => setPreparedPath(null));
           document.documentElement.classList.remove('project-preparing');

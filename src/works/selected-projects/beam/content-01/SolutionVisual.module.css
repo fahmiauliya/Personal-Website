@@ -1,0 +1,773 @@
+/* Motion Lab beam-content/motion-01/SolutionVisual.module.css, unchanged but for
+   three things: the visual is always its container's full width (the desktop rule; the
+   phone-only 40svh cap is gone), its icon rules name the icons (svg.lucide), so they don't
+   reach the outlined text (also an svg), and its mono text names Geist Mono. That name is only used while the
+   text is traced (glyphs.ts): the page draws every piece of text as outlines and declares
+   no font, so nothing is downloaded. */
+.visual {
+  --problem-scene-opacity: 1;
+  --problem-scene-scale: 1;
+  --problem-scene-blur: 0cqw;
+  --destination-problem-opacity: 1;
+  --destination-solution-opacity: 0;
+  --solution-scale: .84;
+  --logo-form: 0;
+  --logo-scale: .26;
+  --beam-response: 0;
+  --command-emphasis: 0;
+  --command-y: .679cqw;
+  --pulse-progress: 0;
+  --connector-settle: 0;
+  --dot-field-opacity: 0;
+  /*
+   * Shared clock for the final-state laser loop. The laser's travel and Beam's
+   * reaction are BOTH derived from these two values, so changing the speed or
+   * the active fraction keeps them synchronised automatically — there are no
+   * independently guessed delays anywhere.
+   */
+  --laser-cycle: 1.15s;
+  --laser-travel: .74;
+  /*
+   * Rail geometry, single-sourced. The rail, the failed attempt's collision
+   * point and the ambient laser's travel all derive from these two values, so
+   * widening the composition overrides them once rather than touching four
+   * literals that could drift apart.
+   */
+  --connector-left: 26.18cqw;
+  --connector-span: 46.927cqw;
+  --pill-left: 40.917cqw;
+  position: relative;
+  container-type: inline-size;
+  width: 100%;
+  aspect-ratio: 1178 / 350;
+  margin-inline: auto;
+  overflow: visible;
+  background: #fafafa;
+  color: #0a0a0a;
+}
+
+.leftCard,
+.rightCard {
+  /*
+   * Single-sourced card geometry.
+   *
+   * `scale` grows the card about its centre WITHOUT changing its layout box, so
+   * the rendered edges sit --card-overhang outside the box on each side. Any
+   * position that needs to align a card's visible edge has to account for that;
+   * deriving it here means the width and the scale can only be changed in one
+   * place and the positions follow.
+   */
+  --card-width: 23.701cqw;
+  --card-scale: 1.12;
+  --card-overhang: calc(var(--card-width) * (var(--card-scale) - 1) / 2);
+  position: absolute;
+  z-index: 2;
+  top: 3.421cqw;
+  width: var(--card-width);
+  height: 22.842cqw;
+  scale: var(--card-scale);
+}
+
+.leftCard {
+  left: 10.017cqw;
+}
+
+.rightCard {
+  left: 66.316cqw;
+}
+
+.machineCard {
+  width: 100%;
+  height: 100%;
+  padding: .507cqw;
+  overflow: hidden;
+  border: .034cqw solid rgba(0, 0, 0, .1);
+  border-radius: .815cqw;
+  background: #fff;
+  box-shadow:
+    0 .543cqw 1.087cqw -.407cqw rgba(0, 0, 0, .04),
+    0 .407cqw .815cqw -.407cqw rgba(0, 0, 0, .12),
+    0 .272cqw .815cqw -.272cqw rgba(0, 0, 0, .08),
+    0 .068cqw .136cqw -.034cqw rgba(0, 0, 0, .2),
+    inset 0 -.034cqw .034cqw rgba(0, 0, 0, .1),
+    inset 0 .034cqw .034cqw rgba(255, 255, 255, .25);
+}
+
+.machineHeader {
+  display: flex;
+  height: 3.724cqw;
+  align-items: center;
+  gap: .713cqw;
+  padding: 0 1.223cqw;
+  border: .056cqw solid #c4c4c4;
+  border-bottom: 0;
+  border-radius: .407cqw .407cqw 0 0;
+  background: #f5f5f5;
+  font-size: 1.223cqw;
+  font-weight: 400;
+  letter-spacing: -.022cqw;
+  line-height: 1;
+}
+
+.machineHeader svg:global(.lucide) {
+  width: 1.358cqw;
+  height: 1.358cqw;
+  flex: 0 0 auto;
+  color: #8f8f8f;
+  stroke-width: 1.65;
+}
+
+.headerIcon {
+  display: block;
+  width: 1.358cqw;
+  height: 1.358cqw;
+  flex: 0 0 auto;
+}
+
+.machineBody {
+  position: relative;
+  height: 18.106cqw;
+  padding: 1.245cqw 1.167cqw;
+  border: .056cqw solid #c4c4c4;
+  border-radius: 0 0 .407cqw .407cqw;
+  background: #fff;
+  box-shadow: inset 0 .056cqw .056cqw rgba(0, 0, 0, .1);
+}
+
+.path {
+  margin: 0 0 1.257cqw;
+  color: rgba(0, 0, 0, .5);
+  font-family: 'Geist Mono', monospace;
+  font-size: 1.223cqw;
+  font-weight: 400;
+  letter-spacing: -.018cqw;
+  line-height: 1;
+}
+
+.fileList {
+  display: flex;
+  flex-direction: column;
+  gap: .815cqw;
+}
+
+.fileRow {
+  display: grid;
+  height: 1.562cqw;
+  grid-template-columns: 1.358cqw auto 1fr;
+  align-items: center;
+  gap: .679cqw;
+  font-family: 'Geist Mono', monospace;
+  font-size: 1.223cqw;
+  font-weight: 400;
+  letter-spacing: -.027cqw;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.fileRow > svg {
+  width: 1.358cqw;
+  height: 1.358cqw;
+  color: #8f8f8f;
+  stroke-width: 1.65;
+}
+
+.fileIcon {
+  display: block;
+  width: 1.358cqw;
+  height: 1.358cqw;
+}
+
+.fileRow .lock {
+  width: 1.358cqw;
+  height: 1.358cqw;
+  justify-self: end;
+  color: #129457;
+  stroke-width: 1.65;
+}
+
+.secretsRequired {
+  display: flex;
+  grid-column: 3;
+  align-items: center;
+  justify-self: end;
+  gap: .543cqw;
+  color: #e51d31;
+}
+
+.secretsRequired svg:global(.lucide) {
+  width: 1.358cqw;
+  height: 1.358cqw;
+  stroke-width: 1.65;
+}
+
+.problemOnly { opacity: var(--destination-problem-opacity); }
+.solutionOnly { opacity: var(--destination-solution-opacity); }
+
+.readyState {
+  position: absolute;
+  bottom: 1.087cqw;
+  left: 1.087cqw;
+  display: flex;
+  width: 20.401cqw;
+  height: 3.124cqw;
+  align-items: center;
+  justify-content: center;
+  gap: .543cqw;
+  border-radius: .272cqw;
+  background: rgba(18, 148, 87, .1);
+  color: #129457;
+  font-size: 1.223cqw;
+  line-height: 1;
+}
+
+.rightCard .readyState.problemOnly {
+  opacity: var(--destination-problem-opacity);
+}
+.rightCard .readyState.solutionOnly {
+  opacity: var(--destination-solution-opacity);
+}
+
+.problemReadyState {
+  background: #fff0f1;
+  color: #e51d31;
+}
+
+/*
+ * Kept self-running: an indeterminate spinner is a legitimate blocked/waiting
+ * indicator and `linear` is the correct vocabulary for it. It never drives the
+ * semantic progression, and it stops once the destination has resolved.
+ */
+.problemReadyState svg:global(.lucide) { animation: statusSpin 1.1s linear infinite; }
+
+.visual[data-phase='solution'] .problemReadyState svg:global(.lucide) {
+  animation-play-state: paused;
+}
+.readyState svg:global(.lucide) {
+  width: 1.358cqw;
+  height: 1.358cqw;
+  stroke-width: 1.7;
+}
+
+.center {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  scale: 1.12;
+}
+
+.problemScene,
+.solutionScene {
+  position: absolute;
+  inset: 0;
+}
+
+.problemScene {
+  z-index: 2;
+  filter: blur(var(--problem-scene-blur));
+  opacity: var(--problem-scene-opacity);
+  transform: scale(var(--problem-scene-scale));
+  transform-origin: center;
+}
+
+/*
+ * The scene no longer gates its children behind one shared opacity. logoDisc,
+ * command and dotField are driven independently so the command can lead the
+ * transformation and the logo can form as a consequence of arrival.
+ */
+.solutionScene {
+  z-index: 3;
+  transform: scale(var(--solution-scale));
+  transform-origin: center;
+}
+
+.problemPill {
+  position: absolute;
+  top: 13.056cqw;
+  left: var(--pill-left);
+  width: 18.268cqw;
+  height: 3.497cqw;
+  opacity: var(--pill-opacity, 1);
+  transform: translate3d(0, var(--pill-y, 0cqw), 0);
+  will-change: transform, opacity;
+}
+
+/*
+ * One face, rendered twice. The neutral face is the resting truth; the failed
+ * face sits exactly on top of it and is revealed by a clip that opens from the
+ * LEFT — the side the attempt strikes.
+ */
+.pillFace {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: 1.222cqw 1fr 1.222cqw;
+  align-items: center;
+  gap: .679cqw;
+  padding: 0 1.019cqw;
+  border: .085cqw solid #d4d4d4;
+  border-radius: 1.749cqw;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(115, 115, 115, .035)),
+    #f5f5f5;
+  box-shadow:
+    0 .204cqw .407cqw -.204cqw rgba(23, 23, 23, .12),
+    inset 0 .068cqw .136cqw rgba(255, 255, 255, .85);
+  color: #525252;
+  font-size: 1.087cqw;
+  letter-spacing: -.016cqw;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/*
+ * `inset()` insets from the RIGHT by the uncovered remainder, so coverage 0
+ * shows nothing and coverage 1 shows the whole pill — a wipe that travels
+ * left -> right and retracts right -> left on reverse scroll. It is a pure
+ * function of scroll position, so every partial value is a valid frame.
+ */
+.pillFaceFailed {
+  border-color: #e51d31;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(241, 53, 70, .035)),
+    #fff0f1;
+  box-shadow:
+    0 .204cqw .407cqw -.204cqw rgba(194, 21, 42, .15),
+    inset 0 .068cqw .136cqw rgba(255, 255, 255, .85);
+  color: #44060e;
+  clip-path: inset(0 calc((1 - var(--fail-coverage, 0)) * 100%) 0 0);
+}
+
+.pillFace > svg {
+  width: 1.222cqw;
+  height: 1.222cqw;
+  stroke-width: 1.65;
+}
+
+.pillFace > svg:last-child {
+  justify-self: end;
+  color: #a3a3a3;
+}
+
+.pillFaceFailed > svg:last-child {
+  color: #f13546;
+}
+
+/* Per-pill channels, written from the failure clock in SolutionVisual.tsx. */
+.problemPill1 {
+  --pill-opacity: var(--f1-opacity, 1);
+  --pill-y: var(--f1-y, 0cqw);
+  --fail-coverage: var(--f1-coverage, 0);
+}
+
+.problemPill2 {
+  --pill-opacity: var(--f2-opacity, 0);
+  --pill-y: var(--f2-y, 0cqw);
+  --fail-coverage: var(--f2-coverage, 0);
+}
+
+.problemPill3 {
+  --pill-opacity: var(--f3-opacity, 0);
+  --pill-y: var(--f3-y, 0cqw);
+  --fail-coverage: var(--f3-coverage, 0);
+}
+
+.dotField {
+  position: absolute;
+  top: 1.06cqw;
+  left: 36cqw;
+  width: 28cqw;
+  height: 28cqw;
+  border-radius: 50%;
+  /*
+   * Background layer: below the pills (2) and the solution scene (3), so the red
+   * pulse can never wash over pill text, border or glyph.
+   */
+  z-index: 1;
+  /*
+   * State 2 reveals the field with scroll; State 1 borrows it transiently for
+   * the failure wave and returns it to nothing. One field, two contexts — the
+   * resting State 1 composition is unchanged.
+   */
+  opacity: max(
+    var(--dot-field-opacity),
+    calc(var(--failure-field, 0) * var(--failure-presence, 1))
+  );
+  pointer-events: none;
+  /* Was inherited from .solutionScene before the field became its own layer. */
+  transform: scale(var(--solution-scale));
+  transform-origin: center;
+  will-change: opacity, transform;
+}
+
+.dotCanvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    #000 0 48%,
+    rgba(0, 0, 0, .84) 66%,
+    transparent 90%
+  );
+  mask-image: radial-gradient(
+    circle at center,
+    #000 0 48%,
+    rgba(0, 0, 0, .84) 66%,
+    transparent 90%
+  );
+  will-change: opacity;
+}
+
+.dotCanvas {
+  opacity: 1;
+}
+
+.waveRing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 7.199cqw;
+  height: 7.199cqw;
+  border: .068cqw solid rgba(10, 10, 10, .045);
+  border-radius: 50%;
+  box-shadow: 0 0 .272cqw rgba(10, 10, 10, .025);
+  /*
+   * Repurposed from an infinite ambient loop into Beam's reception response:
+   * quiet, then a bounded reaction as the travelling state arrives, then settle.
+   * Three rings give the reaction layered depth without a self-running clock.
+   */
+  opacity: calc(var(--beam-response) * .55);
+  transform: translate3d(-50%, -50%, 0) scale(calc(1 + var(--beam-response) * 1.5));
+  will-change: transform, opacity;
+}
+
+.waveRing:nth-of-type(2) {
+  opacity: calc(var(--beam-response) * .32);
+  transform: translate3d(-50%, -50%, 0) scale(calc(1 + var(--beam-response) * 2.15));
+}
+
+.waveRing:nth-of-type(3) {
+  opacity: calc(var(--beam-response) * .16);
+  transform: translate3d(-50%, -50%, 0) scale(calc(1 + var(--beam-response) * 2.8));
+}
+
+.logoDisc {
+  position: absolute;
+  top: 11.46cqw;
+  left: 46.418cqw;
+  display: grid;
+  width: 7.199cqw;
+  height: 7.199cqw;
+  place-items: center;
+  border: .068cqw solid #fff;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 3.396cqw rgba(255, 255, 255, .95),
+    0 .136cqw .272cqw rgba(0, 0, 0, .1),
+    0 .543cqw 1.087cqw -.407cqw rgba(0, 0, 0, .04),
+    0 .407cqw .815cqw -.407cqw rgba(0, 0, 0, .06),
+    0 .272cqw .543cqw -.272cqw rgba(0, 0, 0, .08),
+    -.272cqw -.272cqw 1.358cqw rgba(87, 87, 96, .12),
+    inset 0 .068cqw .136cqw rgba(255, 255, 255, .6);
+  opacity: var(--logo-form);
+  transform: scale(var(--logo-scale));
+}
+
+.logoDisc::before {
+  position: absolute;
+  inset: .204cqw;
+  border: .034cqw solid rgba(0, 0, 0, .05);
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgba(217, 217, 217, .12) 100%);
+  content: '';
+}
+
+.logoDisc::after {
+  position: absolute;
+  inset: -.611cqw;
+  border: .068cqw solid rgba(255, 255, 255, .85);
+  border-radius: 50%;
+  content: '';
+  /* Repurposed from perpetual breathing into the logo's response to receiving
+     the travelling state. */
+  opacity: calc(var(--beam-response) * .7);
+  transform: scale(calc(.82 + var(--beam-response) * .36));
+}
+
+.logo {
+  position: relative;
+  z-index: 1;
+  width: 3.736cqw;
+  height: 3.736cqw;
+  /* Repurposed from a decorative loop into reinforcement of state transfer:
+     the mark brightens as it receives, then settles. */
+  filter: brightness(calc(1 + var(--beam-response) * .18))
+    contrast(calc(1 + var(--beam-response) * .06));
+  transform: scale(calc(1 + var(--beam-response) * .035));
+}
+
+.command {
+  position: absolute;
+  top: 20.153cqw;
+  left: 43.226cqw;
+  display: flex;
+  width: 13.632cqw;
+  height: 3.064cqw;
+  align-items: center;
+  padding: 0 1.087cqw;
+  border: .432cqw solid #fff;
+  border-radius: .577cqw;
+  outline: .048cqw solid rgba(0, 0, 0, .1);
+  background: #fff;
+  box-shadow:
+    0 .543cqw 1.087cqw -.407cqw rgba(0, 0, 0, .04),
+    0 .407cqw .815cqw -.407cqw rgba(0, 0, 0, .12),
+    0 .272cqw .815cqw -.272cqw rgba(0, 0, 0, .08),
+    0 .068cqw .136cqw -.034cqw rgba(0, 0, 0, .2);
+  color: #0a0a0a;
+  font-family: 'Geist Mono', monospace;
+  font-size: .815cqw;
+  font-weight: 400;
+  letter-spacing: -.02cqw;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: var(--command-emphasis);
+  transform: translateY(var(--command-y));
+}
+
+/*
+ * The connector is a quiet rail carrying ONE identifiable travelling state.
+ *
+ * Every part of it is a pure function of --pulse-progress / --connector-settle,
+ * so it scrubs and reverses exactly with scroll. There is no marquee, no
+ * repeating stream of segments, and no timer driving its semantic position.
+ *
+ * Geometry is unchanged: the rail still spans the same coordinates and still
+ * tucks behind both cards (z-index 0 vs cards at 2), so the state departs from
+ * under the source and is absorbed under the destination.
+ *
+ * `overflow` is no longer hidden so the travelling head can carry a halo that
+ * reads at the rail's 0.204cqw height. The rail's own geometry is untouched.
+ */
+.connector {
+  position: absolute;
+  z-index: 0;
+  top: 14.992cqw;
+  left: var(--connector-left);
+  width: var(--connector-span);
+  height: .204cqw;
+  background: #e5e5e5;
+  scale: 1.12 1;
+  transform-origin: center;
+}
+
+/*
+ * State 1's failed attempt, in the connector's own ink so it reads as the line
+ * itself trying to reach across rather than as a separate travelling object.
+ *
+ * The endpoint is `--pill-left` minus `--connector-left` — the same variables the
+ * layout itself uses — so the collision stays exact at every container width AND
+ * follows the composition automatically when it widens. There is no normalised
+ * constant to drift and nothing to update in two places.
+ */
+.attemptLaser {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 6.2cqw;
+  height: .34cqw;
+  border-radius: .17cqw;
+  background: linear-gradient(
+    90deg,
+    rgba(23, 23, 23, 0) 0%,
+    rgba(23, 23, 23, .18) 46%,
+    rgba(23, 23, 23, .62) 82%,
+    #171717 100%
+  );
+  /*
+   * Autoplay decides the frame; scroll decides whether the frame may be seen.
+   * The laser sits in `.connector`, which survives into State 2, so without this
+   * multiplier a frozen mid-travel streak stayed visible over the solution.
+   */
+  opacity: calc(var(--attempt-opacity, 0) * var(--failure-presence, 1));
+  pointer-events: none;
+  /*
+   * `-100%` puts the streak's RIGHT edge — its leading edge — on the travel
+   * position, so at head 1 it lands exactly on `--pill-left` minus
+   * `--connector-left`: the pill's left edge. It stops there and never crosses
+   * into the pill, and it follows the composition when that widens.
+   */
+  transform: translateX(
+      calc(
+        var(--attempt-head, 0) * (var(--pill-left) - var(--connector-left)) -
+          100%
+      )
+    )
+    translateY(-50%);
+  will-change: transform, opacity;
+}
+
+/* The trail: the path already traversed, drawn behind the head. */
+.connector::before {
+  position: absolute;
+  inset: 0;
+  background: #171717;
+  content: '';
+  opacity: calc(.35 + var(--connector-settle) * .65);
+  pointer-events: none;
+  transform: scaleX(max(var(--pulse-progress), var(--connector-settle)));
+  transform-origin: left center;
+  will-change: transform, opacity;
+}
+
+/*
+ * A brighter, softer termination on the advancing end. Without the capsule this
+ * is what gives the eye a front to track, while remaining part of the connector
+ * rather than an object on top of it.
+ */
+.connector::before {
+  background: linear-gradient(
+    90deg,
+    #171717 0%,
+    #171717 calc(100% - 3.2cqw),
+    #0a0a0a 100%
+  );
+}
+
+/*
+ * The discrete black travelling capsule (`.connector::after`) has been removed.
+ * State 2's movement is now carried by the connector's own progressive fill
+ * above, whose leading edge is brightened so it reads as a line advancing
+ * rather than as a bar growing.
+ */
+
+/*
+ * Ambient final-state laser.
+ *
+ * Deliberately time-based rather than scroll-bound: by the time it appears the
+ * semantic journey is already complete, so it determines no product state. It
+ * exists only to give the settled Solution connector some quiet life.
+ *
+ * Default is inert. The animation is applied ONLY by the
+ * [data-connector='settled'] rule below, so scrubbing back out of State 2
+ * removes it outright — no lingering half-travelled highlight, and no way for
+ * it to interfere with reverse scrubbing of the semantic transform.
+ */
+.connectorLaser {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 0;
+  width: 12cqw;
+  height: .204cqw;
+  border-radius: .102cqw;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, .28) 30%,
+    rgba(255, 255, 255, .72) 62%,
+    rgba(255, 255, 255, .98) 84%,
+    rgba(255, 255, 255, .6) 94%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(0) translate(-50%, -50%);
+  will-change: transform, opacity;
+}
+
+.visual[data-connector='settled'] .connectorLaser {
+  animation: connectorLaser var(--laser-cycle) linear infinite;
+}
+
+/* One bright pass, then a quiet gap — not a conveyor belt. */
+/*
+ * Travel occupies 0%-74% of the cycle (`--laser-travel`) at a LINEAR rate, so
+ * the streak sits exactly on the Beam mark at 37% — half of the active span.
+ * That crossing time is what the dot-field pulse is derived from in
+ * SolutionVisual.tsx, so the two cannot drift.
+ */
+@keyframes connectorLaser {
+  0% {
+    opacity: 0;
+    transform: translateX(0) translate(-50%, -50%);
+  }
+  5% { opacity: .92; }
+  64% { opacity: .92; }
+  74% {
+    opacity: 0;
+    transform: translateX(var(--connector-span)) translate(-50%, -50%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(var(--connector-span)) translate(-50%, -50%);
+  }
+}
+
+@keyframes statusSpin { to { transform: rotate(360deg); } }
+
+/*
+ * Tablet and desktop composition. The panels move OUT to the content-grid edges;
+ * nothing is scaled and nothing is resized. `.visual` fills its ratio-locked
+ * content column, so 0cqw and 100cqw are that column's edges and the panels'
+ * outer edges land exactly on them.
+ *
+ * The rail keeps its tuck under both cards (7.538cqw under the left, 6.791cqw
+ * under the right), so the state still departs from beneath the source and is
+ * absorbed beneath the destination.
+ *
+ * The overrides target DESCENDANTS, not `.visual` itself: an element with
+ * `container-type` establishes a query container for its children, and cannot
+ * be styled by a query against itself. Redefining the two rail variables on
+ * `.connector` is enough — `.attemptLaser` and `.connectorLaser` are its
+ * children and inherit them, so the collision point and the ambient laser's
+ * travel follow automatically.
+ *
+ * A container query rather than a media query, because the visual's width
+ * depends on viewport HEIGHT too (the `40svh` cap), and because it keeps the
+ * Motion Lab preview honest.
+ */
+@container (min-width: 600px) {
+  /*
+   * Tablet and desktop push the cards out to the content-column edges. They are
+   * positioned by their RENDERED edges, not their layout boxes: `left: 0` put
+   * the layout box on the boundary and left the scaled card hanging 1.422cqw
+   * past it on each side, which the container's `overflow: hidden` then cut off.
+   * Insetting by --card-overhang lands the visible edges exactly on 0 and 100cqw
+   * — the same intent the literals were reaching for, minus the clipping.
+   */
+  .leftCard {
+    left: var(--card-overhang);
+  }
+
+  .rightCard {
+    left: calc(100cqw - var(--card-width) - var(--card-overhang));
+  }
+
+  .connector {
+    --connector-left: 16.163cqw;
+    --connector-span: 66.927cqw;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visual *,
+  .visual *::before,
+  .visual *::after {
+    animation: none !important;
+  }
+
+  /*
+   * State 1 still tells its story, it just steps between the three failures
+   * instead of travelling: no attempt line, no ripple, and coverage jumps
+   * rather than sweeping. Set from SolutionVisual.tsx.
+   */
+  .attemptLaser {
+    display: none;
+  }
+}

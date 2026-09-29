@@ -1,0 +1,400 @@
+import { useEffect, useRef } from 'react';
+import activePattern from './assets/footer-active-pattern.png';
+import gateLeftClosed from './assets/footer-gate-left.svg';
+import gateRightClosed from './assets/footer-gate-right.svg';
+import gateLeftOpen from './assets/footer-gate-left-open.svg';
+import gateRightOpen from './assets/footer-gate-right-open.svg';
+import { BeamSymbol } from './BeamSymbol';
+import styles from './FooterVisual.module.css';
+
+// Motion Lab beam-content/motion-05/FooterVisual.tsx in its demo loop (the gallery's), ported:
+// the demo cursor glides onto the Beam tile, "hovers" it (gates open, glow, sparkles, pulse)
+// and glides off, every 6s. Its logic is the lab's; the site's version drops the lab's
+// playback-rate and timeline hooks, and pauses the demo clock (not just the sparkle canvas)
+// while the visual is off screen, resuming from the same moment.
+export function FooterVisual({ demoLoop = true }: { demoLoop?: boolean }) {
+  const rootRef = useRef<HTMLElement>(null);
+  const centerRef = useRef<HTMLDivElement>(null);
+  const patternCanvasRef = useRef<HTMLCanvasElement>(null);
+  const interactionRef = useRef<HTMLButtonElement>(null);
+  const pulseRef = useRef<HTMLSpanElement>(null);
+  const demoCursorRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    const centerTile = centerRef.current;
+    const patternCanvas = patternCanvasRef.current;
+    const interactionZone = interactionRef.current;
+    const footerPulse = pulseRef.current;
+    const demoCursor = demoCursorRef.current;
+    if (!root || !centerTile || !patternCanvas || !interactionZone || !footerPulse) {
+      return;
+    }
+    if (demoLoop && !demoCursor) return;
+
+    const patternContext = patternCanvas.getContext('2d');
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let animationFrame = 0;
+    let demoFrame = 0;
+    let visible = false;
+    let desktopCloseTimer: number | null = null;
+    let touchCloseTimer: number | null = null;
+    let sparkleReleaseTimer: number | null = null;
+    let pulseScaleAnimation: Animation | null = null;
+    let pulseOpacityAnimation: Animation | null = null;
+    let pulseExitAnimation: Animation | null = null;
+    let lastFrame = performance.now();
+    const started = lastFrame;
+    const interaction = {
+      strength: 0,
+      targetStrength: 0,
+    };
+    let seed = 0x42ea91;
+    const random = () => {
+      seed = (seed * 1664525 + 1013904223) >>> 0;
+      return seed / 4294967296;
+    };
+    const patternDots: Array<{
+      x: number;
+      y: number;
+      size: number;
+      phase: number;
+      speed: number;
+      falloff: number;
+    }> = [];
+
+    for (let y = 4; y < 339; y += 6) {
+      for (let x = 4; x < 848; x += 6) {
+        if (random() < 0.68) continue;
+
+        const horizontalDistance = Math.abs(x - 426) / 360;
+        const verticalDistance = Math.abs(y - 171.5) / 170;
+        const falloff = Math.max(
+          0,
+          1 - Math.pow(horizontalDistance, 1.7) - Math.pow(verticalDistance, 2.1),
+        );
+        if (falloff <= 0) continue;
+
+        patternDots.push({
+          x,
+          y,
+          size: random() > 0.86 ? 2 : 1,
+          phase: random() * Math.PI * 2,
+          speed: 0.0012 + random() * 0.0028,
+          falloff,
+        });
+      }
+    }
+
+    const draw = (now: number) => {
+      animationFrame = 0;
+      if (!visible || (reducedMotion.matches && !demoLoop)) return;
+
+      const frameScale = Math.min(3, (now - lastFrame) / 16.667);
+      lastFrame = now;
+      const ease = 1 - Math.pow(0.84, frameScale);
+      interaction.strength +=
+        (interaction.targetStrength - interaction.strength) * ease;
+
+      const elapsed = now - started;
+      const centerPulse = 0.5 + Math.sin(elapsed / 1450) * 0.5;
+
+      const centerScale = 1 + centerPulse * 0.006 + interaction.strength * 0.012;
+      centerTile.style.transform = `translate(-50%, -50%) scale(${centerScale.toFixed(4)})`;
+
+      patternContext?.clearRect(0, 0, 852, 343);
+      if (patternContext && interaction.strength > 0.01) {
+        for (const dot of patternDots) {
+          const signal =
+            Math.sin(now * dot.speed + dot.phase) * 0.62 +
+            Math.sin(now * dot.speed * 0.41 + dot.phase * 1.73) * 0.38;
+          const sparkle = Math.max(0, (signal - 0.18) / 0.82);
+          const alpha =
+            (0.025 + sparkle * sparkle * 0.42) *
+            dot.falloff *
+            interaction.strength;
+
+          if (alpha < 0.012) continue;
+          patternContext.fillStyle = `rgba(255, 255, 255, ${alpha.toFixed(3)})`;
+          patternContext.fillRect(dot.x, dot.y, dot.size, dot.size);
+        }
+      }
+
+      animationFrame = window.requestAnimationFrame(draw);
+    };
+
+    const clearPulseAnimations = () => {
+      pulseScaleAnimation?.cancel();
+      pulseOpacityAnimation?.cancel();
+      pulseExitAnimation?.cancel();
+      pulseScaleAnimation = null;
+      pulseOpacityAnimation = null;
+      pulseExitAnimation = null;
+    };
+
+    const resetPulse = () => {
+      footerPulse.style.removeProperty('opacity');
+      footerPulse.style.removeProperty('transform');
+    };
+
+    const startPulse = () => {
+      const computed = window.getComputedStyle(footerPulse);
+      const currentOpacity = Number.parseFloat(computed.opacity) || 0;
+      const currentTransform = computed.transform === 'none' ? 'scale(0.08)' : computed.transform;
+      const isInterrupted = currentOpacity > 0.01;
+
+      clearPulseAnimations();
+      footerPulse.style.opacity = String(currentOpacity);
+      footerPulse.style.transform = currentTransform;
+
+      const delay = isInterrupted ? 0 : 380;
+      const duration = isInterrupted ? 1180 : 1500;
+
+      pulseScaleAnimation = footerPulse.animate(
+        [
+          { transform: currentTransform },
+          { transform: 'scale(1.28)' },
+        ],
+        {
+          duration,
+          delay,
+          easing: 'cubic-bezier(0.2, 0.7, 0.2, 1)',
+          fill: 'forwards',
+        },
+      );
+
+      pulseOpacityAnimation = footerPulse.animate(
+        [
+          { opacity: currentOpacity, offset: 0 },
+          { opacity: 0.5, offset: 0.24 },
+          { opacity: 0.2, offset: 0.58 },
+          { opacity: 0.04, offset: 0.82 },
+          { opacity: 0, offset: 1 },
+        ],
+        { duration, delay, easing: 'linear', fill: 'forwards' },
+      );
+
+      const activeScaleAnimation = pulseScaleAnimation;
+      activeScaleAnimation.onfinish = () => {
+        if (pulseScaleAnimation !== activeScaleAnimation) return;
+        clearPulseAnimations();
+        resetPulse();
+      };
+    };
+
+    const finishPulse = () => {
+      const computed = window.getComputedStyle(footerPulse);
+      const currentOpacity = Number.parseFloat(computed.opacity) || 0;
+      const currentTransform = computed.transform === 'none' ? 'scale(0.08)' : computed.transform;
+      const matrix = new DOMMatrixReadOnly(currentTransform);
+      const currentScale = Math.hypot(matrix.a, matrix.b);
+      const exitScale = Math.min(1.36, currentScale + 0.16);
+
+      clearPulseAnimations();
+      footerPulse.style.opacity = String(currentOpacity);
+      footerPulse.style.transform = currentTransform;
+
+      if (currentOpacity <= 0.01) {
+        resetPulse();
+        return;
+      }
+
+      pulseExitAnimation = footerPulse.animate(
+        [
+          { opacity: currentOpacity, transform: currentTransform },
+          { opacity: 0, transform: `scale(${exitScale})` },
+        ],
+        {
+          duration: 360,
+          easing: 'cubic-bezier(0.22, 0.61, 0.36, 1)',
+          fill: 'forwards',
+        },
+      );
+
+      const activeExitAnimation = pulseExitAnimation;
+      activeExitAnimation.onfinish = () => {
+        if (pulseExitAnimation !== activeExitAnimation) return;
+        clearPulseAnimations();
+        resetPulse();
+      };
+    };
+
+    const resetInteraction = () => {
+      if (root.dataset.hover !== 'true') return;
+      delete root.dataset.hover;
+      finishPulse();
+      if (sparkleReleaseTimer !== null) window.clearTimeout(sparkleReleaseTimer);
+      sparkleReleaseTimer = window.setTimeout(() => {
+        sparkleReleaseTimer = null;
+        interaction.targetStrength = 0;
+      }, 820);
+    };
+
+    const activateInteraction = () => {
+      if (sparkleReleaseTimer !== null) {
+        window.clearTimeout(sparkleReleaseTimer);
+        sparkleReleaseTimer = null;
+      }
+      interaction.targetStrength = 1;
+      delete root.dataset.hover;
+      void root.offsetWidth;
+      root.dataset.hover = 'true';
+      startPulse();
+    };
+
+    const startInteraction = (event: PointerEvent) => {
+      if (event.pointerType !== 'mouse' || reducedMotion.matches) return;
+      if (desktopCloseTimer !== null) return;
+      activateInteraction();
+      desktopCloseTimer = window.setTimeout(() => {
+        desktopCloseTimer = null;
+        resetInteraction();
+      }, 2800);
+    };
+
+    const playTouchInteraction = (event: PointerEvent) => {
+      if (event.pointerType === 'mouse' || reducedMotion.matches) return;
+      if (touchCloseTimer !== null) window.clearTimeout(touchCloseTimer);
+      activateInteraction();
+      touchCloseTimer = window.setTimeout(() => {
+        touchCloseTimer = null;
+        resetInteraction();
+      }, 2600);
+    };
+
+    let demoElapsed = 0;
+    let demoLastFrame = performance.now();
+    let demoHovering = false;
+    const demoTravel = Math.min(180, root.clientWidth * 0.28);
+    const demoCycle = 6000;
+    const ease = (progress: number) => progress * progress * (3 - 2 * progress);
+    const renderDemo = (position: number) => {
+      const clamped = Math.max(0, Math.min(1, position));
+      const hovering = clamped >= 0.999;
+      if (hovering !== demoHovering) {
+        demoHovering = hovering;
+        if (hovering) activateInteraction();
+        else resetInteraction();
+      }
+      demoCursor!.style.transform = `translate(${(-demoTravel * (1 - clamped)).toFixed(1)}px, ${(demoTravel * 0.4 * (1 - clamped)).toFixed(1)}px)`;
+    };
+    const updateDemo = (now: number) => {
+      demoElapsed = (demoElapsed + Math.min(100, now - demoLastFrame)) % demoCycle;
+      demoLastFrame = now;
+      let position = 0;
+      if (demoElapsed < 1000) position = ease(demoElapsed / 1000);
+      else if (demoElapsed < 3600) position = 1;
+      else if (demoElapsed < 4600) position = 1 - ease((demoElapsed - 3600) / 1000);
+      renderDemo(position);
+      demoFrame = window.requestAnimationFrame(updateDemo);
+    };
+    const syncDemo = () => {
+      if (!demoLoop) return;
+      if (visible && !demoFrame) {
+        demoLastFrame = performance.now();
+        demoFrame = window.requestAnimationFrame(updateDemo);
+      } else if (!visible && demoFrame) {
+        window.cancelAnimationFrame(demoFrame);
+        demoFrame = 0;
+      }
+    };
+
+    const intersectionObserver = new IntersectionObserver(
+      ([entry]) => {
+        visible = entry.isIntersecting;
+        if (visible && !animationFrame && (!reducedMotion.matches || demoLoop)) {
+          lastFrame = performance.now();
+          animationFrame = window.requestAnimationFrame(draw);
+        } else if (!visible && animationFrame) {
+          window.cancelAnimationFrame(animationFrame);
+          animationFrame = 0;
+        }
+        syncDemo();
+      },
+      { rootMargin: '120px' },
+    );
+
+    intersectionObserver.observe(root);
+    if (!demoLoop) {
+      interactionZone.addEventListener('pointerenter', startInteraction);
+      interactionZone.addEventListener('pointerup', playTouchInteraction);
+    }
+
+    return () => {
+      if (animationFrame) window.cancelAnimationFrame(animationFrame);
+      if (demoFrame) window.cancelAnimationFrame(demoFrame);
+      if (desktopCloseTimer !== null) window.clearTimeout(desktopCloseTimer);
+      if (touchCloseTimer !== null) window.clearTimeout(touchCloseTimer);
+      if (sparkleReleaseTimer !== null) window.clearTimeout(sparkleReleaseTimer);
+      clearPulseAnimations();
+      resetPulse();
+      intersectionObserver.disconnect();
+      interactionZone.removeEventListener('pointerenter', startInteraction);
+      interactionZone.removeEventListener('pointerup', playTouchInteraction);
+      delete root.dataset.hover;
+    };
+  }, [demoLoop]);
+
+  return (
+    <section
+      ref={rootRef}
+      className={styles.footerVisual}
+      data-demo-loop={demoLoop ? 'true' : undefined}
+      aria-label="Interactive Beam footer key visual"
+    >
+      <div className={styles.activeField} aria-hidden="true">
+        <img
+          className={styles.activePattern}
+          src={activePattern}
+          alt=""
+          draggable="false"
+          width={852}
+          height={343}
+        />
+        <canvas
+          ref={patternCanvasRef}
+          className={styles.randomPattern}
+          width={852}
+          height={343}
+        />
+      </div>
+
+      <div className={styles.gates} aria-hidden="true">
+        <span className={`${styles.gate} ${styles.gateLeft}`}>
+          <img className={styles.gateClosed} src={gateLeftClosed} alt="" />
+          <img className={styles.gateOpen} src={gateLeftOpen} alt="" />
+        </span>
+        <span className={`${styles.gate} ${styles.gateRight}`}>
+          <img className={styles.gateClosed} src={gateRightClosed} alt="" />
+          <img className={styles.gateOpen} src={gateRightOpen} alt="" />
+        </span>
+      </div>
+
+      <span ref={pulseRef} className={styles.footerPulse} aria-hidden="true" />
+
+      <span className={styles.centerLine} aria-hidden="true" />
+      <div className={styles.centerGlow} aria-hidden="true" />
+      <div className={styles.activeTileShadow} aria-hidden="true" />
+
+      <div ref={centerRef} className={styles.centerTile} aria-hidden="true">
+        <span className={styles.tileHighlight} />
+        <span className={styles.tileEdge} />
+        <BeamSymbol
+          className={styles.activeSymbol}
+          variant="metal"
+        />
+      </div>
+
+      <button
+        ref={interactionRef}
+        type="button"
+        className={styles.interactionZone}
+        aria-label="Play Beam icon animation"
+      />
+      {demoLoop && <span ref={demoCursorRef} className={styles.demoCursor} aria-hidden="true">
+        <svg width="22" height="28" viewBox="0 0 19 24" fill="none"><path d="M1 1v17l4.5-4.5 3.2 7.5 3.1-1.4-3.2-7.4H16L1 1Z" fill="#fff" stroke="#171717" strokeWidth="1.8" strokeLinejoin="round" /></svg>
+      </span>}
+    </section>
+  );
+}

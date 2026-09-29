@@ -233,6 +233,13 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   flex: 0 0 375px;
 }
 
+/* Scrolled, the controls span x 32–375 of the 375px strip, 16px right of its centre.
+   On a phone that pushes the email button to (or past) the screen edge, so the strip
+   slides left with the morph and the scrolled controls end up centred. */
+@media (max-width: 419px) {
+  .site-nav { translate: calc(var(--navigation-progress, 0) * -16px) 0; }
+}
+
 .nav-material,
 .nav-inner-highlight {
   position: absolute;
@@ -303,7 +310,63 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   padding: 0 4px;
 }
 
-.site-nav > .nav-circle {
+/* Touch targets. The small controls (28px circles, 29px social icons, 25px pills) keep
+   their drawn size; an invisible area around each takes the tap, about 44px tall, and
+   only as wide as the gap to its neighbour allows (4px between nav circles, 2px between
+   social icons). Nothing is drawn, so the design doesn't change. A nav circle clips
+   its own contents, so its link is a plain wrapper around it (.nav-link) that holds
+   the tap area, and the circle inside draws exactly as before. */
+.nav-link { position: relative; display: block; flex: 0 0 var(--navigation-control-height); }
+.nav-link::after { position: absolute; inset: -8px -2px; content: ''; }
+.tap-target { position: relative; }
+.tap-target::after { position: absolute; inset: var(--tap-inset, -8px); content: ''; }
+.social-button.tap-target { --tap-inset: -7.5px -1px; }
+:is(.beam-visit, .bifrost-visit).tap-target { --tap-inset: -9.5px -4px; }
+
+/* A project page's title, between its home and email buttons (Figma 185:7030): the
+   controls' dark surface and rim, lit by an inner glow instead of the buttons' raised
+   shadows, as it isn't pressable. 103px wide, growing for a longer title. */
+.nav-title {
+  position: relative;
+  display: flex;
+  min-width: 103px;
+  height: 28px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  border: 0.5px solid transparent;
+  border-radius: var(--radius-control);
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2)),
+    var(--color-control);
+  box-shadow: inset 0 0 12px rgba(255, 255, 255, 0.25);
+  color: #fff;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.25), 0.3px 0.3px 0.4px rgba(0, 0, 0, 0.25);
+}
+
+.nav-title::before {
+  position: absolute;
+  inset: -0.5px;
+  padding: 0.5px;
+  border-radius: inherit;
+  background: linear-gradient(180deg, var(--color-control-stroke-top), var(--color-control-stroke-bottom));
+  content: '';
+  pointer-events: none;
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+.site-nav > .nav-link {
   position: absolute;
   top: 2px;
   left: 0;
@@ -455,19 +518,19 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   transition: box-shadow 180ms ease;
 }
 
-.nav-circle:is(button, a) { cursor: pointer; }
+.nav-link { cursor: pointer; }
 
-.nav-circle.nav-surface:hover {
+.nav-link:hover > .nav-circle.nav-surface {
   filter: brightness(1.12);
 }
 
-.nav-circle.nav-surface:hover::after {
+.nav-link:hover > .nav-circle.nav-surface::after {
   box-shadow:
     inset 0 2px 1px rgba(255, 255, 255, 0.28),
     inset 0 -1.5px 1px rgba(0, 0, 0, 0.15);
 }
 
-.nav-circle.nav-surface:active {
+.nav-link:active > .nav-circle.nav-surface {
   box-shadow:
     0 1px 1.5px 0 rgba(0, 0, 0, 0.08),
     0 0.5px 0.5px rgba(0, 0, 0, 0.2),
@@ -475,7 +538,7 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   filter: brightness(0.86);
 }
 
-.nav-circle.nav-surface:active::after {
+.nav-link:active > .nav-circle.nav-surface::after {
   box-shadow:
     inset 0 1.5px 2px rgba(0, 0, 0, 0.35),
     inset 0 -1px 1px rgba(255, 255, 255, 0.06);
@@ -1035,6 +1098,8 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   text-shadow: 0.5px 0.5px 1px rgba(0, 0, 0, 0.25), 0.3px 0.3px 0.4px rgba(0, 0, 0, 0.25);
 }
 
+.contact-note--phone { display: none; }
+
 .contact-pill .pill-button--dark {
   box-shadow:
     0 0 0 0.5px rgba(214, 214, 214, 0.08),
@@ -1189,11 +1254,15 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   .works-grid { grid-template-columns: 1fr; padding-top: 24px; padding-bottom: 24px; }
   .contact-footer { height: auto; flex-basis: auto; }
   .contact-area { padding: 64px var(--page-gutter) 48px; }
+  /* Phones get the shorter note. */
+  .contact-note--wide { display: none; }
+  .contact-note--phone { display: inline; }
 }
 
 @media (max-width: 479px) {
   .intro-copy { font-size: 13px; }
-  .contact-pill p { max-width: 180px; font-size: 12px; }
+  /* Too long for one line beside the button here, so it wraps into two even lines. */
+  .contact-pill p { max-width: 180px; font-size: 12px; text-wrap: balance; }
 }
 
 /* Inactive Works stays laid out for loading and fitting, without affecting page height. */

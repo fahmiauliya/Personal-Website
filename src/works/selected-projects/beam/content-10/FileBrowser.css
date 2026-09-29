@@ -1,0 +1,115 @@
+/* Content 10 — Beam's file browser (Figma 141:25483), at design size 802 × 479.
+   Positions, sizes and colours are Figma's; flex layout stands in for its auto-layout
+   frames. Figma's strokes here sit inside their frames without taking space, so they are
+   inset shadows, not borders. The text is outlines (glyphs.ts, set at 7.025 / 10.538 in
+   TikTok Sans), so no font loads. Like Figma's (imported from the app's page), each text box
+   is its line height rounded up to a whole pixel: 11. */
+/* Laid out at 4x and drawn at 1/4: the browser rounds each piece's position to a whole
+   layout pixel; at 4x the rounding is a quarter of a design pixel. */
+.beam-files {
+  --line: rgb(0 0 0 / 10%);
+  position: relative;
+  width: 802px;
+  height: 479px;
+  zoom: 4;
+  transform: scale(0.25);
+  transform-origin: 0 0;
+  font-size: 7.025px;
+  font-weight: 400;
+  line-height: 10.538px;
+  color: #0a0a0a;
+}
+.beam-files *, .beam-files *::before, .beam-files *::after { box-sizing: border-box; }
+.beam-files svg { display: block; flex: none; overflow: visible; }
+.beam-files__black { color: #000; }
+
+/* The app window, cropped by the frame's right and bottom edges. */
+.beam-files__window { position: absolute; top: 70.769px; left: 47px; width: 843px; height: 526.875px; overflow: hidden; background: #fff; }
+
+/* ---- Sidebar ---- */
+.beam-files__sidebar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: 126.45px;
+  height: 526.875px;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 7.025px 4.683px;
+  box-shadow: inset -0.293px 0 var(--line);
+}
+.beam-files__sidebar-top { display: flex; flex-direction: column; gap: 4.683px; }
+.beam-files__workspace { display: flex; align-items: center; justify-content: space-between; padding: 2.342px 4.683px; }
+.beam-files__brand, .beam-files__workspace-name, .beam-files__with-icon { display: flex; align-items: center; gap: 3.513px; }
+.beam-files__logo { width: 7.025px; height: 7.025px; flex: none; padding: 0.585px; }
+.beam-files__logo img { display: block; width: 5.854px; height: 5.854px; }
+
+.beam-files__nav { display: flex; flex-direction: column; gap: 16.392px; }
+.beam-files__actions { display: flex; flex-direction: column; }
+.beam-files__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  overflow: hidden;
+  padding: 2.342px 4.683px;
+  border-radius: 2.342px;
+  background: #fff;
+  box-shadow: inset 0 0 0 0.293px rgb(0 0 0 / 20%), 0 0.293px 0.585px -0.585px rgb(0 0 0 / 10%);
+}
+/* Figma's inner edge highlights sit over the field, so they are drawn on top. */
+.beam-files__search::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0.293px 0.293px rgb(255 255 255 / 25%), inset 0 -0.293px 0.293px rgb(0 0 0 / 10%); pointer-events: none; }
+.beam-files__placeholder { color: #7a7a7a; }
+.beam-files__new-folder { display: flex; align-items: center; padding: 2.342px 4.683px; border-radius: 2.342px; background: #fff; }
+
+.beam-files__folders { display: flex; flex-direction: column; gap: 2.342px; }
+.beam-files__folder { display: flex; align-items: center; justify-content: space-between; padding: 1.171px 4.683px; border-radius: 2.342px; }
+.beam-files__folder--selected { background: #f0f0f0; }
+.beam-files__folder--plain { height: 12.879px; padding: 0 4.683px; }
+.beam-files__folder--white { background: #fff; }
+
+.beam-files__sidebar-bottom { display: flex; flex-direction: column; }
+.beam-files__links { display: flex; flex-direction: column; gap: 2.342px; padding: 4.683px 0; }
+.beam-files__link { display: flex; align-items: center; gap: 3.513px; overflow: hidden; padding: 1.171px 4.683px; border-radius: 2.342px; }
+.beam-files__user { padding-top: 4.683px; }
+.beam-files__avatar { position: relative; width: 7.025px; height: 7.025px; flex: none; overflow: hidden; border-radius: 50%; }
+.beam-files__avatar img { display: block; width: 100%; height: 100%; }
+.beam-files__avatar::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 0.176px rgb(0 0 0 / 8%); }
+.beam-files__user-name { flex: 1 0 0; min-width: 1px; }
+
+/* ---- My Beam ---- */
+.beam-files__main { position: absolute; top: 0; left: 126.45px; display: flex; width: 716.55px; flex-direction: column; gap: 7.025px; overflow: hidden; padding: 9.367px 9.367px 9.367px 4.683px; }
+.beam-files__title { display: flex; align-items: center; padding-left: 4.683px; }
+.beam-files__content { display: flex; align-items: flex-start; gap: 4.683px; }
+.beam-files__list { display: flex; width: 526.875px; flex: none; flex-direction: column; gap: 4.683px; }
+
+.beam-files__table { display: flex; flex-direction: column; }
+.beam-files__row, .beam-files__stat {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: inset 0.293px 0 var(--line), inset -0.293px 0 var(--line), inset 0 -0.293px var(--line);
+}
+.beam-files__row--head, .beam-files__stat:first-child { border-radius: 2.342px 2.342px 0 0; box-shadow: inset 0 0 0 0.293px var(--line); }
+.beam-files__row--head { background: #f0f0f0; color: #525252; }
+.beam-files__row:last-child, .beam-files__stat:last-child { border-radius: 0 0 2.342px 2.342px; }
+.beam-files__size-head { color: #5c5c5e; }
+.beam-files__cell { display: flex; align-items: center; overflow: hidden; padding: 2.342px 4.683px; }
+.beam-files__cell--name { min-width: 1px; flex: 1 0 0; gap: 4.683px; }
+.beam-files__cell--size { width: 64.396px; flex: none; justify-content: flex-end; }
+.beam-files__cell--modified { width: 64.396px; flex: none; }
+.beam-files__cell--more { width: 37.467px; flex: none; align-self: stretch; justify-content: flex-end; }
+.beam-files__badge { display: flex; height: 8.342px; flex: none; align-items: center; padding: 0 3.513px; border-radius: 999px; background: #f2f7f7; color: #587174; font-size: 5.854px; line-height: 1; }
+
+.beam-files__pagination { display: flex; height: 15.683px; align-items: center; justify-content: space-between; padding-left: 4.683px; }
+.beam-files__per-page, .beam-files__pages { display: flex; align-items: center; }
+.beam-files__muted { color: #525252; }
+.beam-files__disabled { color: #8f8f8f; }
+.beam-files__page-control { display: flex; align-items: center; gap: 2.342px; padding: 2.342px 4.683px; }
+.beam-files__page { display: flex; width: 15.221px; flex: none; justify-content: center; padding: 2.342px 4.683px; }
+
+.beam-files__stats { display: flex; min-width: 1px; flex: 1 0 0; flex-direction: column; overflow: hidden; }
+.beam-files__stat { justify-content: space-between; padding: 2.342px 4.683px; }

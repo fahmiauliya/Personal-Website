@@ -1,0 +1,26 @@
+/* Content 01 (ProblemSolution.tsx): Motion Lab's Tailwind layout for this section, resolved at
+   the export's 1200 × 756 viewport (its lg breakpoint; 1svh = 7.56px). A 938px column (131px
+   side padding) centred on the #fafafa canvas: the 60.48px title box (clamp(58px, 8svh, 84px)),
+   the 1178:350 visual, and the 78px details box, 30.24px apart (clamp(20px, 4svh, 48px)).
+   Text is #0a0a0a, descriptions #525252. The TikTok Sans named here is only used while the
+   text is traced; the page draws outlines and declares no font. */
+.beam-problem-solution { position: relative; display: flex; width: 1200px; height: 756px; align-items: center; justify-content: center; overflow: hidden; padding: 0 131px; background: #fafafa; color: #0a0a0a; font-family: 'TikTok Sans', sans-serif; }
+.beam-ps-column { display: flex; width: 100%; max-width: 1178px; flex-direction: column; align-items: center; gap: 30.24px; }
+
+.beam-ps-title { position: relative; width: 100%; height: 60.48px; }
+.beam-ps-title > h2 { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 400; line-height: 36px; letter-spacing: -0.56px; text-align: center; will-change: transform, filter, opacity; }
+.beam-ps-title > h2[data-solution-state] { visibility: hidden; }
+
+.beam-ps-visual { display: flex; width: 100%; aspect-ratio: 1178 / 350; align-items: center; }
+.beam-ps-visual > * { width: 100%; }
+
+.beam-ps-details { position: relative; width: 100%; min-height: 78px; }
+.beam-ps-problems { position: absolute; top: 0; right: 0; left: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; will-change: transform, filter, opacity; }
+.beam-ps-feature { display: flex; align-items: flex-start; gap: 6px; }
+.beam-ps-feature-icon { display: flex; width: 12px; height: 12px; flex: none; align-items: center; justify-content: center; box-sizing: content-box; padding: 4px 0; overflow: hidden; }
+.beam-ps-feature-icon img { max-width: 100%; max-height: 100%; }
+.beam-ps-feature-text { display: flex; flex-direction: column; font-size: 14px; line-height: 20px; }
+.beam-ps-feature-description { color: #525252; }
+.beam-ps-solution { position: absolute; top: 0; right: 0; left: 0; display: flex; justify-content: center; visibility: hidden; will-change: transform, filter, opacity; }
+.beam-ps-solution > p { width: 100%; max-width: 387px; font-size: 14px; line-height: 20px; text-align: center; }
+.beam-ps-solution > p > .beam-outlined, .beam-ps-solution > p > [data-t] { margin-inline: auto; }

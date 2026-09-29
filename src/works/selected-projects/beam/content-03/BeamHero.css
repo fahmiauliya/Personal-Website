@@ -1,0 +1,56 @@
+/* Content 03 (BeamHero.tsx): Motion Lab's Tailwind layout for the hero and its page's navbar,
+   resolved at the export's 1500 × 865 viewport (its lg breakpoint), on the #fafafa canvas.
+   The TikTok Sans named here is only used while the text is traced; the page draws outlines
+   and declares no font. */
+.beam-hero { position: relative; width: 1500px; height: 865px; overflow: hidden; background: #fafafa; color: #0a0a0a; font-family: 'TikTok Sans', sans-serif; font-size: 16px; line-height: 1.5; }
+
+/* The page reset the lab's export ran under (Tailwind's preflight), for this section only:
+   the demo's CSS relies on it. As in Tailwind, it carries no weight (:where), so every
+   class below and in the demo's CSS overrides it. */
+:where(.beam-hero *, .beam-hero ::before, .beam-hero ::after) { border: 0 solid #e5e7eb; }
+:where(.beam-hero) :where(button, input) { margin: 0; padding: 0; color: inherit; font: inherit; line-height: inherit; background: transparent; }
+:where(.beam-hero) :where(img, svg) { display: block; vertical-align: middle; }
+:where(.beam-hero) :where(h1, h2, p, pre) { margin: 0; font-size: inherit; font-weight: inherit; }
+
+/* Navbar: fixed at the top of the lab's page (12px 132px padding, 95% canvas, 4px blur). */
+.beam-hero-nav { position: absolute; top: 0; right: 0; left: 0; z-index: 50; padding: 12px 132px; background: rgb(250 250 250 / 95%); backdrop-filter: blur(4px); }
+.beam-hero-nav-inner { display: flex; max-width: 1176px; height: 100%; align-items: center; justify-content: space-between; margin: 0 auto; }
+.beam-hero-brand { display: flex; align-items: center; gap: 5px; }
+.beam-hero-brand > img { width: 18.7px; height: 18.7px; }
+.beam-hero-brand-name { font-size: 16.667px; font-weight: 600; letter-spacing: -0.83px; }
+.beam-hero-nav-actions { display: flex; align-items: center; gap: 12px; }
+.beam-hero-signup { display: inline-flex; align-items: center; justify-content: center; padding: 8px 14px; border-radius: 9999px; color: #353331; font-size: 14px; line-height: 1; }
+
+/* The lab's Button, at rest: secondary (light) and primary (dark). */
+.beam-hero-pill { display: inline-flex; align-items: center; justify-content: center; gap: 4px; padding: 8px 14px; border: 0.5px solid; border-radius: 9999px; font-size: 14px; line-height: 1; white-space: nowrap; }
+.beam-hero-pill--light { border-color: rgb(0 0 0 / 10%); background: #fafafa; color: #000; box-shadow: inset 0 0.5px 0.5px rgb(255 255 255 / 60%), inset 0 -0.5px 0.5px rgb(0 0 0 / 50%); }
+.beam-hero-pill--dark { border-color: rgb(0 0 0 / 20%); background: linear-gradient(180deg, rgb(0 0 0 / 0%) 0%, rgb(0 0 0 / 50%) 100%), #3d3d3d; color: #fff; box-shadow: inset 0 0.5px 0.5px rgb(255 255 255 / 60%), inset 0 -0.5px 0.5px rgb(0 0 0 / 50%); }
+
+/* The intro: a 1176 × 266 box under the 43px navbar, the copy 103px down, the actions at its
+   right edge 185px down. */
+.beam-hero-intro { position: absolute; top: 43px; left: 162px; width: 1176px; height: 266px; }
+.beam-hero-copy { position: absolute; top: 103px; left: 0; display: flex; width: 100%; max-width: 748px; flex-direction: column; gap: 8px; }
+.beam-hero-offer-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.beam-hero-sale { padding: 2px 6px; border-radius: 9999px; background: #141414; color: #fff; font-size: 10px; }
+.beam-hero-offer { display: flex; align-items: center; gap: 4px; font-size: 14px; line-height: 14px; }
+.beam-hero-offer > img { width: 12px; height: 12px; }
+.beam-hero-title { font-size: 28px; line-height: 36px; letter-spacing: -0.56px; }
+.beam-hero-lede { max-width: 564px; color: #3d3d3d; font-size: 16px; line-height: 24px; }
+.beam-hero-actions { position: absolute; top: 185px; right: 0; display: flex; align-items: center; justify-content: center; gap: 12px; }
+.beam-hero-copy-prompt { position: relative; width: 250px; height: 36px; flex: none; gap: 0; overflow: hidden; padding: 0 14px; }
+.beam-hero-copy-label { position: relative; display: flex; width: 132px; height: 20px; flex: none; align-items: center; justify-content: center; overflow: hidden; }
+.beam-hero-divider { width: 1px; height: 16px; margin: 0 10px; background: rgb(0 0 0 / 10%); }
+.beam-hero-agents { display: flex; align-items: center; gap: 8px; }
+.beam-hero-agents > img { width: 14px; height: 14px; }
+.beam-hero-start { height: 34px; flex: none; padding: 0 14px; }
+
+/* The artwork (the lab's HeroVisual at desktop width): 1454px wide, 1440:540, its 1440 × 540
+   canvas scaled from the top centre. */
+.beam-hero-visual { position: absolute; top: 309px; left: 23px; width: 1454px; aspect-ratio: 1440 / 540; }
+.beam-hero-canvas { position: absolute; top: 0; left: 50%; width: 1440px; height: 540px; transform-origin: top center; }
+.beam-hero-backdrop { position: absolute; inset: 0; width: 1440px; height: 540px; }
+.beam-hero-app-clip { position: absolute; z-index: 1; top: 5.48961px; left: 137.49px; width: 1164.56px; height: 669.682px; overflow: hidden; border-radius: 5.75533px; opacity: 0.9; }
+.beam-hero-fade { position: absolute; z-index: 2; top: 264px; left: 0; width: 1440px; height: 276px; background: linear-gradient(180deg, rgb(250 250 250 / 0%) 0%, #fafafa 66.0644%); }
+
+/* The demo's search field: its placeholder, where the lab's input sat (flex: 1, #777). */
+.beam-hero-placeholder { min-width: 0; flex: 1; color: #777; }

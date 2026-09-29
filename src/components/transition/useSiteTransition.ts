@@ -3,6 +3,7 @@ import { isProjectPath, normalizePath } from './projectTransition';
 import { markFirstLoadRevealed } from './firstLoad';
 import { firstViewportReady } from './firstViewportReady';
 import { worksReady } from './worksReady';
+import { lazyPagesReady } from './lazyPages';
 import { PuzzleHandle } from './PuzzleOverlay';
 import { usePageTransition } from './usePageTransition';
 
@@ -106,7 +107,7 @@ export function useSiteTransition(path: string, setPath: (path: string) => void)
     let cancelled = false;
     const viewport = stage.current;
     if (!viewport) return;
-    firstViewportReady(viewport, { extra: [worksReady()], capMs: 12500, onProgress: share => { progress.current = share; } }).then(() => {
+    firstViewportReady(viewport, { extra: [worksReady(), lazyPagesReady()], capMs: 12500, onProgress: share => { progress.current = share; } }).then(() => {
       if (!cancelled) setReady(true);
     });
     return () => { cancelled = true; };

@@ -1,0 +1,458 @@
+/* Motion Lab beam-content/motion-05/FooterVisual.module.css, as the embedded export drew it
+   (1340px wide): its tablet and phone layouts (@media by the visitor's screen width, which
+   never applied at that size) are gone, and its hover/touch rules apply unconditionally. */
+.footerVisual {
+  position: relative;
+  width: min(100%, 1439px);
+  max-width: 1439px;
+  aspect-ratio: 1439 / 169;
+  margin: 0 auto;
+  overflow: visible;
+  flex: none;
+  touch-action: pan-y;
+  isolation: isolate;
+  container-type: inline-size;
+  background: transparent;
+}
+
+.centerLine {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  background: linear-gradient(
+    180deg,
+    rgb(20 20 20 / 12%) 0%,
+    rgb(20 20 20 / 58%) 28%,
+    rgb(20 20 20 / 62%) 72%,
+    rgb(20 20 20 / 18%) 100%
+  );
+  opacity: 1;
+  transform: translateX(-50%);
+  transition: opacity 180ms ease-out 340ms;
+}
+
+.centerGlow {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  top: 50%;
+  width: 30cqw;
+  height: 12cqw;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse,
+    rgb(255 255 255 / 6%) 0%,
+    rgb(255 255 255 / 1.8%) 31%,
+    transparent 72%
+  );
+  filter: blur(0.753cqw);
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.92);
+  pointer-events: none;
+  transition:
+    opacity 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.centerTile {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  width: 6.185cqw;
+  height: 6.185cqw;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 1.46cqw;
+  background:
+    radial-gradient(circle at 48% 19%, rgb(255 255 255 / 10%), transparent 37%),
+    linear-gradient(145deg, #343434 0%, #191919 54%, #141414 100%);
+  box-shadow:
+    0 12px 28px rgb(0 0 0 / 46%),
+    0 3px 8px rgb(0 0 0 / 38%),
+    0 0 34px rgb(255 255 255 / 4%),
+    inset 0 1px 0 rgb(255 255 255 / 11%),
+    inset 0 0 0 1px rgb(255 255 255 / 4%);
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+  will-change: transform;
+}
+
+.activeTileShadow {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 50%;
+  width: 6.185cqw;
+  height: 6.185cqw;
+  border-radius: 1.46cqw;
+  box-shadow:
+    0 14px 32px rgb(0 0 0 / 48%),
+    0 4px 10px rgb(0 0 0 / 40%),
+    0 0 38px rgb(255 255 255 / 8%),
+    0 0 72px rgb(255 255 255 / 4%);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: none;
+  will-change: opacity;
+}
+
+.tileHighlight {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 48% 19%, rgb(255 255 255 / 8%), transparent 42%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footerPulse {
+  position: absolute;
+  z-index: 3;
+  inset: -320% -55%;
+  background: radial-gradient(
+    ellipse 47% 24% at 50% 50%,
+    transparent 0 34%,
+    rgb(255 255 255 / 1.2%) 41%,
+    rgb(255 255 255 / 7.5%) 48%,
+    rgb(255 255 255 / 2.2%) 55%,
+    transparent 66%
+  );
+  -webkit-mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 8%,
+    #000 88%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    #000 8%,
+    #000 88%,
+    transparent 100%
+  );
+  filter: blur(14px);
+  display: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.08);
+  transform-origin: 50% 50%;
+  will-change: opacity, transform;
+}
+
+.activeField {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.activePattern,
+.randomPattern {
+  position: absolute;
+  display: block;
+  top: -55.62%;
+  left: 50%;
+  width: 59.208%;
+  max-width: none;
+  height: auto;
+  user-select: none;
+  transform: translateX(-50%);
+}
+
+.randomPattern {
+  opacity: 0;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 0 40%, transparent 78%);
+  mask-image: radial-gradient(ellipse at center, #000 0 40%, transparent 78%);
+  transition: opacity 180ms ease-out 820ms;
+  will-change: opacity;
+}
+
+.activePattern {
+  opacity: 0;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 0 42%, transparent 72%);
+  mask-image: radial-gradient(ellipse at center, #000 0 42%, transparent 72%);
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-size: 0% 0%;
+  mask-size: 0% 0%;
+  transition:
+    opacity 220ms ease-out 820ms,
+    -webkit-mask-size 360ms cubic-bezier(0.4, 0, 1, 1) 820ms,
+    mask-size 360ms cubic-bezier(0.4, 0, 1, 1) 820ms;
+  will-change: opacity, mask-size;
+}
+
+.gates {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.gate {
+  position: absolute;
+  top: -6.324cqw;
+  width: 51.251cqw;
+  height: 27.762cqw;
+  transition: transform 620ms cubic-bezier(0.16, 1, 0.3, 1) 340ms;
+  will-change: transform;
+}
+
+.gateLeft {
+  left: -1.39cqw;
+}
+
+.gateRight {
+  right: -1.39cqw;
+}
+
+.gate img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  user-select: none;
+}
+
+.gateRight img {
+  transform: scaleX(-1);
+}
+
+.gateClosed,
+.gateOpen {
+  transition: opacity 220ms ease-out 340ms;
+}
+
+.gateClosed {
+  opacity: 1;
+}
+
+.gateOpen {
+  opacity: 0;
+}
+
+/* Motion Lab wraps these in @media (hover: hover) and (pointer: fine), (hover: none): true on
+   essentially every device, and the loop needs them, so they apply as they are. */
+.footerVisual .interactionZone {
+  pointer-events: auto;
+}
+
+.footerVisual[data-hover='true'] .activeTileShadow {
+  animation: footerShadowBloom 1600ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.footerVisual[data-hover='true'] .tileHighlight {
+  animation: footerTileHighlightBloom 1600ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.footerVisual[data-hover='true'] .centerGlow {
+  animation: footerGlowBloom 1600ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.footerVisual[data-hover='true'] .activePattern {
+  opacity: 0.48;
+  -webkit-mask-size: 170% 210%;
+  mask-size: 170% 210%;
+  transition:
+    opacity 280ms ease-out 420ms,
+    -webkit-mask-size 720ms cubic-bezier(0.16, 1, 0.3, 1) 400ms,
+    mask-size 720ms cubic-bezier(0.16, 1, 0.3, 1) 400ms;
+}
+
+.footerVisual[data-hover='true'] .randomPattern {
+  opacity: 1;
+  transition-delay: 430ms;
+}
+
+.footerVisual[data-hover='true'] .gateLeft {
+  transform: translateX(-13.934cqw);
+  transition-delay: 260ms;
+}
+
+.footerVisual[data-hover='true'] .gateRight {
+  transform: translateX(13.934cqw);
+  transition-delay: 260ms;
+}
+
+.footerVisual[data-hover='true'] .gateClosed {
+  opacity: 0;
+  transition-delay: 230ms;
+}
+
+.footerVisual[data-hover='true'] .gateOpen {
+  opacity: 1;
+  transition-delay: 230ms;
+}
+
+.footerVisual[data-hover='true'] .centerLine {
+  opacity: 0;
+  transition-delay: 220ms;
+}
+
+
+.interactionZone {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  top: 50%;
+  width: 9.6cqw;
+  height: 9.6cqw;
+  border-radius: 2.4cqw;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: auto;
+  transform: translate(-50%, -50%);
+}
+
+.demoCursor {
+  position: absolute;
+  z-index: 7;
+  left: 50%;
+  top: 50%;
+  display: block;
+  width: 22px;
+  height: 28px;
+  opacity: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 45%));
+  transform: translate(-180px, 72px);
+}
+
+.tileEdge {
+  position: absolute;
+  inset: 0.342cqw;
+  border: 1px solid rgb(255 255 255 / 3.5%);
+  border-radius: 1.027cqw;
+  pointer-events: none;
+}
+
+.activeSymbol {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: 3.356cqw;
+  height: 3.356cqw;
+  filter:
+    brightness(1)
+    drop-shadow(0 1px 0 rgb(255 255 255 / 42%))
+    drop-shadow(0 4px 5px rgb(0 0 0 / 65%));
+  transition:
+    filter 600ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.footerVisual[data-hover='true'] .activeSymbol {
+  animation: footerIconLightBloom 1600ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+@keyframes footerShadowBloom {
+  0% { opacity: 0; }
+  18% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+@keyframes footerGlowBloom {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.92);
+  }
+  18% {
+    opacity: 0.82;
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.96);
+  }
+}
+
+@keyframes footerIconLightBloom {
+  0%,
+  100% {
+    filter:
+      brightness(1)
+      drop-shadow(0 1px 0 rgb(255 255 255 / 42%))
+      drop-shadow(0 4px 5px rgb(0 0 0 / 65%));
+    transform: scale(1);
+  }
+  18% {
+    filter:
+      brightness(1.08)
+      drop-shadow(0 1px 0 rgb(255 255 255 / 52%))
+      drop-shadow(0 5px 7px rgb(0 0 0 / 68%));
+    transform: scale(1.022);
+  }
+}
+
+@keyframes footerTileHighlightBloom {
+  0% { opacity: 0; }
+  18% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .footerVisual:not([data-demo-loop='true']) .centerTile {
+    transition: none;
+  }
+
+  .footerVisual:not([data-demo-loop='true']) .activeTileShadow {
+    transition: none;
+  }
+
+  .footerVisual:not([data-demo-loop='true']) .centerGlow {
+    opacity: 0.54 !important;
+  }
+
+  .footerVisual:not([data-demo-loop='true']) .footerPulse,
+  .footerVisual:not([data-demo-loop='true']) .activePattern,
+  .footerVisual:not([data-demo-loop='true']) .randomPattern,
+  .footerVisual:not([data-demo-loop='true']) .gate,
+  .footerVisual:not([data-demo-loop='true']) .gateClosed,
+  .footerVisual:not([data-demo-loop='true']) .gateOpen,
+  .footerVisual:not([data-demo-loop='true']) .centerLine,
+  .footerVisual:not([data-demo-loop='true']) .activeSymbol,
+  .footerVisual:not([data-demo-loop='true']) .tileHighlight {
+    animation: none !important;
+  }
+
+  .footerVisual:not([data-demo-loop='true']) .centerGlow,
+  .footerVisual:not([data-demo-loop='true']) .centerTile,
+  .footerVisual:not([data-demo-loop='true']) .tileHighlight,
+  .footerVisual:not([data-demo-loop='true']) .activePattern,
+  .footerVisual:not([data-demo-loop='true']) .gate,
+  .footerVisual:not([data-demo-loop='true']) .gateClosed,
+  .footerVisual:not([data-demo-loop='true']) .gateOpen,
+  .footerVisual:not([data-demo-loop='true']) .centerLine,
+  .footerVisual:not([data-demo-loop='true']) .activeSymbol {
+    transition: none !important;
+  }
+
+  .footerVisual:not([data-demo-loop='true']) .randomPattern,
+  .footerVisual:not([data-demo-loop='true']) .footerPulse {
+    display: none;
+  }
+
+  .footerVisual:not([data-demo-loop='true'])[data-hover='true'] .activeSymbol {
+    filter:
+      drop-shadow(0 1px 0 rgb(255 255 255 / 42%))
+      drop-shadow(0 4px 5px rgb(0 0 0 / 65%));
+    transform: none;
+  }
+}

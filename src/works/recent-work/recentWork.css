@@ -19,7 +19,7 @@
   grid-template-columns: 28px minmax(0, 1fr) 28px;
   height: 63px;
   align-items: center;
-  padding: 20px 16px 12px;
+  padding: 20px 16px 15px; /* a 28px row: the controls sit at y 20, as in Figma 185:7014 */
   background: var(--color-canvas);
 }
 
@@ -33,8 +33,6 @@
 /* Beam and Bifrost's title box is a fixed 109 × 31px (Figma's single-word layout);
    Recent Work titles run longer ("Agent Walkthrough"), so this one sizes to its text
    instead, at the same height and padding, rather than wrapping inside a fixed box. */
-.recent-work-header-title { display: flex; align-items: center; justify-content: center; min-width: 109px; height: 31px; padding: 2px 4px; }
-.recent-work-header-title > span { display: grid; height: 27px; padding-inline: 4px; place-items: center; white-space: nowrap; text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 25%), 0.3px 0.3px 0.4px rgb(0 0 0 / 25%); }
 
 .recent-work-main { width: calc(100% - 32px); margin-inline: auto; padding-bottom: 24px; }
 /* The intro (header + this) fills 98% of the screen height, as on Beam/Bifrost. */

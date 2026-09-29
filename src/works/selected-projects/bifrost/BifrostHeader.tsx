@@ -16,17 +16,21 @@ export default function BifrostHeader() {
       <ProgressiveBlur />
       <span className="bifrost-header-spacer" aria-hidden="true" />
       <nav className="bifrost-header-center" aria-label="Project navigation">
-        <a className="nav-circle nav-surface" href="/" aria-label="Back to introduction">
-          <span className="nav-icon nav-icon--logo" aria-hidden="true">
-            <span ref={logo}><img src={homeIcon} alt="" /></span>
+        <a className="nav-link" href="/" aria-label="Back to introduction">
+          <span className="nav-circle nav-surface">
+            <span className="nav-icon nav-icon--logo" aria-hidden="true">
+              <span ref={logo}><img src={homeIcon} alt="" /></span>
+            </span>
           </span>
         </a>
-        <div className="bifrost-header-title"><span>Bifrost</span></div>
-        <a className="nav-circle nav-surface" href={CONTACT_MAILTO} aria-label="Send an email">
-          <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={contactIcon} alt="" /></span>
+        <span className="nav-title">Bifrost</span>
+        <a className="nav-link" href={CONTACT_MAILTO} aria-label="Send an email">
+          <span className="nav-circle nav-surface">
+            <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={contactIcon} alt="" /></span>
+          </span>
         </a>
       </nav>
-      <a className="bifrost-close" href="/#works" data-project-close aria-label="Close project and return to Works">
+      <a className="bifrost-close tap-target" href="/#works" data-project-close aria-label="Close project and return to Works">
         <CloseRing />
         <img src={closeIcon} alt="" width="14" height="14" />
       </a>

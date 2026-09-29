@@ -14,7 +14,7 @@
   grid-template-columns: 28px minmax(0, 1fr) 28px;
   height: 63px;
   align-items: center;
-  padding: 20px 16px 12px;
+  padding: 20px 16px 15px; /* a 28px row: the controls sit at y 20, as in Figma 185:7014 */
   background: var(--color-canvas);
 }
 
@@ -26,8 +26,6 @@
 .bifrost-header-center { display: flex; align-items: center; gap: 4px; justify-self: center; }
 .bifrost-header-spacer, .bifrost-close { width: 28px; height: 28px; }
 .bifrost-close { display: grid; place-items: center; }
-.bifrost-header-title { width: 109px; height: 31px; padding: 2px 4px 2px 2px; }
-.bifrost-header-title > span { display: grid; width: 103px; height: 27px; place-items: center; text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 25%), 0.3px 0.3px 0.4px rgb(0 0 0 / 25%); }
 
 .bifrost-main { width: calc(100% - 32px); margin-inline: auto; padding-bottom: 24px; }
 /* Same hero layout as Beam's (beam.css): three fixed columns, centred. */

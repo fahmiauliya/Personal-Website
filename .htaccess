@@ -1,0 +1,8 @@
+# Hostinger: compress text files and the Rive runtime (motions/rive.wasm, ~1.9 MB as-is,
+# ~0.8 MB compressed) on the way out. Each block only applies if the server has the module.
+<IfModule mod_mime.c>
+  AddType application/wasm .wasm
+</IfModule>
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css text/javascript application/javascript application/json image/svg+xml application/wasm
+</IfModule>

@@ -1,3 +1,4 @@
+import { spawnSync } from 'node:child_process';
 import { cp, mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -22,7 +23,36 @@ const here = dirname(fileURLToPath(import.meta.url));
 const website = resolve(here, '../..');
 const motionLab = resolve(website, '..', 'Motion Lab');
 const modules = join(motionLab, 'node_modules');
-const output = join(website, 'public/motions');
+// MOTIONS_OUT builds somewhere else instead (e.g. to compare a rebuild with what's live).
+const output = process.env.MOTIONS_OUT ? resolve(process.env.MOTIONS_OUT) : join(website, 'public/motions');
+
+// Website overrides: Motion Lab files swapped for website versions at build time, loaded in
+// place of the original (so their relative imports still resolve beside it); Motion Lab keeps
+// its own files. Bifrost motion 04 draws its two Poppins labels as outlines, so the page
+// doesn't load Poppins (overrides/bifrost-04/). Motion 10 draws its card's frame stroke and
+// uses the website's build of its artwork, with the current load-balancer layer from Figma
+// (overrides/bifrost-10/, the artwork made by build-visual.py). `assets` rewrites the overrides' imports to files in this repository.
+const overrides = {
+  [join(motionLab, 'src/motion-lab/bifrost-content/motion-10/motion-10.tsx')]: {
+    source: join(here, 'overrides/bifrost-10/motion-10.tsx'),
+    assets: { "'./visual.svg'": JSON.stringify(join(here, 'overrides/bifrost-10/visual.svg')).replaceAll('"', "'") },
+  },
+  [join(motionLab, 'src/motion-lab/bifrost-content/motion-04/motion-04.tsx')]: {
+    source: join(here, 'overrides/bifrost-04/motion-04.tsx'),
+    assets: {
+      '@website/Outlined': join(website, 'src/works/selected-projects/beam/Outlined.tsx'),
+      '@website/bifrost-04-glyphs': join(here, 'overrides/bifrost-04/glyphs.ts'),
+    },
+  },
+};
+
+// Website frame images, used in place of Motion Lab's. The Bifrost cover uses motion 10's
+// background (Figma 221:99469, the dithered blur), cropped from its 1× render at 542 × 475 so
+// its dots come out the same size on the page as in the gallery (the cover's 806 px frame is
+// shown 542 px wide) (overrides/bifrost-cover/frame.webp).
+const frameImages = {
+  'bifrost/cover': join(here, 'overrides/bifrost-cover/frame.webp'),
+};
 
 // Reads one frame's entry from frames.ts. Each entry is a one-line object literal,
 // so a few patterns are enough; fail loudly if its shape changes. Numbered frames are
@@ -174,10 +204,12 @@ try {
   for (const [project, { content: folder, slugs }] of Object.entries(motions)) {
     const content = join(motionLab, 'src/motion-lab', folder);
     for (const slug of slugs) {
+      const frame = await readFrame(content, project, slug);
+      frame.image = frameImages[`${project}/${slug}`] ?? frame.image;
       list.push({
         id: `${project}/${slug}`,
         source: join(content, `motion-${slug}/motion-${slug}.tsx`),
-        frame: await readFrame(content, project, slug),
+        frame,
         settings: await readSettings(content, slug),
       });
     }
@@ -191,11 +223,24 @@ try {
     base: './',
     publicDir: false,
     logLevel: 'warn',
+    plugins: [{
+      name: 'website-overrides',
+      enforce: 'pre',
+      async load(id) {
+        const override = overrides[id.split('?')[0]];
+        if (!override) return null;
+        let code = await readFile(override.source, 'utf8');
+        for (const [from, to] of Object.entries(override.assets)) code = code.replaceAll(from, to);
+        return code;
+      },
+    }],
     resolve: {
       alias: {
         react: join(modules, 'react'),
         'react-dom': join(modules, 'react-dom'),
-        '@rive-app/react-canvas': join(modules, '@rive-app/react-canvas'),
+        // The website's Rive, not Motion Lab's: Compai's card uses the same one, so the
+        // page downloads one rive.wasm (/motions/rive.wasm) for both.
+        '@rive-app/react-canvas': join(website, 'node_modules/@rive-app/react-canvas'),
       },
     },
     build: {
@@ -238,11 +283,15 @@ try {
     await cp(join(motionLab, 'public', asset), join(exportDir, asset));
   }
   await writeFile(join(exportDir, 'fonts.css'), `${[...fontFaces].join('\n')}\n`);
-  await cp(join(modules, '@rive-app/canvas/rive.wasm'), join(exportDir, 'rive.wasm'));
+  await cp(join(website, 'node_modules/@rive-app/canvas/rive.wasm'), join(exportDir, 'rive.wasm'));
+
+  // Lighter frame images and SVGs, looking the same (optimize.py).
+  const optimize = spawnSync('python3', [join(here, 'optimize.py'), exportDir], { stdio: 'inherit' });
+  if (optimize.status !== 0) throw new Error('optimize.py failed (it needs Python 3 with Pillow).');
 
   await rm(output, { recursive: true, force: true });
   await cp(exportDir, output, { recursive: true });
-  console.log(`${list.length} motions bundled into public/motions/ (${[...copied].length} public assets, ${fontFaces.size} font faces).`);
+  console.log(`${list.length} motions bundled into ${output} (${[...copied].length} public assets, ${fontFaces.size} font faces).`);
 } finally {
   await rm(work, { recursive: true, force: true });
 }
