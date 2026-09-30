@@ -1,5 +1,6 @@
 import ctaIcon from '../../assets/icons/cta-small.svg';
 import CopyEmailButton from '../../components/contact/CopyEmailButton';
+import { CONTACT_TELEGRAM } from '../../data/portfolio';
 import SocialLinks from '../../components/contact/SocialLinks';
 
 export default function Intro() {
@@ -28,10 +29,10 @@ export default function Intro() {
             </div>
 
             <div className="intro-actions">
-              <button className="pill-button pill-button--dark skeuo-button" type="button">
+              <a className="pill-button pill-button--dark skeuo-button" href={CONTACT_TELEGRAM} target="_blank" rel="noopener noreferrer">
                 <span>Let’s Talk</span>
                 <img src={ctaIcon} alt="" />
-              </button>
+              </a>
               <CopyEmailButton />
               <SocialLinks className="intro-socials" />
             </div>

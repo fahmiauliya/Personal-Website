@@ -5,7 +5,7 @@ import contactIcon from '../../assets/icons/nav-contact.svg';
 import worksIcon from '../../assets/icons/nav-works.svg';
 import NavigationMaterial from './NavigationMaterial';
 import HeaderFade from './HeaderFade';
-import { CONTACT_MAILTO } from '../../data/portfolio';
+import { CONTACT_TELEGRAM } from '../../data/portfolio';
 import { materialPath, useNavigationProgress } from './navigationMotion';
 import { useScrollRoll } from './useScrollRoll';
 import { setWorkTab, useWorkTab, type WorkTab } from './workTab';
@@ -108,7 +108,7 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
           <span className="nav-about-label" aria-hidden="true" style={{ width: labelWidth, opacity: 1 - collapse }}><span>About</span></span>
         </a>
 
-        <a className="nav-link nav-email" style={{ transform: `translateX(${269 + 78 * progress}px)` }} href={CONTACT_MAILTO} aria-label="Send an email">
+        <a className="nav-link nav-email" style={{ transform: `translateX(${269 + 78 * progress}px)` }} href={CONTACT_TELEGRAM} target="_blank" rel="noopener noreferrer" aria-label="Message Fahmi on Telegram">
           <span className="nav-circle nav-surface">
             <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={contactIcon} alt="" /></span>
           </span>

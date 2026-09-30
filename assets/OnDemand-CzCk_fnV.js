@@ -1,4 +1,4 @@
-import{d as S,j as t,N as B,r as a}from"./index-D6NSmaSX.js";const j=`<svg width="809" height="692" viewBox="0 0 809 692" fill="none" xmlns="http://www.w3.org/2000/svg">
+import{a as S,j as t,J as B,r as a}from"./index-BUc1r-YT.js";const j=`<svg width="809" height="692" viewBox="0 0 809 692" fill="none" xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_1003_3758)">
 <rect width="809" height="692" fill="#FAFAFA"/>
 <g class="od-window" filter="url(#filter0_ddddii_1003_3758)">

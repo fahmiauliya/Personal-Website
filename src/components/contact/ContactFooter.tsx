@@ -1,5 +1,6 @@
 import { lazy, Suspense, useRef } from 'react';
 import ctaIcon from '../../assets/icons/cta-footer.svg';
+import { CONTACT_TELEGRAM } from '../../data/portfolio';
 import SocialLinks from './SocialLinks';
 import { useNearView } from '../motion/useNearView';
 
@@ -22,11 +23,11 @@ export default function ContactFooter() {
             <span className="contact-note--wide">Have something that want to discuss</span>
             <span className="contact-note--phone">Have something you want to discuss?</span>
           </p>
-          {/* No action yet; enabled so its hover and pressed states can be checked. */}
-          <button className="pill-button pill-button--dark skeuo-button" type="button">
+          {/* The main call to action: a chat with Fahmi on Telegram. */}
+          <a className="pill-button pill-button--dark skeuo-button" href={CONTACT_TELEGRAM} target="_blank" rel="noopener noreferrer">
             <span>Let’s Talk</span>
             <img src={ctaIcon} alt="" />
-          </button>
+          </a>
         </div>
       </div>
       <div className="footer-socials">

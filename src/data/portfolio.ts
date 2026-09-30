@@ -43,7 +43,7 @@ import xIcon from '../assets/icons/social-x.svg';
 import dribbbleIcon from '../assets/icons/social-dribbble.svg';
 
 export const CONTACT_EMAIL = 'fahmiauliyarohman@gmail.com';
-export const CONTACT_MAILTO = `mailto:${CONTACT_EMAIL}`;
+export const CONTACT_TELEGRAM = 'https://t.me/fahmiauliya';
 
 export const projects: Project[] = Array.from({ length: 8 }, (_, index) => {
   const projectNumber = index + 1;

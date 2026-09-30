@@ -1,1 +1,0 @@
-import{j as s}from"./index-Difa_34x.js";const t="/assets/frame-EEYEQyqw.svg";function i(){return s.jsx("div",{style:{position:"absolute",inset:0,overflow:"hidden",background:"#f6f6f6"},children:s.jsx("img",{src:t,alt:"",decoding:"async",style:{position:"absolute",inset:0,display:"block",width:"100%",height:"100%"}})})}export{i as default};

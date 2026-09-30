@@ -731,6 +731,7 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   border-radius: var(--radius-control);
   font-size: 14px;
   line-height: 1.4;
+  text-decoration: none;
   white-space: nowrap;
 }
 
@@ -1017,7 +1018,8 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 84px var(--page-gutter);
+  /* 48px more below than above: the glass and pill sit 24px above the centre. */
+  padding: 84px var(--page-gutter) 132px;
   overflow: hidden;
   background: var(--color-footer);
   box-shadow: 0 0 0 0.5px #fff;
@@ -1037,8 +1039,8 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   z-index: 1;
   display: flex;
   /* Room for the glass above (FooterGlass.tsx: about 2.32 units tall as drawn, tilted, a
-     unit being min(160px, width / 2.9)) and its 140px gap, so glass and pill centre as one group. */
-  margin-top: calc(min(160px, 100vw / 2.9) * 2.32 + 140px);
+     unit being min(160px, width / 2.9)) and its 80px gap, so glass and pill centre as one group. */
+  margin-top: calc(min(160px, 100vw / 2.9) * 2.32 + 80px);
   width: auto;
   max-width: 100%;
   align-items: center;
@@ -1218,7 +1220,7 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   .works-section { padding: 80px 0 0; }
   .works-grid { grid-template-columns: 1fr; padding-top: 24px; padding-bottom: 24px; }
   .contact-footer { height: auto; flex-basis: auto; }
-  .contact-area { padding: 56px var(--page-gutter); }
+  .contact-area { padding: 56px var(--page-gutter) 104px; }
   /* Phones get the shorter note. */
   .contact-note--wide { display: none; }
   .contact-note--phone { display: inline; }

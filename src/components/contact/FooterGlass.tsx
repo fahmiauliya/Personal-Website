@@ -76,7 +76,7 @@ const MAX_DENSITY = 2;
 const CAMERA_Z = 12;
 // Space between the glass's lower tip and the pill, css px (the pill's margin in
 // global.css makes room for the glass and this gap, so the two centre together).
-const GAP = 140;
+const GAP = 80;
 
 const VERT = `#version 300 es
 in vec2 p; void main() { gl_Position = vec4(p, 0., 1.); }`;
