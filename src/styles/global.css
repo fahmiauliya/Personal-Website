@@ -948,39 +948,6 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   );
 }
 
-/* Project detail close button: on hover a thin ring draws around the X (the stroke's
-   dash offset runs 1.02 → 0 over its normalised length), and retracts on leave. The X and
-   the button's size and position don't change. */
-a[data-project-close] { position: relative; }
-
-.close-ring {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-  pointer-events: none;
-  transform: rotate(-90deg);
-}
-
-.close-ring circle {
-  fill: none;
-  stroke: rgba(0, 0, 0, 0.5);
-  /* The normalised length rounds slightly, so the dash overshoots (1.02) to close the
-     circle fully, and the gap is wide enough (2) that nothing shows at rest. */
-  stroke-dasharray: 1.02 2;
-  stroke-dashoffset: 1.02;
-  /* butt, not round: a zero-length round-capped dash would still draw a dot. */
-  stroke-linecap: butt;
-  stroke-width: 0.75;
-  transition: stroke-dashoffset 420ms cubic-bezier(0.65, 0, 0.35, 1);
-}
-
-a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-dashoffset: 0; }
-
-@media (prefers-reduced-motion: reduce) {
-  .close-ring circle { transition: none; }
-}
 
 /* Static cover images fill the card's height with their ratio locked, centred, so a
    wider image crops evenly left and right and is never stretched. */
@@ -1049,8 +1016,8 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   flex: 1 1 auto;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end;
-  padding: 96px var(--page-gutter) 72px;
+  justify-content: center;
+  padding: 84px var(--page-gutter);
   overflow: hidden;
   background: var(--color-footer);
   box-shadow: 0 0 0 0.5px #fff;
@@ -1069,11 +1036,14 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   position: relative;
   z-index: 1;
   display: flex;
+  /* Room for the glass above (FooterGlass.tsx: about 2.32 units tall as drawn, tilted, a
+     unit being min(160px, width / 2.9)) and its 140px gap, so glass and pill centre as one group. */
+  margin-top: calc(min(160px, 100vw / 2.9) * 2.32 + 140px);
   width: auto;
   max-width: 100%;
   align-items: center;
   justify-content: space-between;
-  gap: 32px;
+  gap: 12px;
   padding: 8px;
   border-radius: 60px;
   background:
@@ -1083,6 +1053,9 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
 }
 
 .contact-pill p {
+  /* Hugs its text, always on one line. */
+  flex: none;
+  white-space: nowrap;
   padding: 0 0 0 12px;
   color: #000;
   font-size: 14px;
@@ -1245,7 +1218,7 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
   .works-section { padding: 80px 0 0; }
   .works-grid { grid-template-columns: 1fr; padding-top: 24px; padding-bottom: 24px; }
   .contact-footer { height: auto; flex-basis: auto; }
-  .contact-area { padding: 64px var(--page-gutter) 48px; }
+  .contact-area { padding: 56px var(--page-gutter); }
   /* Phones get the shorter note. */
   .contact-note--wide { display: none; }
   .contact-note--phone { display: inline; }
@@ -1253,8 +1226,14 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
 
 @media (max-width: 479px) {
   .intro-copy { font-size: 13px; }
-  /* Too long for one line beside the button here, so it wraps into two even lines. */
-  .contact-pill p { max-width: 180px; font-size: 12px; text-wrap: balance; }
+  .contact-pill p { font-size: 12px; }
+}
+
+/* Narrower than the one-line pill (about 353px at these sizes): the note and the button's label
+   scale down with the screen so it stays on one line, the 12px spacing unchanged. */
+@media (max-width: 389px) {
+  .contact-pill p { font-size: calc((100vw - 32px) * 12 / 364); }
+  .contact-pill .pill-button { font-size: calc((100vw - 32px) * 14 / 364); }
 }
 
 /* Inactive Works stays laid out for loading and fitting, without affecting page height. */

@@ -18,8 +18,7 @@
 }
 
 .beam-header-center { display: flex; align-items: center; gap: 4px; justify-self: center; }
-.beam-header-spacer, .beam-close { width: 28px; height: 28px; }
-.beam-close { display: grid; place-items: center; }
+.beam-header-spacer { width: 28px; height: 28px; }
 
 .beam-main { width: calc(100% - 32px); margin-inline: auto; padding-bottom: 24px; }
 /* The intro (header + this) fills 98% of the screen height, content centred as before,

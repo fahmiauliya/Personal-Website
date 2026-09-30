@@ -270,11 +270,36 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
       void go(next);
     };
 
+    // Whether the visitor is using a pointer (mouse, trackpad, touch) or the keyboard (Tab).
+    let pointer = true;
+    const onPointerDown = () => { pointer = true; };
+    // Esc closes an open project page: it presses the page's close button, so it closes the
+    // same way (and does nothing while a transition runs, as the button doesn't).
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Tab') pointer = false;
+      if (event.key !== 'Escape' || event.defaultPrevented || event.repeat || event.metaKey || event.ctrlKey || event.altKey || event.shiftKey) return;
+      if (!isProjectPath(pathRef.current)) return;
+      const target = event.target as Element | null;
+      if (target?.closest('input, textarea, select, [contenteditable="true"]')) return;
+      const close = document.querySelector<HTMLAnchorElement>('.project-layer a[data-project-close]');
+      if (!close) return;
+      event.preventDefault();
+      // A card opened with a click keeps focus behind the page; the key press would now draw
+      // its keyboard focus ring when the page closes. With a pointer, let it go first. (Keyboard
+      // visitors keep it: the ring shows them where they are.)
+      if (pointer && document.activeElement instanceof HTMLElement) document.activeElement.blur();
+      close.click();
+    };
+
     if (isProjectPath(pathRef.current)) history.scrollRestoration = 'manual';
     document.addEventListener('click', onClick);
+    document.addEventListener('keydown', onKeyDown);
+    document.addEventListener('pointerdown', onPointerDown, true);
     window.addEventListener('popstate', onPopState);
     return () => {
       document.removeEventListener('click', onClick);
+      document.removeEventListener('keydown', onKeyDown);
+      document.removeEventListener('pointerdown', onPointerDown, true);
       window.removeEventListener('popstate', onPopState);
     };
     // Mounted once; pathRef also tracks routes changed by the site navigation hook.

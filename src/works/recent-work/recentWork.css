@@ -23,8 +23,7 @@
 }
 
 .recent-work-header-center { display: flex; align-items: center; gap: 4px; justify-self: center; }
-.recent-work-header-spacer, .recent-work-close { width: 28px; height: 28px; }
-.recent-work-close { display: grid; place-items: center; }
+.recent-work-header-spacer { width: 28px; height: 28px; }
 /* Beam and Bifrost's title box is a fixed 109 × 31px (Figma's single-word layout);
    Recent Work titles run longer ("Agent Walkthrough"), so this one sizes to its text
    instead, at the same height and padding, rather than wrapping inside a fixed box. */

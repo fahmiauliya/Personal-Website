@@ -1,11 +1,9 @@
 import { useRef } from 'react';
 import { useScrollRoll } from '../../components/navigation/useScrollRoll';
-import CloseRing from '../../components/navigation/CloseRing';
 import HeaderFade from '../../components/navigation/HeaderFade';
 import homeIcon from '../../assets/icons/logo.svg';
-import contactIcon from '../../assets/icons/nav-contact.svg';
-import { CONTACT_MAILTO } from '../../data/portfolio';
-import closeIcon from '../../assets/icons/close.svg';
+// The pill's right button closes the project (Esc does too: projectTransition.ts).
+import closeIcon from '../../assets/icons/nav-close.svg';
 
 // Same shell as BeamHeader/BifrostHeader, parameterized by title, so every Recent Work
 // project shares one header instead of duplicating it per project.
@@ -26,16 +24,13 @@ export default function RecentWorkHeader({ title }: { title: string }) {
           </span>
         </a>
         <span className="nav-title">{title}</span>
-        <a className="nav-link" href={CONTACT_MAILTO} aria-label="Send an email">
+        <a className="nav-link" href="/#works" data-project-close aria-label="Close project and return to Works (Esc)">
           <span className="nav-circle nav-surface">
-            <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={contactIcon} alt="" /></span>
+            <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={closeIcon} alt="" /></span>
           </span>
         </a>
       </nav>
-      <a className="recent-work-close tap-target" href="/#works" data-project-close aria-label="Close project and return to Works">
-        <CloseRing />
-        <img src={closeIcon} alt="" width="14" height="14" />
-      </a>
+      <span className="recent-work-header-spacer" aria-hidden="true" />
     </header>
   );
 }

@@ -18,8 +18,7 @@
 }
 
 .bifrost-header-center { display: flex; align-items: center; gap: 4px; justify-self: center; }
-.bifrost-header-spacer, .bifrost-close { width: 28px; height: 28px; }
-.bifrost-close { display: grid; place-items: center; }
+.bifrost-header-spacer { width: 28px; height: 28px; }
 
 .bifrost-main { width: calc(100% - 32px); margin-inline: auto; padding-bottom: 24px; }
 /* Same hero layout as Beam's (beam.css): three fixed columns, centred. */

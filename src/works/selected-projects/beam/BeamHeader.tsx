@@ -1,11 +1,9 @@
 import { useRef } from 'react';
 import { useScrollRoll } from '../../../components/navigation/useScrollRoll';
-import CloseRing from '../../../components/navigation/CloseRing';
 import HeaderFade from '../../../components/navigation/HeaderFade';
 import homeIcon from '../../../assets/icons/logo.svg';
-import contactIcon from '../../../assets/icons/nav-contact.svg';
-import { CONTACT_MAILTO } from '../../../data/portfolio';
-import closeIcon from '../../../assets/icons/close.svg';
+// The pill's right button closes the project (Esc does too: projectTransition.ts).
+import closeIcon from '../../../assets/icons/nav-close.svg';
 
 export default function BeamHeader() {
   // The logo rolls with this page's scroll, like the main navigation's.
@@ -24,16 +22,13 @@ export default function BeamHeader() {
           </span>
         </a>
         <span className="nav-title">Beam</span>
-        <a className="nav-link" href={CONTACT_MAILTO} aria-label="Send an email">
+        <a className="nav-link" href="/#works" data-project-close aria-label="Close project and return to Works (Esc)">
           <span className="nav-circle nav-surface">
-            <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={contactIcon} alt="" /></span>
+            <span className="nav-icon nav-icon--contact" aria-hidden="true"><img src={closeIcon} alt="" /></span>
           </span>
         </a>
       </nav>
-      <a className="beam-close tap-target" href="/#works" data-project-close aria-label="Close project and return to Works">
-        <CloseRing />
-        <img src={closeIcon} alt="" width="14" height="14" />
-      </a>
+      <span className="beam-header-spacer" aria-hidden="true" />
     </header>
   );
 }

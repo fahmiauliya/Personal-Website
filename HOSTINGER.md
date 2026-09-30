@@ -7,10 +7,10 @@ The generated `about/index.html` entry serves the About page at `/about/`.
 
 ## Hostinger settings
 
-- Repository: `fahmiauliya/Web-porto-project`
+- Repository: `fahmiauliya/Personal-Website`
 - Branch: `main`
 - Destination: `public_html`
-- Deployment flow: website Dashboard → Advanced → Git
+- Deployment flow: website Dashboard → Advanced → Git (auto-deploys on push)
 
 Redeploy the latest commit after pushing. The live HTML must load
 `/assets/index-*.js`, not `/src/main.jsx`. If old HTML persists after a

@@ -74,6 +74,9 @@ export function glassSettings(values: Values = (saved as { values?: Values }).va
 const UNIT = 160;
 const MAX_DENSITY = 2;
 const CAMERA_Z = 12;
+// Space between the glass's lower tip and the pill, css px (the pill's margin in
+// global.css makes room for the glass and this gap, so the two centre together).
+const GAP = 140;
 
 const VERT = `#version 300 es
 in vec2 p; void main() { gl_Position = vec4(p, 0., 1.); }`;
@@ -410,9 +413,9 @@ export default function FooterGlass({ anchor, settings, playing = true }: { anch
     const uRim = u('uRim'), uRound = u('uRound'), uRipple = u('uRipple'), uNoise = u('uNoise'), uTime = u('uTime');
     const uGlow = u('uGlow'), uInner = u('uInner'), uGlints = u('uGlints'), uLod = u('uLod');
 
-    // Size follows the footer; the object is centred in the open space above the pill
-    // (the anchor). Narrow screens scale the unit down so the diamond keeps fitting.
-    let density = 1, unit = UNIT, width = 1, height = 1, cx = 0, cy = 0;
+    // Size follows the footer; the object sits just above the pill (the anchor), its lower
+    // tip GAP px over it. Narrow screens scale the unit down so the diamond keeps fitting.
+    let density = 1, unit = UNIT, width = 1, height = 1, cx = 0, pillTop = 0;
     const resize = () => {
       const box = area.getBoundingClientRect();
       density = Math.min(window.devicePixelRatio || 1, MAX_DENSITY);
@@ -424,7 +427,7 @@ export default function FooterGlass({ anchor, settings, playing = true }: { anch
       unit = Math.min(UNIT, width / 2.9);
       const target = anchor.current?.getBoundingClientRect();
       cx = width / 2;
-      cy = (target ? target.top - box.top : height) / 2;
+      pillTop = target ? target.top - box.top : height;
     };
 
     let phase = 0.8, spin = 0, flow = 0, floating = 0, pitch = 0, pitchTarget = 0, roll = 0, rollTarget = 0;
@@ -442,6 +445,8 @@ export default function FooterGlass({ anchor, settings, playing = true }: { anch
       // Floating: an easy rise and sink on its own clock, separate from the sway.
       const bob = s.Motion.Bob * Math.sin(floating);
       // Offsets are css px, y downward; the shader's y is upward.
+      // The rounded tip ends about 7% short of the shape's point.
+      const cy = pillTop - GAP - half[1] * unit * 0.93;
       const centreY = height - cy - s.Shape.OffsetY + bob * unit;
       gl.uniform1f(uScale, unit * density);
       gl.uniform2f(uCentre, (cx + s.Shape.OffsetX) * density, centreY * density);
