@@ -1,6 +1,13 @@
 import { useLayoutEffect, useRef, useState } from 'react';
+import { createOutlined } from '../../../../components/outlined/Outlined';
+import { GLYPHS, TEXT } from './glyphs';
 import styles from './FinovaCard.module.css';
 import { Flip, RollSwap, RollText, finovaDefaults, mix, press, there, type FinovaSettings } from './motion';
+
+// The two status-bar clocks were the card's only Inter text; they are outlines (./glyphs, traced
+// where the browser set them), so the card loads no Inter.
+const Outlined = createOutlined(GLYPHS, TEXT);
+const T = ({ k, children }: { k: string; children: string }) => <Outlined k={k} style={{ whiteSpace: 'inherit' }}>{children}</Outlined>;
 // Figma 282:1447: separate phone/UI layers retained for future motion.
 import imgRectangle115 from './assets/2a0cd.png';
 import imgPexelsPhotoByMohamedAbdelghaffar from './assets/20899.png';
@@ -360,7 +367,7 @@ export default function FinovaCard({ position = 0, values }: { position?: number
                   </div>
                   <div className={[styles.f3, styles.f138].join(" ")} data-node-id="282:5844" data-name="Time Style">
                     <div className={[styles.f107, styles.f3, styles.f26, styles.f72, styles.f139, styles.f140, styles.f141, styles.f142, styles.f143, styles.f144, styles.f112, styles.f145, styles.f146, styles.f147].join(" ")} data-node-id="282:5845">
-                      <p className={[styles.f148].join(" ")}>9:41</p>
+                      <p className={[styles.f148].join(" ")}><T k="clock:5845">9:41</T></p>
                     </div>
                   </div>
                 </div>
@@ -458,7 +465,7 @@ export default function FinovaCard({ position = 0, values }: { position?: number
                     </div>
                     <div className={[styles.f3, styles.f138].join(" ")} data-node-id="282:7386" data-name="Time Style">
                       <div className={[styles.f107, styles.f3, styles.f26, styles.f72, styles.f139, styles.f140, styles.f190, styles.f142, styles.f143, styles.f144, styles.f112, styles.f145, styles.f146, styles.f147].join(" ")} data-node-id="282:7387">
-                        <p className={[styles.f148].join(" ")}>9:41</p>
+                        <p className={[styles.f148].join(" ")}><T k="clock:7387">9:41</T></p>
                       </div>
                     </div>
                   </div>

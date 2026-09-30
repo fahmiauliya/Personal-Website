@@ -68,7 +68,7 @@ const NAV_HIDE_MS = 160;
 const NAV_REVEAL_MS = 300;
 
 const homeNavigation = () => [...document.querySelectorAll<HTMLElement>('.portfolio .site-nav')];
-const detailNavigation = () => [...document.querySelectorAll<HTMLElement>('.project-layer [data-project-part="actions"] > :not(.progressive-blur)')];
+const detailNavigation = () => [...document.querySelectorAll<HTMLElement>('.project-layer [data-project-part="actions"] > :not(.header-fade)')];
 
 /** Hides the navigation; the returned animations hold it hidden until cancelled. */
 async function hideNavigation(elements: HTMLElement[]) {
@@ -90,7 +90,7 @@ const revealNavigation = (elements: HTMLElement[]) => elements.forEach(element =
 // transition's update is pending.
 const tick = () => new Promise<void>(resolve => setTimeout(resolve, 16));
 
-// Prepare before starting View Transitions: canvas/Rive need live animation frames,
+// Prepare before starting View Transitions: canvases need live animation frames,
 // which browsers suspend inside the transition's update callback.
 // `cover` is looked up on every check: a page whose code is its own file (App.tsx) renders
 // its cover a moment after it's asked to open.
@@ -102,8 +102,7 @@ async function coverReady(findCover: () => HTMLElement | null, timeout = 6000) {
   while (performance.now() - start < timeout) {
     const cover = findCover();
     if (!cover) { await tick(); continue; }
-    const stage = cover.querySelector('.motion-preview-stage');
-    const frame = stage?.shadowRoot ?? cover;
+    const frame = cover;
     const pending = cover.querySelector('[data-cover-ready="pending"]');
     const content = frame.querySelector('figure, canvas, img, .scene-fit-stage > *');
     const images = [...frame.querySelectorAll('img')];

@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { isProjectPath, normalizePath } from './projectTransition';
-import { markFirstLoadRevealed } from './firstLoad';
 import { firstViewportReady } from './firstViewportReady';
 import { worksReady } from './worksReady';
 import { lazyPagesReady } from './lazyPages';
@@ -9,7 +8,7 @@ import { usePageTransition } from './usePageTransition';
 
 // The site's one puzzle overlay (Motion Lab's transition-content), used for two things:
 //
-// - The first load: the overlay starts closed (near-black, grained) with a small
+// - The first load: the overlay starts closed (near-black) with a small
 //   "Loading, please wait ..." note and a percentage; the page underneath is already
 //   mounted, held small behind it, scrolling locked. Once the first screen's fonts and
 //   on-screen images are ready, the note finishes and the puzzle opens as the page comes
@@ -120,10 +119,7 @@ export function useSiteTransition(path: string, setPath: (path: string) => void)
   const revealFirstLoad = useCallback(async () => {
     await enter();
     setLoading(false);
-    markFirstLoadRevealed();
   }, [enter]);
-  // No loader this visit: the page is revealed as soon as it mounts.
-  useEffect(() => { if (skipLoader) markFirstLoadRevealed(); }, [skipLoader]);
 
   // --- Regular page navigation ----------------------------------------------------
   const busyRef = useRef(false);

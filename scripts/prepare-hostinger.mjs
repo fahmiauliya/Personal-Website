@@ -7,16 +7,6 @@ if (html.includes('.jsx') || html.includes('.tsx') || !html.includes('/assets/')
   throw new Error('Expected a production HTML file referencing bundled assets.');
 }
 
-// Compai's card loads the motion bundle's Rive runtime (/motions/rive.wasm), so it must be
-// the installed Rive's own file; after upgrading @rive-app, `npm run sync:motions` refreshes it.
-const [bundledRive, installedRive] = await Promise.all([
-  readFile(new URL('dist/motions/rive.wasm', root)),
-  readFile(new URL('node_modules/@rive-app/canvas/rive.wasm', root)),
-]);
-if (!bundledRive.equals(installedRive)) {
-  throw new Error('motions/rive.wasm is not the installed Rive runtime. Run `npm run sync:motions`.');
-}
-
 // Publish assets before HTML. Hashed files from the last committed build (what is live)
 // are kept, so a visitor still on the previous page can load its chunks; anything older
 // is removed, so assets/ holds at most two builds instead of growing with every deploy.
@@ -46,17 +36,11 @@ if (keep) {
     if (!keep.has(name)) await rm(new URL(`assets/${name}`, root));
   }
 }
-// public/motions/ is the shared Motion Lab motion bundle (npm run sync:motions);
-// public/fonts/ holds TikTok Sans for the Career Agent card.
-for (const folder of ['motions/', 'fonts/']) {
-  await rm(new URL(folder, root), { recursive: true, force: true });
-  await cp(new URL(`dist/${folder}`, root), new URL(folder, root), { recursive: true });
-}
-// The per-motion iframe exports the bundle replaced.
-// Folders earlier builds published that now ship inside assets/.
-// motion-01/ to -06/ were the Beam motions' iframe exports; they are code now
-// (src/works/selected-projects/beam/content-01 to -06).
-for (const legacy of ['bifrost/', 'beam/', 'talentpluto/', 'rive/', 'motion-01/', 'motion-02/', 'motion-03/', 'motion-05/', 'motion-06/']) await rm(new URL(legacy, root), { recursive: true, force: true });
+// Folders earlier builds published that are gone or now ship inside assets/: motion-01/ to -06/
+// were the Beam motions' iframe exports, motions/ the Motion Lab bundle (with the Rive runtime)
+// that played the Bifrost motions and Compai, and fonts/ TikTok Sans for the Career Agent card;
+// all of them are code (or outlines) now.
+for (const legacy of ['bifrost/', 'beam/', 'talentpluto/', 'rive/', 'motion-01/', 'motion-02/', 'motion-03/', 'motion-05/', 'motion-06/', 'motions/', 'fonts/']) await rm(new URL(legacy, root), { recursive: true, force: true });
 await copyFile(new URL('dist/favicon.svg', root), new URL('favicon.svg', root));
 await copyFile(new URL('dist/index.html', root), new URL('index.html', root));
 // Every route needs its own entry page on a static host, or a direct link (or a reload)

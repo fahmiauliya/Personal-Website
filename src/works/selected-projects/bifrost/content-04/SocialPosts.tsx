@@ -1,0 +1,101 @@
+import { useEffect, useRef, type CSSProperties } from 'react';
+import { useNearView } from '../../../../components/motion/useNearView';
+import { createOutlined } from '../../../../components/outlined/Outlined';
+import { holdSlide, runTimeline } from '../shared/timeline';
+import frame from '../shared/frame-dither.webp';
+import visual1 from './assets/visual-1.svg';
+import visual2 from './assets/visual-2.svg';
+import visual3 from './assets/visual-3.svg';
+import visual4 from './assets/visual-4.svg';
+import { GLYPHS, TEXT } from './glyphs';
+import '../labFrame.css';
+
+// Bifrost motion 04, the social post carousel (Figma Portfolio-2026, frame 225:112775, 698 × 557,
+// post cover 213:85521), in code: Motion Lab's bifrost-content/motion-04 as the site had it, with
+// its frame image. Post covers slide right → left through the card on Motion Lab's default
+// timeline (a 2s hold, then a 1.2s slide, four times), while the motion is near the screen.
+// Everything is code except the frame's background pattern and the post images; the card's two
+// Poppins labels are outlines (./glyphs, traced where the browser set them), so no font loads.
+const POPPINS = "Poppins, 'DM Sans', Arial, sans-serif";
+const T = createOutlined(GLYPHS, TEXT);
+const CARD_W = 310.881;
+const POST = 310.881;
+const TOP_H = 54.248;
+const BOTTOM_H = 41.729;
+const CARD_H = TOP_H + POST + BOTTOM_H;
+const PITCH = 368; // centre-to-centre spacing from Figma's side covers
+const RADIUS = 14.605;
+
+const LOGO_SVG = `<svg width="34.4646" height="34.4646" viewBox="0 0 34.4646 34.4646" fill="none" xmlns="http://www.w3.org/2000/svg"> <g id="logo"> <circle id="Ellipse 17" cx="16.8323" cy="17.2321" r="16.8316" fill="#33C19E"/> <path id="Union" d="M19.9675 25.5669H9.90013V22.2114H19.9675V25.5669ZM23.324 22.2124H19.9675V18.8569H23.324V22.2124ZM16.612 18.8559H13.2556V15.5005H16.612V18.8559ZM23.324 15.5005H19.9675V12.145H23.324V15.5005ZM19.9675 12.145H9.90013V8.78954H19.9675V12.145Z" fill="white"/> </g> </svg>`;
+const HEART_SVG = `<svg width="20.0695" height="20.0695" viewBox="0 0 20.0695 20.0695" fill="none" xmlns="http://www.w3.org/2000/svg"> <g id="Heart"> <g id="Vector"> </g> <path id="Vector_2" d="M10.0305 16.9337C10.0305 16.9337 2.19084 12.5435 2.19084 7.21249C2.19084 6.27007 2.51736 5.35676 3.11484 4.62795C3.71232 3.89914 4.54386 3.39985 5.46797 3.21503C6.39209 3.03021 7.3517 3.17127 8.18353 3.61422C9.01536 4.05716 9.66804 4.77463 10.0305 5.64456V5.64456C10.393 4.77463 11.0456 4.05716 11.8775 3.61422C12.7093 3.17127 13.6689 3.03021 14.593 3.21503C15.5172 3.39985 16.3487 3.89914 16.9462 4.62795C17.5436 5.35676 17.8702 6.27007 17.8702 7.21249C17.8702 12.5435 10.0305 16.9337 10.0305 16.9337Z" stroke="#696969" stroke-width="1.25435" stroke-linecap="round" stroke-linejoin="round"/> </g> </svg>`;
+const CHAT_SVG = `<svg width="20.0695" height="20.0695" viewBox="0 0 20.0695 20.0695" fill="none" xmlns="http://www.w3.org/2000/svg"> <g id="ChatCircle"> <g id="Vector"> </g> <path id="Vector_2" d="M3.55879 13.8761C2.625 12.3007 2.29837 10.4386 2.64022 8.63936C2.98208 6.84015 3.96891 5.22759 5.41545 4.10441C6.86199 2.98122 8.66876 2.42467 10.4966 2.53921C12.3244 2.65376 14.0475 3.43154 15.3425 4.72654C16.6375 6.02153 17.4153 7.74468 17.5298 9.57249C17.6444 11.4003 17.0878 13.2071 15.9646 14.6536C14.8415 16.1001 13.2289 17.087 11.4297 17.4288C9.63049 17.7707 7.76837 17.4441 6.19292 16.5103V16.5103L3.59015 17.2472C3.48351 17.2784 3.37045 17.2803 3.26281 17.2528C3.15517 17.2252 3.05692 17.1693 2.97836 17.0907C2.8998 17.0121 2.84382 16.9139 2.81628 16.8062C2.78875 16.6986 2.79068 16.5855 2.82186 16.4789L3.55879 13.8761Z" stroke="#696969" stroke-width="1.25435" stroke-linecap="round" stroke-linejoin="round"/> </g> </svg>`;
+const PLANE_SVG = `<svg width="20.0695" height="20.0695" viewBox="0 0 20.0695 20.0695" fill="none" xmlns="http://www.w3.org/2000/svg"> <g id="PaperPlaneTilt"> <g id="Vector"> </g> <path id="Vector_2" d="M16.4826 2.81443L1.86949 6.93025C1.7451 6.96426 1.63421 7.03579 1.55194 7.1351C1.46966 7.2344 1.42 7.35666 1.40972 7.48521C1.39943 7.61376 1.42903 7.74235 1.49447 7.85348C1.55991 7.9646 1.65801 8.05285 1.77542 8.1062L8.48617 11.2813C8.61762 11.3421 8.7232 11.4477 8.78408 11.5792L11.9591 18.2899C12.0125 18.4073 12.1007 18.5054 12.2119 18.5709C12.323 18.6363 12.4516 18.6659 12.5801 18.6556C12.7087 18.6453 12.8309 18.5957 12.9302 18.5134C13.0295 18.4311 13.1011 18.3202 13.1351 18.1958L17.2509 3.58272C17.2821 3.47608 17.284 3.36301 17.2565 3.25538C17.229 3.14774 17.173 3.04949 17.0944 2.97092C17.0159 2.89236 16.9176 2.83638 16.81 2.80885C16.7023 2.78131 16.5893 2.78324 16.4826 2.81443V2.81443Z" stroke="#696969" stroke-width="1.25435" stroke-linecap="round" stroke-linejoin="round"/> <path id="Vector_3" d="M8.694 11.3754L12.2375 7.83184" stroke="#696969" stroke-width="1.25435" stroke-linecap="round" stroke-linejoin="round"/> </g> </svg>`;
+const BOOKMARK_SVG = `<svg width="20.0695" height="20.0695" viewBox="0 0 20.0695 20.0695" fill="none" xmlns="http://www.w3.org/2000/svg"> <g id="BookmarkSimple"> <g id="Vector"> </g> <path id="Vector_2" d="M15.0509 17.5608L10.0335 14.425L5.01613 17.5608V3.76303C5.01613 3.59669 5.08221 3.43717 5.19983 3.31955C5.31745 3.20193 5.47697 3.13586 5.64331 3.13586H14.4237C14.5901 3.13586 14.7496 3.20193 14.8672 3.31955C14.9848 3.43717 15.0509 3.59669 15.0509 3.76303V17.5608Z" stroke="#696969" stroke-width="1.25435" stroke-linecap="round" stroke-linejoin="round"/> </g> </svg>`;
+
+const posts = [
+  { src: visual1, alt: 'Audit logs and evaluator feature update' },
+  { src: visual2, alt: 'Feature update version 1.1' },
+  { src: visual3, alt: '50x faster than LiteLLM' },
+  { src: visual4, alt: 'January 2026 product update' },
+];
+
+function Svg({ markup, style }: { markup: string; style: CSSProperties }) {
+  return <span style={{ display: 'block', lineHeight: 0, ...style }} dangerouslySetInnerHTML={{ __html: markup }} />;
+}
+
+// The card frame stays put; only the plain content panels slide through it.
+function CardChrome() {
+  return <>
+    <div style={{ position: 'absolute', left: '50%', top: 0, transform: 'translateX(-50%)', width: CARD_W, height: TOP_H, background: '#fff', borderRadius: `${RADIUS}px ${RADIUS}px 0 0`, overflow: 'hidden' }}>
+      <Svg markup={LOGO_SVG} style={{ position: 'absolute', left: 15.34, top: 10.94, width: 34.465, height: 34.465 }} />
+      <span style={{ position: 'absolute', left: 58.16, top: 15.38, fontFamily: POPPINS, fontWeight: 700, fontSize: 10.363, color: '#2d2936', whiteSpace: 'nowrap' }}><T k="name">Bifrost.ai</T></span>
+      <span style={{ position: 'absolute', left: 58.16, top: 28.91, fontFamily: POPPINS, fontWeight: 500, fontSize: 9.211, color: '#2d2936', whiteSpace: 'nowrap' }}><T k="place">Bilbao, Spain</T></span>
+    </div>
+    <div style={{ position: 'absolute', left: '50%', bottom: 0, transform: 'translateX(-50%)', width: CARD_W, height: BOTTOM_H, background: '#fff', borderRadius: `0 0 ${RADIUS}px ${RADIUS}px`, overflow: 'hidden' }}>
+      <div style={{ position: 'absolute', left: 14.11, top: 11.72, width: 282.664, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <span style={{ display: 'flex', alignItems: 'center', gap: 8.346 }}>
+          <Svg markup={HEART_SVG} style={{ width: 20.07, height: 20.07 }} />
+          <Svg markup={CHAT_SVG} style={{ width: 20.07, height: 20.07 }} />
+          <Svg markup={PLANE_SVG} style={{ width: 20.07, height: 20.07 }} />
+        </span>
+        <Svg markup={BOOKMARK_SVG} style={{ width: 20.07, height: 20.07 }} />
+      </div>
+    </div>
+  </>;
+}
+
+function Panel({ src, alt }: { src: string; alt: string }) {
+  return <div style={{ position: 'relative', width: POST, height: POST, background: '#f9f9f9' }}>
+    <img src={src} alt={alt} draggable={false} style={{ display: 'block', width: '100%', height: '100%', objectFit: 'cover' }} />
+  </div>;
+}
+
+const STEPS = holdSlide(posts.length);
+
+export default function SocialPosts() {
+  const ref = useRef<HTMLDivElement>(null);
+  const rowRef = useRef<HTMLDivElement>(null);
+  const clock = useRef({ elapsed: 0 });
+  const live = useNearView(ref, false, 'screen');
+  // The timeline's position counts panels advanced. Cards repeat every `posts.length`, so
+  // position 0 and 4 land on the same picture and the loop restart is seamless.
+  useEffect(() => runTimeline(STEPS, live, clock.current, position => {
+    if (rowRef.current) rowRef.current.style.transform = `translateX(${-Math.max(0, Math.min(posts.length, position)) * PITCH}px)`;
+  }), [live]);
+  return (
+    <div ref={ref} className="bifrost-lab-frame" style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#00281e' }}>
+      <img src={frame} alt="" decoding="async" style={{ position: 'absolute', inset: 0, display: 'block', width: '100%', height: '100%' }} />
+      <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: CARD_W, height: CARD_H }}>
+        {/* sliding content panels, not clipped to the card */}
+        <div ref={rowRef} style={{ position: 'absolute', left: 0, top: TOP_H, width: POST, height: POST }}>
+          {[...posts, ...posts, ...posts].map((post, index) => (
+            <div key={index} style={{ position: 'absolute', left: (index - posts.length) * PITCH, top: 0 }}>
+              <Panel src={post.src} alt={post.alt} />
+            </div>
+          ))}
+        </div>
+        <CardChrome />
+      </div>
+    </div>
+  );
+}

@@ -1,4 +1,3 @@
-import type { MotionScene } from '../../../components/motion/MotionPreview';
 
 // Geometry from Figma frame 142:95. The summary (left) and story (right) are final copy;
 // replace the gallery's empty media areas here when final assets are ready.
@@ -15,10 +14,7 @@ export const beamProject = {
     'Beam is a shared workspace that keeps files and context available across laptops, cloud environments, CI, sandboxes, and AI agents.',
     'It helps humans and agents work from the same up-to-date files without repeatedly copying, syncing, or rebuilding setup.',
   ],
-  // Motion Lab's beam-content/motion-cover (Figma 248:3595); refresh with `npm run sync:motions`.
-  // The home page's Works card uses this same cover (src/data/portfolio.ts).
-  // It draws no Rive, so it doesn't load the Rive runtime (MotionPreview).
-  cover: { id: 'beam/cover', width: 806, height: 706, title: 'Beam cover motion', rive: false } satisfies MotionScene,
+  // The cover is ./cover/BeamCover (Figma 248:3595); the home page's Works card shows the same one.
 };
 
 export interface BeamVisual {

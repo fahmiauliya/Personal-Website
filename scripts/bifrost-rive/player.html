@@ -1,0 +1,118 @@
+<!doctype html><meta charset="utf-8"><title>Rive recorder</title>
+<script>
+// A controlled clock: the Rive player's frames run only when step(ms) is called, at exact times.
+window.__queue = []; window.__now = 1000;
+window.requestAnimationFrame = cb => { window.__queue.push(cb); return window.__queue.length; };
+window.cancelAnimationFrame = () => {};
+const realNow = performance.now.bind(performance);
+performance.now = () => window.__now;
+window.step = ms => { window.__now += ms; const q = window.__queue; window.__queue = []; for (const cb of q) cb(window.__now); };
+</script>
+<canvas id="riveCanvas" width="10" height="10"></canvas>
+<script>
+// Records a Rive file's canvas drawing: every Path2D's commands, and each fill / stroke / clip /
+// save / restore with the context state (transform, paint, alpha).
+const RealPath2D = window.Path2D;
+window.Path2D = class extends RealPath2D {
+  constructor(p) { super(p); this.__cmds = p && p.__cmds ? p.__cmds.map(c => c.slice()) : []; }
+  moveTo(x, y) { this.__cmds.push(['M', x, y]); return super.moveTo(x, y); }
+  lineTo(x, y) { this.__cmds.push(['L', x, y]); return super.lineTo(x, y); }
+  bezierCurveTo(a, b, c, d, e, f) { this.__cmds.push(['C', a, b, c, d, e, f]); return super.bezierCurveTo(a, b, c, d, e, f); }
+  quadraticCurveTo(a, b, c, d) { this.__cmds.push(['Q', a, b, c, d]); return super.quadraticCurveTo(a, b, c, d); }
+  closePath() { this.__cmds.push(['Z']); return super.closePath(); }
+  rect(x, y, w, h) { this.__cmds.push(['M', x, y], ['L', x + w, y], ['L', x + w, y + h], ['L', x, y + h], ['Z']); return super.rect(x, y, w, h); }
+  addPath(p, m) { throw new Error('addPath not handled'); }
+};
+window.__log = []; window.__rec = false;
+const P = CanvasRenderingContext2D.prototype;
+const state = ctx => { const m = ctx.getTransform(); return { t: [m.a, m.b, m.c, m.d, m.e, m.f], alpha: ctx.globalAlpha, comp: ctx.globalCompositeOperation }; };
+const style = s => typeof s === 'string' ? s : (s && s.__desc) || String(s);
+const wrap = (name, fn) => { const orig = P[name]; P[name] = function (...a) { if (window.__rec) fn.call(this, ...a); return orig.apply(this, a); }; };
+const grad = g => { g.__stops = []; const add = g.addColorStop; g.addColorStop = (o, c) => { g.__stops.push([o, c]); return add.call(g, o, c); }; return g; };
+const oLin = P.createLinearGradient, oRad = P.createRadialGradient;
+P.createLinearGradient = function (...a) { const g = grad(oLin.apply(this, a)); g.__desc = { type: 'linear', args: a, stops: g.__stops }; return g; };
+P.createRadialGradient = function (...a) { const g = grad(oRad.apply(this, a)); g.__desc = { type: 'radial', args: a, stops: g.__stops }; return g; };
+wrap('fill', function (p, rule) { window.__log.push({ op: 'fill', path: p && p.__cmds, rule: typeof p === 'string' ? p : rule, style: style(this.fillStyle), ...state(this) }); });
+wrap('stroke', function (p) { window.__log.push({ op: 'stroke', path: p && p.__cmds, style: style(this.strokeStyle), width: this.lineWidth, cap: this.lineCap, join: this.lineJoin, ...state(this) }); });
+wrap('clip', function (p, rule) { window.__log.push({ op: 'clip', path: p && p.__cmds, rule, ...state(this) }); });
+wrap('save', function () { window.__log.push({ op: 'save' }); });
+wrap('restore', function () { window.__log.push({ op: 'restore' }); });
+window.__images = [];
+wrap('drawImage', function (img, ...a) { let k = window.__images.indexOf(img); if (k < 0) { k = window.__images.length; window.__images.push(img); } window.__log.push({ op: 'drawImage', image: k, args: a, w: img.width, h: img.height, ...state(this) }); });
+</script>
+<script src="rive.js"></script>
+<script>
+rive.RuntimeLoader.setWasmUrl('rive.wasm');
+const R3 = v => JSON.stringify(v, (k, x) => typeof x === 'number' ? Math.round(x * 1000) / 1000 : x);
+// Plays a file as the site's motions do: autoplay, then the first state machine too.
+window.playerLoad = src => new Promise(res => {
+  const canvas = document.getElementById('riveCanvas');
+  const r = new rive.Rive({ src, canvas, autoplay: true, layout: new rive.Layout({ fit: rive.Fit.Contain, alignment: rive.Alignment.Center }), onLoad: () => {
+    const b = r.bounds; const k = window.__scale || 1; canvas.width = Math.round(b.maxX) * k; canvas.height = Math.round(b.maxY) * k; canvas.style.width = Math.round(b.maxX) + 'px'; canvas.style.height = Math.round(b.maxY) + 'px'; r.resizeToCanvas && r.resizeToCanvas();
+    const machines = r.stateMachineNames ?? [];
+    if (machines.length) r.play(machines[0]); else if (r.animationNames?.length) r.play(r.animationNames[0]);
+    window.__r = r; res({ w: canvas.width, h: canvas.height, playing: r.playingAnimationNames, machines: r.playingStateMachineNames });
+  } });
+});
+// n frames at 60fps: each frame's draw calls (save/restore kept).
+window.playerFrames = n => { const out = []; for (let i = 0; i < n; i++) { window.__log = []; window.__rec = true; step(1000 / 60); window.__rec = false; out.push(window.__log); } return R3(out); };
+window.ready = true;
+</script>
+<script>
+// Frames as changes: frame 0 in full, then per frame either {same: true}, the ops that differ from
+// the previous frame ({diff: [[index, op], ...]}), or the whole list when its length changed.
+let __prev = null;
+window.playerDiffs = n => { const out = []; for (let i = 0; i < n; i++) {
+  window.__log = []; window.__rec = true; step(1000 / 60); window.__rec = false;
+  const cur = JSON.parse(R3(window.__log));
+  if (!cur.length) { out.push({ empty: true }); continue; }
+  if (!__prev || __prev.length !== cur.length) out.push({ full: cur });
+  else { const diff = []; cur.forEach((o, k) => { const p = __prev[k]; if (o.op !== p.op) { diff.push([k, o]); return; } const ch = {}; let any = false; for (const key of Object.keys(o)) if (JSON.stringify(o[key]) !== JSON.stringify(p[key])) { ch[key] = o[key]; any = true; } if (any) diff.push([k, ch, 1]); }); out.push(diff.length ? { diff } : { same: true }); }
+  __prev = cur; } return JSON.stringify(out); };
+// The file's embedded images, as PNG data URLs.
+window.playerImages = () => window.__images.map(img => { const c = document.createElement('canvas'); c.width = img.width; c.height = img.height; c.getContext('2d').drawImage(img, 0, 0); return c.toDataURL('image/png'); });
+</script>
+<script>
+const fnv = s => { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); };
+// n frames: per frame, the number of draw calls and a fingerprint of all of them (rounded to 0.01).
+window.playerHashes = n => { const out = []; for (let i = 0; i < n; i++) { window.__log = []; window.__rec = true; step(1000 / 60); window.__rec = false;
+  const ops = window.__log.filter(o => o.op !== 'save' && o.op !== 'restore');
+  out.push([ops.length, fnv(JSON.stringify(ops, (k, x) => typeof x === 'number' ? Math.round(x * 100) / 100 : x))]); } return out; };
+</script>
+<script>
+// For checking: the SVG version next to the canvas, at the same size, at time `seconds`.
+window.showSvg = async (url, seconds) => {
+  const box = document.createElement('div'); const c = document.getElementById('riveCanvas');
+  const cw = parseFloat(c.style.width) || c.width, ch = parseFloat(c.style.height) || c.height;
+  box.style.cssText = `position:absolute;left:0;top:${ch + 20}px;width:${cw}px;height:${ch}px;background:#fff`;
+  box.innerHTML = await (await fetch(url + '?v=' + Date.now())).text();
+  const svg = box.querySelector('svg'); svg.setAttribute('width', cw); svg.setAttribute('height', ch);
+  document.body.append(box); await new Promise(r => setTimeout(r, 100));
+  svg.pauseAnimations(); svg.setCurrentTime(seconds);
+  return [cw, ch];
+};
+</script>
+<script>
+// Scrub mode: one timeline set to exact times (as the site's cards scrub it), each frame recorded
+// in the same change format as playerDiffs.
+window.scrubLoad = async (src, name) => {
+  const rt = await rive.RuntimeLoader.awaitInstance();
+  const file = await rt.load(new Uint8Array(await (await fetch(src)).arrayBuffer()));
+  const artboard = file.defaultArtboard();
+  const canvas = document.getElementById('riveCanvas'); canvas.width = Math.ceil(artboard.bounds.maxX); canvas.height = Math.ceil(artboard.bounds.maxY);
+  const renderer = rt.makeRenderer(canvas);
+  let anim = null; for (let i = 0; i < artboard.animationCount(); i++) { const a = artboard.animationByIndex(i); if (a.name === name) anim = a; }
+  window.__scrub = { rt, artboard, renderer, inst: new rt.LinearAnimationInstance(anim, artboard) };
+  window.__r = true; __prev = null;
+  return { w: canvas.width, h: canvas.height, playing: [name], machines: [] };
+};
+window.scrubDiffs = (from, n, fps) => { const s = window.__scrub; const out = [];
+  for (let k = from; k < from + n; k++) {
+    s.inst.time = k / fps; s.inst.apply(1); s.artboard.advance(0); s.renderer.clear && s.renderer.clear();
+    window.__log = []; window.__rec = true; s.renderer.save(); s.artboard.draw(s.renderer); s.renderer.restore(); s.rt.resolveAnimationFrame(); window.__rec = false;
+    const cur = JSON.parse(R3(window.__log));
+    if (!__prev || __prev.length !== cur.length) out.push({ full: cur });
+    else { const diff = []; cur.forEach((o, j) => { const p = __prev[j]; if (o.op !== p.op) { diff.push([j, o]); return; } const ch = {}; let any = false; for (const key of Object.keys(o)) if (JSON.stringify(o[key]) !== JSON.stringify(p[key])) { ch[key] = o[key]; any = true; } if (any) diff.push([j, ch, 1]); }); out.push(diff.length ? { diff } : { same: true }); }
+    __prev = cur; }
+  return JSON.stringify(out); };
+</script>

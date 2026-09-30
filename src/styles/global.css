@@ -161,9 +161,8 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   to { opacity: 1; transform: none; }
 }
 
-/* As the Works surface covers it, the intro recedes slightly: its content column moves
-   up and shrinks, and the full-width layer dims. Only the column is scaled, so the
-   layer's full-bleed background never pulls in from the viewport edges.
+/* As the Works surface covers it, the intro fades out (opacity only, following the cover
+   progress), and fades back in on the way up. It doesn't move, scale or blur.
    --intro-cover (0 → 1) is written by src/pages/home/introCoverMotion.ts. */
 .intro-layer {
   --intro-cover: 0;
@@ -181,22 +180,9 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   backface-visibility: hidden;
 }
 
-/* The hero also falls out of focus as Works covers it: blur follows the same cover
-   progress, 0 → 8px, and reverses on the way back up. Works and the nav stay sharp. */
 .intro-layer > .intro-panel {
-  filter: blur(calc(var(--intro-cover) * 8px));
-  transform: translate3d(0, calc(var(--intro-cover) * -16px), 0) scale(calc(1 - var(--intro-cover) * 0.02));
-  transform-origin: 50% 0;
-  will-change: transform, filter;
-}
-
-.intro-layer::after {
-  position: absolute;
-  inset: 0;
-  background: #000;
-  content: '';
-  opacity: calc(var(--intro-cover) * 0.05);
-  pointer-events: none;
+  opacity: calc(1 - var(--intro-cover));
+  will-change: opacity;
 }
 
 .intro-panel {
@@ -924,11 +910,6 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   transform: translate(-50%, -50%);
 }
 
-/* Motions from the shared bundle (src/components/motion/MotionPreview.tsx) fill their box: the
-   stage is the frame at its design size, scaled from its top-left corner. */
-.motion-preview { position: absolute; inset: 0; overflow: hidden; }
-.motion-preview-stage { position: absolute; top: 0; left: 0; display: block; overflow: hidden; transform-origin: top left; pointer-events: none; }
-
 .project-image {
   position: relative;
   display: grid;
@@ -947,12 +928,25 @@ html.project-vt-close::view-transition-old(project-part-actions) { animation: pr
   letter-spacing: 0.24px;
 }
 
-/* Progressive blur behind the sticky project headers (src/components/navigation/ProgressiveBlur.tsx).
-   Without backdrop-filter the header keeps its solid canvas background instead. */
-.progressive-blur { position: absolute; z-index: -1; inset: 0; pointer-events: none; }
-.progressive-blur > span { position: absolute; inset: 0; }
-/* No view-transition-name here: a named element becomes a backdrop root, so its
-   backdrop-filter would only see its own (empty) contents and never blur the page. */
+/* The soft fade behind every header (src/components/navigation/HeaderFade.tsx): the page
+   colour easing out to transparent down the header, its stops spaced along an ease-out curve
+   so the fade has no visible edge. */
+.header-fade {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    var(--color-canvas) 0%,
+    color-mix(in srgb, var(--color-canvas) 94%, transparent) 25%,
+    color-mix(in srgb, var(--color-canvas) 80%, transparent) 45%,
+    color-mix(in srgb, var(--color-canvas) 60%, transparent) 60%,
+    color-mix(in srgb, var(--color-canvas) 35%, transparent) 75%,
+    color-mix(in srgb, var(--color-canvas) 14%, transparent) 88%,
+    transparent 100%
+  );
+}
 
 /* Project detail close button: on hover a thin ring draws around the X (the stroke's
    dash offset runs 1.02 → 0 over its normalised length), and retracts on leave. The X and
@@ -1067,8 +1061,6 @@ a[data-project-close]:is(:hover, :focus-visible) .close-ring circle { stroke-das
 .contact-glass { position: absolute; inset: 0; z-index: 0; display: block; width: 100%; height: 100%; pointer-events: none; }
 .contact-glass-fallback { position: absolute; top: 50%; left: 50%; z-index: 0; transform: translate(-50%, -50%); pointer-events: none; }
 .contact-glass-fallback[hidden] { display: none; }
-/* The dev panel's save status (FooterGlassDials.tsx, dev server only). */
-.contact-glass-save { position: fixed; right: 16px; bottom: 16px; z-index: 100; padding: 8px 12px; border-radius: 6px; background: #1b1b1b; color: #fff; font-size: 12px; }
 
 
 /* The footer pill hugs its content (the note and the button), centred under the glass,

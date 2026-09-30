@@ -1,0 +1,180 @@
+/* The Beam cover (BeamCover.tsx): Motion Lab's beam-content/motion-cover/motion-cover.module.css,
+   with the rules it borrows from motion 1 (SolutionVisual.module.css: the dot field, its canvas,
+   the solution layer, the logo disc and mark) copied in, so the cover carries its own styles.
+   The field's fade uses the lab's saved stops (0% and 65%). */
+.frame { position: absolute; inset: 0; overflow: hidden; background: #fafafa; }
+/* As the lab's export drew it (in its own shadow root, outside the site's border-box reset): the
+   disc's border sits outside its 7.199cqw, as in Figma's cover. */
+.frame *, .frame ::before, .frame ::after { box-sizing: content-box; }
+
+/*
+ * Motion 1's scene box at the cover's scale: 100cqw = 3679.652px, so 1cqw = 36.797px.
+ * Figma centres it 0.27px left of and 14.56px above the frame's centre.
+ */
+.scene {
+  --dot-field-opacity: 1;
+  --solution-scale: 1;
+  --logo-form: 1;
+  --logo-scale: 1;
+  --beam-response: 0;
+  position: absolute;
+  left: -1437.099px;
+  top: -208.179px;
+  width: 3679.652px;
+  height: 1093.24px;
+  container-type: inline-size;
+  pointer-events: none;
+}
+
+/*
+ * The dot field dissolves toward every edge: an ellipse centred on the disc
+ * (403, 339), full strength around it and clear by the frame's sides, so the cover
+ * has no hard cut wherever it is placed.
+ */
+.fieldFade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(closest-side at 50% 48.02%, #000 0%, rgba(0, 0, 0, .55) 65%, transparent 100%);
+  mask-image: radial-gradient(closest-side at 50% 48.02%, #000 0%, rgba(0, 0, 0, .55) 65%, transparent 100%);
+}
+
+/* Faint white rules: two across at y 177.83 and 549.09, two down at x 82.23 and 723.88. */
+.rule { position: absolute; background: rgba(255, 255, 255, 0.3); pointer-events: none; }
+.ruleAcross { left: -30.39px; width: 924.735px; height: 0.463px; }
+.ruleDown { top: 0; width: 0.463px; height: 706px; }
+
+/*
+ * The disc takes Figma's cover values (248:3666–3668): a heavier inner ring and its
+ * own shadow stack. Motion 1's disc is untouched.
+ */
+.scene .logoDisc {
+  border-width: 2.813px;
+  box-shadow:
+    0 0 111.572px rgba(255, 255, 255, .95),
+    0 4.468px 8.936px rgba(0, 0, 0, .1),
+    0 17.84px 35.712px -13.372px rgba(0, 0, 0, .04),
+    0 13.372px 26.776px -13.372px rgba(0, 0, 0, .06),
+    0 8.936px 17.84px -8.936px rgba(0, 0, 0, .08),
+    -8.936px -8.936px 44.616px rgba(87, 87, 96, .12),
+    inset 0 2.234px 4.468px 2.813px rgba(255, 255, 255, .6);
+}
+.scene .logoDisc::before {
+  inset: 6.765px;
+  border-width: 2.813px;
+}
+
+/* From motion 1 (content-01/SolutionVisual.module.css). */
+.solutionScene {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  transform: scale(var(--solution-scale));
+  transform-origin: center;
+}
+
+.dotField {
+  position: absolute;
+  top: 1.06cqw;
+  left: 36cqw;
+  width: 28cqw;
+  height: 28cqw;
+  border-radius: 50%;
+  /*
+   * Background layer: below the pills (2) and the solution scene (3), so the red
+   * pulse can never wash over pill text, border or glyph.
+   */
+  z-index: 1;
+  /*
+   * State 2 reveals the field with scroll; State 1 borrows it transiently for
+   * the failure wave and returns it to nothing. One field, two contexts — the
+   * resting State 1 composition is unchanged.
+   */
+  opacity: max(
+    var(--dot-field-opacity),
+    calc(var(--failure-field, 0) * var(--failure-presence, 1))
+  );
+  pointer-events: none;
+  /* Was inherited from .solutionScene before the field became its own layer. */
+  transform: scale(var(--solution-scale));
+  transform-origin: center;
+  will-change: opacity, transform;
+}
+
+.dotCanvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(
+    circle at center,
+    #000 0 48%,
+    rgba(0, 0, 0, .84) 66%,
+    transparent 90%
+  );
+  mask-image: radial-gradient(
+    circle at center,
+    #000 0 48%,
+    rgba(0, 0, 0, .84) 66%,
+    transparent 90%
+  );
+  will-change: opacity;
+}
+
+.logoDisc {
+  position: absolute;
+  top: 11.46cqw;
+  left: 46.418cqw;
+  display: grid;
+  width: 7.199cqw;
+  height: 7.199cqw;
+  place-items: center;
+  border: .068cqw solid #fff;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow:
+    0 0 3.396cqw rgba(255, 255, 255, .95),
+    0 .136cqw .272cqw rgba(0, 0, 0, .1),
+    0 .543cqw 1.087cqw -.407cqw rgba(0, 0, 0, .04),
+    0 .407cqw .815cqw -.407cqw rgba(0, 0, 0, .06),
+    0 .272cqw .543cqw -.272cqw rgba(0, 0, 0, .08),
+    -.272cqw -.272cqw 1.358cqw rgba(87, 87, 96, .12),
+    inset 0 .068cqw .136cqw rgba(255, 255, 255, .6);
+  opacity: var(--logo-form);
+  transform: scale(var(--logo-scale));
+}
+
+.logoDisc::before {
+  position: absolute;
+  inset: .204cqw;
+  border: .034cqw solid rgba(0, 0, 0, .05);
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 50%, rgba(217, 217, 217, .12) 100%);
+  content: '';
+}
+
+.logoDisc::after {
+  position: absolute;
+  inset: -.611cqw;
+  border: .068cqw solid rgba(255, 255, 255, .85);
+  border-radius: 50%;
+  content: '';
+  /* Repurposed from perpetual breathing into the logo's response to receiving
+     the travelling state. */
+  opacity: calc(var(--beam-response) * .7);
+  transform: scale(calc(.82 + var(--beam-response) * .36));
+}
+
+.logo {
+  position: relative;
+  z-index: 1;
+  width: 3.736cqw;
+  height: 3.736cqw;
+  /* Repurposed from a decorative loop into reinforcement of state transfer:
+     the mark brightens as it receives, then settles. */
+  filter: brightness(calc(1 + var(--beam-response) * .18))
+    contrast(calc(1 + var(--beam-response) * .06));
+  transform: scale(calc(1 + var(--beam-response) * .035));
+}

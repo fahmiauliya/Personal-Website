@@ -1,12 +1,12 @@
 import { useLayoutEffect } from 'react';
 
 // Intro → Works handoff. Native scrolling still moves the Works surface
-// (.foreground-layer) over the fixed intro; this adds two transform-only layers:
+// (.foreground-layer) over the fixed intro; this adds two layers, a transform and a fade:
 //
 // - Weight: the surface trails the scroll position on a critically damped spring (no
 //   bounce, like the navigation morph), capped at MAX_LAG_PX. The lag fades out as the
 //   surface finishes covering the intro, so scrolling through the projects stays 1:1.
-// - Depth: the intro recedes as it is covered (--intro-cover, 0 → 1), styled in CSS.
+// - Fade: the intro fades out as it is covered (--intro-cover, 0 → 1), styled in CSS.
 //
 // Transforms are written straight to the elements each frame, never through React
 // state, so nothing re-renders or reflows. Reduced motion keeps both layers static.

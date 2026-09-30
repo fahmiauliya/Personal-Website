@@ -51,8 +51,8 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
     releaseFixed.current?.();
     releaseFixed.current = null;
   }, []);
-  // The headers' progressive blur belongs to the top of the screen, not to the page: while
-  // the page zooms, each blur gets the inverse scale about the same point, so it stays
+  // The headers' fade (HeaderFade) belongs to the top of the screen, not to the page: while
+  // the page zooms, each fade gets the inverse scale about the same point, so it stays
   // full-width at the top edge instead of shrinking away with the navigation.
   const blurs = useRef<HTMLElement[]>([]);
   const releaseBlurs = useCallback(() => {
@@ -71,7 +71,7 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
     releaseBlurs();
     // The page zooms about the middle of the viewport (origin() below). Measured at scale 1
     // and before pinning: pinned fixed layers only sit right once the stage is transformed.
-    blurs.current = [...page.querySelectorAll<HTMLElement>('.progressive-blur')];
+    blurs.current = [...page.querySelectorAll<HTMLElement>('.header-fade')];
     const origins = blurs.current.map(blur => {
       const box = blur.getBoundingClientRect();
       return `${window.innerWidth / 2 - box.left}px ${window.innerHeight / 2 - box.top}px`;
@@ -121,7 +121,7 @@ export function usePageTransition<Page>({ setPage, stage, scroller, overlay, mot
   const full = () => live.current.scale === 1
     ? { opacity: 1 }
     : { transform: 'scale(1)', opacity: 1 };
-  // The blur's counter-zoom (see prepareZoom): scale(1 / s) while the page is at s.
+  // The fade's counter-zoom (see prepareZoom): scale(1 / s) while the page is at s.
   const unzoomed = () => `scale(${1 / live.current.scale})`;
   const counterZoom = (from: string, to: string, timing: KeyframeAnimationOptions) => {
     if (live.current.scale === 1) return;

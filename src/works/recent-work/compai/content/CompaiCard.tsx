@@ -1,55 +1,46 @@
-import { useEffect } from 'react';
-import { Alignment, Fit, Layout, RuntimeLoader, useRive } from '@rive-app/react-canvas';
-import heroAnimation from './assets/compai_hero_animation.riv?url';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import styles from './CompaiCard.module.css';
 
 // Figma: Portfolio-2026, Compai card 282:1295 (536 × 410.204071): a blank #979797 frame
-// holding the Compai hero Rive animation (compai_hero_animation.riv, 1200 × 900 artboard,
-// "Timeline 1"), centred and fitted inside the card. The .riv here is patched so its gray
-// background fill stays transparent and the card's #979797 shows through (see README).
+// holding the Compai hero animation (1200 × 900, "Timeline 1"), centred and fitted inside the
+// card. It was a Rive file (compai_hero_animation.riv, patched so its gray background stays
+// transparent and the card's #979797 shows through); it is that timeline's own drawing here,
+// without the Rive player: recorded from the Rive runtime at each of its 900 frames and rebuilt as
+// an SVG keyframed over its 15s (scripts/bifrost-rive, `timeline` mode). As with Rive, nothing
+// runs on its own: the card sets the SVG's time to `position` (the Recent Work clock, shared by
+// the grid and the detail view), paused in between.
 
-// Site addition: Rive fetches its runtime (~2MB of WASM) from the unpkg CDN by default, a
-// slow external round trip. It loads the motion bundle's copy instead: the bundle is built
-// with this same installed Rive and ships its rive.wasm at /motions/rive.wasm, so a page
-// with both downloads the runtime once. The build checks the two stay the same file
-// (scripts/prepare-hostinger.mjs); after upgrading Rive, run `npm run sync:motions`.
-RuntimeLoader.setWasmUrl('/motions/rive.wasm');
-
-/** Rive dial defaults. Scale 1 fits the artboard to the card; below 1 shrinks it, centred. */
+/** Dial defaults. Scale 1 fits the artboard to the card; below 1 shrinks it, centred. */
 export const riveDefaults = { Scale: 1 };
 
-/**
- * The timeline to show. It is named up front: the file also has "State Machine 1", which
- * isn't used, and starting both at once shows nothing.
- */
-const TIMELINE = 'Timeline 1';
-/** Timeline 1's length: 900 frames at 60 fps. The lab's timeline dock runs 0 → this. */
+/** Timeline 1's length: 900 frames at 60 fps. */
 export const TIMELINE_SECONDS = 15;
 
-/**
- * Draws Timeline 1 at `time` seconds. Rive doesn't run its own clock here: the lab's
- * timeline dock does (play, pause, scrub, loop, and speed from Playback Rate), and each
- * new time is drawn with `scrub`. Without a time it plays on its own, once.
- */
+// Fetched with this chunk (it only loads once the card mounts), then kept.
+let source: string | undefined;
+const loadSource = () => import('./assets/compai-hero.svg?raw').then(module => (source = module.default));
+
+/** Draws Timeline 1 at `time` seconds (without a time, its first frame). */
 function HeroAnimation({ time }: { time?: number }) {
-  const driven = time !== undefined;
-  // The canvas follows the screen's pixel ratio (2× on retina), so it stays sharp.
-  // `customDevicePixelRatio` is ignored by this Rive runtime, so it isn't set.
-  const { rive, RiveComponent } = useRive({
-    src: heroAnimation,
-    animations: TIMELINE,
-    autoplay: !driven,
-    layout: new Layout({ fit: Fit.Contain, alignment: Alignment.Center }),
-  });
-
-  useEffect(() => {
-    if (rive && driven) rive.scrub(TIMELINE, Math.min(TIMELINE_SECONDS, Math.max(0, time)));
-  }, [rive, driven, time]);
-
-  return <RiveComponent className={styles.riveCanvas} data-cover-ready={rive ? "ready" : "pending"} />;
+  const ref = useRef<HTMLDivElement>(null);
+  const [markupSource, setMarkupSource] = useState(source);
+  useEffect(() => { if (!markupSource) void loadSource().then(setMarkupSource); }, [markupSource]);
+  // Ids made unique to this copy (the grid card and the detail view can both be mounted).
+  const prefix = useId().replace(/[^a-zA-Z0-9]/g, '');
+  const markup = useMemo(() => markupSource
+    ?.replace(/(id="|url\(#|href="#)rv/g, `$1${prefix}`)
+    .replace('<svg ', '<svg width="100%" height="100%" preserveAspectRatio="xMidYMid meet" '), [markupSource, prefix]);
+  // Paused from the start; each new time is drawn by setting the SVG's clock.
+  useLayoutEffect(() => {
+    const svg = ref.current?.querySelector('svg');
+    if (!svg) return;
+    svg.pauseAnimations();
+    svg.setCurrentTime(Math.min(TIMELINE_SECONDS, Math.max(0, time ?? 0)));
+  }, [markup, time]);
+  return <div ref={ref} className={styles.riveCanvas} aria-hidden="true" data-cover-ready={markup ? 'ready' : 'pending'} dangerouslySetInnerHTML={markup ? { __html: markup } : undefined} />;
 }
 
-/** `position` is the time in Timeline 1, in seconds, when the lab's timeline drives it. */
+/** `position` is the time in Timeline 1, in seconds. */
 export default function CompaiCard({ position, values }: { position?: number; values?: Record<string, Record<string, number>> }) {
   const { Scale } = { ...riveDefaults, ...(values?.Rive ?? {}) };
   return <figure className={styles.card} aria-label="Compai" data-node-id="282:1295">

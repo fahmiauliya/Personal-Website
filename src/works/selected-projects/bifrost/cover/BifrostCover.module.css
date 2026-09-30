@@ -1,0 +1,87 @@
+/* The Bifrost cover (BifrostCover.tsx): Motion Lab's motion-cover styles. The lab drew it in a
+   page of its own, so the site's inherited text styles and border-box sizing are reset first. */
+.frame, .frame * { box-sizing: content-box; }
+.frame { position: absolute; inset: 0; overflow: hidden; background: #00281e; font-weight: 400; line-height: normal; letter-spacing: normal; color: #000; }
+
+/* Hero card, 747 × 447, centred on the frame. Its side rules are inside strokes in Figma. */
+.card {
+  position: absolute;
+  left: 30px;
+  top: 129.82px;
+  width: 747px;
+  height: 447px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #f6f6f6;
+  border-left: 1.84px solid rgba(0, 0, 0, 0.1);
+  border-right: 1.84px solid rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  position: absolute;
+  left: 19.31px;
+  top: 22.08px;
+  width: 702.842px;
+  height: 38.638px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.badge {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 38.638px;
+  padding: 3.68px 14.719px;
+  box-sizing: border-box;
+  background: #ebfff4; /* Motion 1's badge mint */
+}
+
+.chart {
+  position: absolute;
+  left: 19.31px;
+  top: 80.96px;
+  width: 702.842px;
+  height: 349.581px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  background: #fff;
+  border: 1.84px solid #ebebeb;
+}
+
+.gauge {
+  position: relative;
+  flex: none;
+  height: 237.347px;
+  box-sizing: border-box;
+  overflow: hidden;
+  border-bottom: 1.84px solid #ebebeb;
+}
+
+.readings { flex: none; display: flex; align-items: center; width: 100%; }
+.reading {
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 14.719px 22.079px;
+  box-sizing: border-box;
+}
+.readingFirst { border-right: 1.84px solid #ebebeb; }
+.name { display: flex; align-items: center; gap: 7.36px; }
+.dotWrap { display: flex; padding: 3.68px; }
+.dot { width: 7.36px; height: 7.36px; }
+
+/* The frame image (motion 10's dithered blur) behind the card. */
+.image { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+/* The white masks over the faint side rules in the gauge's artboard. */
+.mask { position: absolute; z-index: 1; top: 0; bottom: 0; width: 9.38px; background: #fff; pointer-events: none; }
+.maskLeft { left: 0; }
+.maskRight { right: 0; }

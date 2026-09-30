@@ -3,12 +3,16 @@
 // Motion Lab's bifrost-content/motion-XX. Figma's own labels differ from motion 06
 // onward (it has no "Motion 6" and two "Motion 11"s); `figmaLabel` keeps the map.
 //
-// Each motion is the whole Motion Lab frame, from the shared motion bundle: run
-// `npm run sync:motions` to refresh public/motions/. `motion` holds
-// the export's own frame size; the gallery stretches it to the slot, which differs
-// by under a pixel (Motion Lab rounds some heights, e.g. 557 vs 556.7).
+// Each motion is the whole Motion Lab frame, in code (content-01 … content-13, see
+// BifrostGallery). `motion` holds the frame's own size in Motion Lab; the gallery stretches it to
+// the slot, which differs by under a pixel (Motion Lab rounds some heights, e.g. 557 vs 556.7).
 
-import type { MotionScene } from '../../../components/motion/MotionPreview';
+/** A motion's frame size in Motion Lab (design px) and its accessible title. */
+export interface MotionScene {
+  width: number;
+  height: number;
+  title: string;
+}
 
 export const MOTION_GALLERY_WIDTH = 1408;
 
@@ -31,9 +35,7 @@ const pairWidth = 698;
 const pairHeight = 556.7;
 const tallRowHeight = 811.93;
 
-const scene = (id: MotionId, width: number, height: number, title: string): MotionScene => (
-  { id: `bifrost/${id.slice('motion-'.length)}`, width, height, title }
-);
+const scene = (_id: MotionId, width: number, height: number, title: string): MotionScene => ({ width, height, title });
 
 export const motionSlots: Record<MotionId, MotionSlot> = {
   'motion-01': {

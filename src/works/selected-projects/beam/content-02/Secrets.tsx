@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useNearView } from '../../../../components/motion/useNearView';
-import { createOutlined } from '../Outlined';
+import { createOutlined } from '../../../../components/outlined/Outlined';
 import secretVisual from './assets/secret-visual.svg?raw';
 import toggleActive from './assets/toggle-active.svg';
 import { GLYPHS, TEXT } from './glyphs';
@@ -26,7 +26,7 @@ const at = ([left, top]: number[]) => ({ left, top });
 
 export default function Secrets() {
   const stage = useRef<HTMLDivElement>(null);
-  const near = useNearView(stage);
+  const near = useNearView(stage, false, 'screen');
 
   useEffect(() => {
     const svg = stage.current?.querySelector('svg.secret-svg');

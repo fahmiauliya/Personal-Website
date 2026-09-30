@@ -15,12 +15,6 @@
   height: 63px;
   align-items: center;
   padding: 20px 16px 15px; /* a 28px row: the controls sit at y 20, as in Figma 185:7014 */
-  background: var(--color-canvas);
-}
-
-/* The page scrolls under the header through a progressive blur instead of a solid band. */
-@supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-  .bifrost-header { background: none; }
 }
 
 .bifrost-header-center { display: flex; align-items: center; gap: 4px; justify-self: center; }
@@ -62,6 +56,8 @@
 .bifrost-gallery-rows { --u: calc(100cqw / 1408); display: flex; flex-direction: column; gap: calc(12 * var(--u)); }
 .bifrost-gallery-row { display: flex; gap: calc(12 * var(--u)); }
 .bifrost-gallery-column { display: flex; flex-direction: column; gap: calc(12 * var(--u)); }
+/* A motion fills its slot (BifrostGallery: the frame at its design size, stretched to fit). */
+.bifrost-motion-stage { position: absolute; inset: 0; overflow: hidden; }
 .bifrost-motion { position: relative; width: calc(var(--frame-width) * var(--u)); margin: 0; overflow: hidden; aspect-ratio: var(--frame-ratio); }
 .bifrost-motion-label { position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; text-shadow: 0.5px 0.5px 1px rgb(0 0 0 / 15%), 0.3px 0.3px 0.4px rgb(0 0 0 / 20%); }
 .bifrost-motion-label--light { color: #fff; }

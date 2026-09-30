@@ -1,25 +1,22 @@
-import { lazy, Suspense, useRef, useState } from 'react';
+import { lazy, Suspense, useRef } from 'react';
 import ctaIcon from '../../assets/icons/cta-footer.svg';
 import SocialLinks from './SocialLinks';
-import type { GlassSettings } from './FooterGlass';
 import { useNearView } from '../motion/useNearView';
 
 // The glass octahedron behind the pill (FooterGlass.tsx) is its own chunk, mounted only
-// once the footer is near the screen, like the Recent Work cards. On the dev server it
-// comes with its parameter panel (FooterGlassDials.tsx), which never ships.
+// once the footer is near the screen, like the Recent Work cards.
 const FooterGlass = lazy(() => import('./FooterGlass'));
-const FooterGlassDials = import.meta.env.DEV ? lazy(() => import('./FooterGlassDials')) : null;
 
 export default function ContactFooter() {
   const area = useRef<HTMLDivElement>(null);
   const pill = useRef<HTMLDivElement>(null);
+  // Loads a screen early; its loop runs only while the footer is on screen.
   const live = useNearView(area);
-  const [tuned, setTuned] = useState<GlassSettings>();
+  const playing = useNearView(area, false, 'screen');
   return (
     <footer className="contact-footer">
       <div className="contact-area" ref={area}>
-        {live && <Suspense fallback={null}><FooterGlass anchor={pill} settings={tuned} /></Suspense>}
-        {live && FooterGlassDials && <Suspense fallback={null}><FooterGlassDials onChange={setTuned} /></Suspense>}
+        {live && <Suspense fallback={null}><FooterGlass anchor={pill} playing={playing} /></Suspense>}
         <div className="contact-pill" ref={pill}>
           <p>
             <span className="contact-note--wide">Have something that want to discuss</span>

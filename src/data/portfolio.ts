@@ -5,16 +5,12 @@ export interface Project {
   date: string;
   imageLabel: string;
   href?: string;
-  /** Motion shown as the card image; shares the project page's cover so both stay in sync. */
-  cover?: MotionScene;
   /** Cover built in code (e.g. a video with UI on top), shown as the card image. */
   coverScene?: ComponentType;
   /** Static cover image (e.g. a Figma SVG export), shown as the card image. */
   coverImage?: string;
   /** Which side of the card the cover image fills (ratio locked, centred, overflow cropped). Defaults to height. */
   coverImageFit?: 'height' | 'width';
-  /** A looping video in place of the cover image (the image is its poster). */
-  coverVideo?: string;
 }
 
 export interface SocialLink {
@@ -24,22 +20,23 @@ export interface SocialLink {
 }
 
 import type { ComponentType } from 'react';
-import type { MotionScene } from '../components/motion/MotionPreview';
 import { beamProject } from '../works/selected-projects/beam/beamData';
+import BeamCover from '../works/selected-projects/beam/cover/BeamCover';
+import BifrostCover from '../works/selected-projects/bifrost/cover/BifrostCover';
 import { bifrostProject } from '../works/selected-projects/bifrost/bifrostData';
 import { recentWorkPath, recentWorkProjects } from '../works/recent-work/recentWorkData';
-// Avea Robotics cover: ~/Documents/avea-robotics-2.jpg, resized for the web (600px tall, 2x the card).
-import aveaCover from '../works/selected-projects/avea/cover.jpg';
-// Lasting Learn cover: Figma Portfolio-2026 node 265:4229 at 4x, resized for the web (600px tall, 2x the card).
-import lastingLearnCover from '../works/selected-projects/lasting-learn/cover.jpg';
-// Almanac Market cover: Figma Portfolio-2026 node 267:4640 at 4x, resized for the web (600px tall, 2x the card).
-import almanacMarketCover from '../works/selected-projects/almanac-market/cover.jpg';
-// TalentPluto card image: a still of its cover video, from Motion Lab website-content/shared/assets.
-import talentPlutoCover from '../works/selected-projects/talentpluto/cover.jpg';
-import talentPlutoVideo from '../works/selected-projects/talentpluto/cover.mp4';
-// Eden AI (7) and Tika Security (8) covers: Figma Portfolio-2026 nodes 271:309 and 272:488 at 4x, resized for the web (600px tall, 2x the card).
-import edenAiCover from '../works/selected-projects/eden-ai/cover.jpg';
-import tikaSecurityCover from '../works/selected-projects/tika-security/cover.jpg';
+// The other Selected Project covers are still images, 600px tall (2x the card) as WebP.
+// Avea Robotics cover: ~/Documents/avea-robotics-2.jpg.
+import aveaCover from '../works/selected-projects/avea/cover.webp';
+// Lasting Learn cover: Figma Portfolio-2026 node 265:4229.
+import lastingLearnCover from '../works/selected-projects/lasting-learn/cover.webp';
+// Almanac Market cover: Figma Portfolio-2026 node 267:4640.
+import almanacMarketCover from '../works/selected-projects/almanac-market/cover.webp';
+// TalentPluto cover: a still of its former cover video (Motion Lab website-content/shared/assets).
+import talentPlutoCover from '../works/selected-projects/talentpluto/cover.webp';
+// Eden AI (7) and Tika Security (8) covers: Figma Portfolio-2026 nodes 271:309 and 272:488.
+import edenAiCover from '../works/selected-projects/eden-ai/cover.webp';
+import tikaSecurityCover from '../works/selected-projects/tika-security/cover.webp';
 import githubIcon from '../assets/icons/social-github.svg';
 import linkedinIcon from '../assets/icons/social-linkedin.svg';
 import xIcon from '../assets/icons/social-x.svg';
@@ -58,10 +55,9 @@ export const projects: Project[] = Array.from({ length: 8 }, (_, index) => {
     date: projectNumber === 1 || projectNumber === 2 ? '2026' : '00/00',
     imageLabel: projectNumber === 1 ? 'Cover' : `IMG-${projectNumber}`,
     href: projectNumber === 1 ? '/projects/beam/' : projectNumber === 2 ? '/projects/bifrost/' : undefined,
-    cover: projectNumber === 1 ? beamProject.cover : projectNumber === 2 ? bifrostProject.cover : undefined,
+    coverScene: projectNumber === 1 ? BeamCover : projectNumber === 2 ? BifrostCover : undefined,
     coverImage: projectNumber === 3 ? lastingLearnCover : projectNumber === 4 ? talentPlutoCover : projectNumber === 5 ? aveaCover : projectNumber === 6 ? almanacMarketCover : projectNumber === 7 ? edenAiCover : projectNumber === 8 ? tikaSecurityCover : undefined,
     coverImageFit: projectNumber === 3 || projectNumber === 6 ? 'width' : undefined,
-    coverVideo: projectNumber === 4 ? talentPlutoVideo : undefined,
   };
 });
 

@@ -1,8 +1,8 @@
 import attachmentIcon from '../../../assets/icons/attachment.svg';
 import ContactFooter from '../../../components/contact/ContactFooter';
-import MotionPreview from '../../../components/motion/MotionPreview';
 import BifrostHeader from './BifrostHeader';
 import BifrostGallery from './BifrostGallery';
+import BifrostCover from './cover/BifrostCover';
 import { bifrostProject } from './bifrostData';
 import './bifrost.css';
 
@@ -26,7 +26,7 @@ export default function BifrostPage() {
               </dl>
             </div>
           </div>
-          <div className="bifrost-cover" data-project-cover><MotionPreview scene={bifrostProject.cover} eager /></div>
+          <div className="bifrost-cover" data-project-cover><BifrostCover /></div>
           <div className="bifrost-description" data-project-part="description">
             <div>{bifrostProject.description.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div>
             <div className="bifrost-closing">

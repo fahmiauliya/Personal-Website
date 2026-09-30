@@ -1,4 +1,4 @@
-import { createOutlined, placeText } from '../Outlined';
+import { createOutlined, placeText } from '../../../../components/outlined/Outlined';
 import { GLYPHS, TEXT } from './glyphs';
 
 // Content 06's text, drawn as outlines (glyphs.ts), so the section loads no font: TikTok Sans

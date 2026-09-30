@@ -1,5 +1,5 @@
 import Guides from '../Guides';
-import { createOutlined } from '../Outlined';
+import { createOutlined } from '../../../../components/outlined/Outlined';
 import appSettings from './assets/app-settings.webp';
 import { GLYPHS, TEXT } from './glyphs';
 import './SwitchToPro.css';

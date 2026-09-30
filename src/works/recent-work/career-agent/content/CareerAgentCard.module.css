@@ -4,8 +4,6 @@
  * hero and story cards can move on their own later.
  */
 /* Shared with the Beam gallery motions (public/fonts/): same variable file, one download. */
-@font-face { font-family: 'Career Agent TikTok Sans'; src: url('/fonts/tiktok-sans-variable.woff2') format('woff2'); font-style: normal; font-weight: 300 900; font-display: swap; }
-@font-face { font-family: 'Career Agent Inter'; src: url('../../../../assets/fonts/inter-variable.woff2') format('woff2'); font-style: normal; font-weight: 100 900; font-display: swap; }
 
 .card {
   position: relative;

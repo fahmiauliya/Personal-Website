@@ -1,4 +1,4 @@
-import { createOutlined } from '../Outlined';
+import { createOutlined } from '../../../../components/outlined/Outlined';
 import { GLYPHS, TEXT } from './glyphs';
 
 // Content 01's text, drawn as outlines (glyphs.ts, traced from TikTok Sans and, for the mono

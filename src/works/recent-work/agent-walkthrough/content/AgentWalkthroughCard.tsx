@@ -7,7 +7,15 @@ import iconMaxAgent from './assets/icon-max-agent.svg';
 import iconNetwork from './assets/icon-network.svg';
 import iconOpportunities from './assets/icon-opportunities.svg';
 import iconSend from './assets/icon-send.svg';
+import { createOutlined } from '../../../../components/outlined/Outlined';
+import { GLYPHS, TEXT } from './glyphs';
 import styles from './AgentWalkthroughCard.module.css';
+
+// The card's text is outlines (./glyphs, traced from Inter where the browser set it), so the card
+// loads no font. Each piece keeps its parent's wrapping (the live text, before tracing, is measured
+// laid out as the card lays it out).
+const Outlined = createOutlined(GLYPHS, TEXT);
+const T = ({ k, children }: { k: string; children: string }) => <Outlined k={k} style={{ whiteSpace: 'inherit' }}>{children}</Outlined>;
 
 // Figma: Portfolio-2026, "Agent Walkthrough" 285:43271 (536 × 410.204071). The background
 // is the image layer exported at 2×; the onboarding panel is code, one element per Figma
@@ -65,8 +73,8 @@ export default function AgentWalkthroughCard({ position, values }: { position?: 
       <div className={styles.panel} data-node-id="287:55351">
         <div className={styles.steps} data-node-id="287:55352">
           {steps.map(step => <div key={step.number} className={`${styles.step} ${step.centred ? styles.stepCentred : ''} ${step.active ? styles.stepActive : ''}`} data-node-id={step.node}>
-            <span className={`${styles.badge} ${step.active ? styles.badgeActive : ''}`}>{step.number}</span>
-            <span className={styles.stepLabel}>{step.label}</span>
+            <span className={`${styles.badge} ${step.active ? styles.badgeActive : ''}`}><T k={`step:${step.number}`}>{String(step.number)}</T></span>
+            <span className={styles.stepLabel}><T k={`label:${step.number}`}>{step.label}</T></span>
           </div>)}
         </div>
         <div className={styles.body} data-node-id="287:55373">
@@ -76,8 +84,8 @@ export default function AgentWalkthroughCard({ position, values }: { position?: 
               <AgentOrb className={styles.orb} size={31.701} time={position} settings={orbSettings(values)} />
             </span>
             <div className={styles.introText} data-node-id="287:55377">
-              <p className={styles.introTitle}>Talk to Agent</p>
-              <p className={styles.introSubtitle}>Have a real conversation about you</p>
+              <p className={styles.introTitle}><T k="introTitle">Talk to Agent</T></p>
+              <p className={styles.introSubtitle}><T k="introSubtitle">Have a real conversation about you</T></p>
             </div>
           </div>
           <div className={styles.actions} data-node-id="287:55380">
@@ -86,15 +94,15 @@ export default function AgentWalkthroughCard({ position, values }: { position?: 
                 <div className={styles.rowMain}>
                   <span className={styles.rowIcon}><img src={option.icon} alt="" /></span>
                   <div className={styles.rowText}>
-                    <p className={styles.rowTitle}>{option.title}</p>
-                    <p className={styles.rowDescription}>{option.description}</p>
+                    <p className={styles.rowTitle}><T k={`title:${option.title}`}>{option.title}</T></p>
+                    <p className={styles.rowDescription}><T k={`description:${option.title}`}>{option.description}</T></p>
                   </div>
                 </div>
                 <img className={styles.chevron} src={chevron} alt="" />
               </div>)}
             </div>
             <div className={styles.input} data-node-id="287:55425">
-              <p className={styles.placeholder}>Ask agent anything ...</p>
+              <p className={styles.placeholder}><T k="placeholder">Ask agent anything ...</T></p>
               <span className={styles.send} data-node-id="287:55427"><img src={iconSend} alt="" /></span>
             </div>
           </div>

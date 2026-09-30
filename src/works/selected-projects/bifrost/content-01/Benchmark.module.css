@@ -1,0 +1,44 @@
+/* Bifrost motion 01 (Benchmark.tsx): Motion Lab's motion-01 styles. The lab drew it in a page
+   of its own, so the site's inherited text styles and border-box sizing are reset first.
+   Layer order matches Figma: strips, lines, then the inset on top. */
+.frame, .frame * { box-sizing: content-box; }
+.frame {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: #00251a;
+  font-weight: 400;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #000;
+}
+
+.strip {
+  position: absolute;
+  top: 0.63px;
+  width: 39px;
+  height: 906px;
+  box-sizing: border-box;
+  image-rendering: pixelated;
+}
+.stripLeft { border-right: 0.49px solid rgba(224, 224, 224, 0.2); }
+.stripRight { border-left: 0.49px solid rgba(224, 224, 224, 0.2); }
+
+.line {
+  position: absolute;
+  left: -2px;
+  width: 738px;
+  height: 0.49px;
+  background: rgba(249, 249, 249, 0.2);
+}
+
+.inset {
+  position: absolute;
+  left: 54.73px;
+  top: 91.97px;
+  width: 588.53px;
+  height: 372.74px;
+  box-sizing: border-box;
+  background: #f6f6f6;
+  border-bottom: 0.49px dashed #e2e2e2;
+}

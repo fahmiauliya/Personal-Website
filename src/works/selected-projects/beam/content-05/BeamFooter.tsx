@@ -1,4 +1,4 @@
-import { createOutlined } from '../Outlined';
+import { createOutlined } from '../../../../components/outlined/Outlined';
 import { FooterVisual } from './FooterVisual';
 import { GLYPHS, TEXT } from './glyphs';
 import productIcon from './assets/footer-product.svg';

@@ -19,8 +19,8 @@ import { LogoMark, logoPetals } from '../transition/LogoMark';
 // while the footer is near the screen (ContactFooter mounts this through useNearView) and
 // the tab is visible.
 //
-// Every look and motion value is a setting (footerGlass.settings.json, written by the
-// dev-only panel in FooterGlassDials.tsx, "Save to local"); glassDefaults documents them.
+// Every look and motion value is a setting (footerGlass.settings.json, the values tuned
+// for the site); glassDefaults documents them.
 
 export const glassDefaults = {
   /** The octahedron: a scale, its half extents in world units, and its place (css px). */
@@ -345,7 +345,14 @@ function rotation(yaw: number, pitch: number, roll: number) {
  * `anchor` is the element the glass centres on (the pill). `settings` overrides the saved
  * values live (the dev panel); without it the saved values apply.
  */
-export default function FooterGlass({ anchor, settings }: { anchor: React.RefObject<HTMLElement | null>; settings?: GlassSettings }) {
+export default function FooterGlass({ anchor, settings, playing = true }: { anchor: React.RefObject<HTMLElement | null>; settings?: GlassSettings; playing?: boolean }) {
+  // `playing`: whether its loop runs (the footer is on screen); stopped, it holds its last frame.
+  const playingRef = useRef(playing);
+  const loop = useRef<{ start: () => void; stop: () => void }>({ start: () => undefined, stop: () => undefined });
+  useEffect(() => {
+    playingRef.current = playing;
+    if (playing) loop.current.start(); else loop.current.stop();
+  }, [playing]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fallback = useRef<HTMLDivElement>(null);
   const live = useRef(settings ?? glassSettings());
@@ -486,8 +493,9 @@ export default function FooterGlass({ anchor, settings }: { anchor: React.RefObj
       draw();
       frame = requestAnimationFrame(tick);
     };
-    const start = () => { if (!frame && !document.hidden) { last = 0; frame = requestAnimationFrame(tick); } };
+    const start = () => { if (!frame && !document.hidden && playingRef.current) { last = 0; frame = requestAnimationFrame(tick); } };
     const stop = () => { cancelAnimationFrame(frame); frame = 0; };
+    loop.current = { start, stop };
     const onScroll = () => {
       const y = scrollTop();
       phase += (y - lastScroll) * live.current.Motion.Scroll;
@@ -510,6 +518,7 @@ export default function FooterGlass({ anchor, settings }: { anchor: React.RefObj
     start();
     return () => {
       stop();
+      loop.current = { start: () => undefined, stop: () => undefined };
       redraw.current = () => undefined;
       observer.disconnect();
       scroller.removeEventListener('scroll', onScroll);

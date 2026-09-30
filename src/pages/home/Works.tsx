@@ -1,6 +1,5 @@
 import { projects, recentWorks, type Project } from '../../data/portfolio';
 import { useRef, useState, type PointerEvent } from 'react';
-import MotionPreview from '../../components/motion/MotionPreview';
 import { useNearView } from '../../components/motion/useNearView';
 import { LockIcon, LockedGrid, Padlock } from './Padlock';
 import { useWorkTab, type WorkTab } from '../../components/navigation/workTab';
@@ -80,7 +79,7 @@ function WorksPanel({ category, active }: { category: WorkTab; active: boolean }
   );
 }
 
-// The card's cover. Image and video covers load like the motion covers: once the card is
+// The card's cover. Image covers load like the motion covers: once the card is
 // near the screen and not under an open project page (useNearView), so a visitor who
 // lands straight on a project page doesn't download the Works grid behind it. Once
 // shown, they stay.
@@ -92,20 +91,16 @@ function ProjectImage({ project }: { project: Project }) {
   return (
     <div
       ref={ref}
-      className={`project-image${project.cover || project.coverScene || project.coverImage ? ' project-image--media' : project.href ? '' : ' project-image--locked'}`}
+      className={`project-image${project.coverScene || project.coverImage ? ' project-image--media' : project.href ? '' : ' project-image--locked'}`}
       role="img"
       aria-label={`${project.title}: ${project.imageLabel}`}
       {...(!project.href && project.coverImage ? revealHandlers : {})}
     >
-      {project.cover
-        ? <MotionPreview scene={project.cover} fit="cover" />
-        : project.coverScene
+      {project.coverScene
         ? <project.coverScene />
         : project.coverImage
         ? <>
-            {shown && (project.coverVideo
-              ? <video className="project-cover-image" src={project.coverVideo} poster={project.coverImage} autoPlay muted loop playsInline preload="metadata" aria-hidden="true" />
-              : <img className={`project-cover-image${project.coverImageFit === 'width' ? ' project-cover-image--fill-width' : ''}`} src={project.coverImage} alt="" decoding="async" />)}
+            {shown && <img className={`project-cover-image${project.coverImageFit === 'width' ? ' project-cover-image--fill-width' : ''}`} src={project.coverImage} alt="" decoding="async" />}
             {!project.href && <>
               <span className="project-colour-reveal" aria-hidden="true" />
               <LockedGrid className="project-locked-grid" />

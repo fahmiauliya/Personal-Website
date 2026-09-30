@@ -1,7 +1,6 @@
-import { forwardRef, useImperativeHandle, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { forwardRef, useImperativeHandle, useMemo, useRef, useState, type ReactNode } from 'react';
 import { HandoffLogo, type HandoffHandle, type HandoffSettings } from './HandoffLogo';
 import styles from './PuzzleOverlay.module.css';
-import { grain } from './surfaceGrain';
 
 /** Timing and shape of the puzzle. Times in ms. */
 export type PuzzleSettings = {
@@ -63,12 +62,6 @@ const deferred = (): Deferred => {
 };
 
 /**
- * A still grain tile for the pieces: faint light and dark specks, about 2% at most, so the dark
- * surface is less flat without any visible texture. Made once; it moves with the pieces, never
- * flickers.
- */
-
-/**
  * The page-transition overlay: dark vertical columns, each split into a few full-height
  * rectangular pieces side by side. It stays mounted above the pages for good; cover() and
  * reveal() move the pieces with transforms only. Columns start at slightly different times and
@@ -98,7 +91,6 @@ export const PuzzleOverlay = forwardRef<PuzzleHandle, {
   const hasLogo = useRef(Boolean(logo));
   hasLogo.current = Boolean(logo);
   const layout = useMemo(() => Array.from({ length: settings.columns }, (_, column) => pieceWidths(column, settings.pieces)), [settings.columns, settings.pieces]);
-  const surface = useMemo(() => ({ '--puzzle-grain': `url(${grain()})` }) as CSSProperties, []);
 
   useImperativeHandle(ref, () => {
     const pieces = () => [...(root.current?.querySelectorAll<HTMLElement>('[data-piece]') ?? [])];
@@ -172,7 +164,7 @@ export const PuzzleOverlay = forwardRef<PuzzleHandle, {
 
   // Closed from the first frame when startCovered (the pieces rest in place until reveal()).
   const initial = useRef(startCovered ? { 'data-active': 'true' } : {});
-  return <div ref={root} className={[styles.overlay, className].filter(Boolean).join(' ')} style={surface} {...initial.current}>
+  return <div ref={root} className={[styles.overlay, className].filter(Boolean).join(' ')} {...initial.current}>
     {layout.map((column, columnIndex) => <div key={columnIndex} className={styles.column} aria-hidden>
       {column.map((width, index) => <div
         key={index}

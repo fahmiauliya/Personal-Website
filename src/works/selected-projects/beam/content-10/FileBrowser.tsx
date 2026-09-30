@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import Guides from '../Guides';
-import { createOutlined } from '../Outlined';
+import { createOutlined } from '../../../../components/outlined/Outlined';
 // The same Beam mark as the phone in content 04, and the same avatar photo as content 13.
 import beamLogo from '../content-04/assets/beam-logo.svg';
 import avatar from '../content-13/assets/avatar.webp';

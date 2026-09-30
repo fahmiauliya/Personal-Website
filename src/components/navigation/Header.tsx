@@ -4,7 +4,7 @@ import homeIcon from '../../assets/icons/logo.svg';
 import contactIcon from '../../assets/icons/nav-contact.svg';
 import worksIcon from '../../assets/icons/nav-works.svg';
 import NavigationMaterial from './NavigationMaterial';
-import ProgressiveBlur from './ProgressiveBlur';
+import HeaderFade from './HeaderFade';
 import { CONTACT_MAILTO } from '../../data/portfolio';
 import { materialPath, useNavigationProgress } from './navigationMotion';
 import { useScrollRoll } from './useScrollRoll';
@@ -69,7 +69,7 @@ export default function Header({ isAboutPage = false }: { isAboutPage?: boolean 
 
   return (
     <header className="site-header">
-      <ProgressiveBlur revealOnScroll />
+      <HeaderFade revealOnScroll />
       {/* The SVG material is the one persistent surface for the pill and the About bubble,
           at rest and mid-morph, so their fill, border, shadow and highlight never swap
           renderers or restart; only the geometry animates, in both directions. */}

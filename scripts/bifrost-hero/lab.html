@@ -1,0 +1,62 @@
+<!doctype html><meta charset="utf-8"><title>Rive recorder</title>
+<canvas id="riveCanvas" width="10" height="10"></canvas>
+<script>
+// Records a Rive file's canvas drawing: every Path2D's commands, and each fill / stroke / clip /
+// save / restore with the context state (transform, paint, alpha).
+const RealPath2D = window.Path2D;
+window.Path2D = class extends RealPath2D {
+  constructor(p) { super(p); this.__cmds = p && p.__cmds ? p.__cmds.map(c => c.slice()) : []; }
+  moveTo(x, y) { this.__cmds.push(['M', x, y]); return super.moveTo(x, y); }
+  lineTo(x, y) { this.__cmds.push(['L', x, y]); return super.lineTo(x, y); }
+  bezierCurveTo(a, b, c, d, e, f) { this.__cmds.push(['C', a, b, c, d, e, f]); return super.bezierCurveTo(a, b, c, d, e, f); }
+  quadraticCurveTo(a, b, c, d) { this.__cmds.push(['Q', a, b, c, d]); return super.quadraticCurveTo(a, b, c, d); }
+  closePath() { this.__cmds.push(['Z']); return super.closePath(); }
+  rect(x, y, w, h) { this.__cmds.push(['M', x, y], ['L', x + w, y], ['L', x + w, y + h], ['L', x, y + h], ['Z']); return super.rect(x, y, w, h); }
+  addPath(p, m) { throw new Error('addPath not handled'); }
+};
+window.__log = []; window.__rec = false;
+const P = CanvasRenderingContext2D.prototype;
+const state = ctx => { const m = ctx.getTransform(); return { t: [m.a, m.b, m.c, m.d, m.e, m.f], alpha: ctx.globalAlpha, comp: ctx.globalCompositeOperation }; };
+const style = s => typeof s === 'string' ? s : (s && s.__desc) || String(s);
+const wrap = (name, fn) => { const orig = P[name]; P[name] = function (...a) { if (window.__rec) fn.call(this, ...a); return orig.apply(this, a); }; };
+const grad = g => { g.__stops = []; const add = g.addColorStop; g.addColorStop = (o, c) => { g.__stops.push([o, c]); return add.call(g, o, c); }; return g; };
+const oLin = P.createLinearGradient, oRad = P.createRadialGradient;
+P.createLinearGradient = function (...a) { const g = grad(oLin.apply(this, a)); g.__desc = { type: 'linear', args: a, stops: g.__stops }; return g; };
+P.createRadialGradient = function (...a) { const g = grad(oRad.apply(this, a)); g.__desc = { type: 'radial', args: a, stops: g.__stops }; return g; };
+wrap('fill', function (p, rule) { window.__log.push({ op: 'fill', path: p && p.__cmds, rule: typeof p === 'string' ? p : rule, style: style(this.fillStyle), ...state(this) }); });
+wrap('stroke', function (p) { window.__log.push({ op: 'stroke', path: p && p.__cmds, style: style(this.strokeStyle), width: this.lineWidth, cap: this.lineCap, join: this.lineJoin, ...state(this) }); });
+wrap('clip', function (p, rule) { window.__log.push({ op: 'clip', path: p && p.__cmds, rule, ...state(this) }); });
+wrap('save', function () { window.__log.push({ op: 'save' }); });
+wrap('restore', function () { window.__log.push({ op: 'restore' }); });
+wrap('drawImage', function (img) { window.__log.push({ op: 'drawImage', ...state(this) }); });
+</script>
+<script src="rive.js"></script>
+<script>
+rive.RuntimeLoader.setWasmUrl('rive.wasm');
+const R3 = v => JSON.stringify(v, (k, x) => typeof x === 'number' ? Math.round(x * 1000) / 1000 : x);
+async function open(src, name) {
+  const rt = await rive.RuntimeLoader.awaitInstance();
+  const file = await rt.load(new Uint8Array(await (await fetch(src)).arrayBuffer()));
+  const artboard = name ? file.artboardByName(name) : file.defaultArtboard();
+  const canvas = document.getElementById('riveCanvas');
+  canvas.width = Math.ceil(artboard.bounds.maxX); canvas.height = Math.ceil(artboard.bounds.maxY);
+  return { rt, file, artboard, renderer: rt.makeRenderer(canvas) };
+}
+function draw(s, keepSaves) {
+  s.renderer.clear && s.renderer.clear();
+  window.__log = []; window.__rec = true;
+  s.renderer.save(); s.artboard.draw(s.renderer); s.renderer.restore(); s.rt.resolveAnimationFrame();
+  window.__rec = false;
+  return keepSaves ? window.__log : window.__log.filter(o => o.op !== 'save' && o.op !== 'restore');
+}
+// The main timeline at given timeline seconds, nested artboards held at their start.
+window.timelineLoad = async src => { const s = await open(src); const a = s.artboard.animationByIndex(0); s.inst = new s.rt.LinearAnimationInstance(a, s.artboard); window.__tl = s; return true; };
+window.timelineFrame = seconds => { const s = window.__tl; s.inst.time = seconds; s.inst.apply(1); s.artboard.advance(0); return R3([draw(s, true)]); };
+// Playback as the player does it (animation and nested artboards advancing together).
+window.playLoad = async src => { const s = await open(src); s.inst = new s.rt.LinearAnimationInstance(s.artboard.animationByIndex(0), s.artboard); window.__play = s; return true; };
+window.playFrames = (n, dt) => { const s = window.__play; const out = []; for (let i = 0; i < n; i++) { s.inst.advance(dt); s.inst.apply(1); s.artboard.advance(dt); out.push(draw(s, true)); } return R3(out); };
+// One nested artboard alone with the named animations (name → speed).
+window.nestedLoad = async (src, name, play) => { const s = await open(src, name); s.insts = []; for (let i = 0; i < s.artboard.animationCount(); i++) { const a = s.artboard.animationByIndex(i); if (a.name in play) s.insts.push([new s.rt.LinearAnimationInstance(a, s.artboard), play[a.name]]); } window.__nest = s; return s.insts.length; };
+window.nestedFrames = (n, dt) => { const s = window.__nest; const out = []; for (let i = 0; i < n; i++) { for (const [inst, speed] of s.insts) { inst.advance(dt * speed); inst.apply(1); } s.artboard.advance(dt); out.push(draw(s, false)); } return R3(out); };
+window.ready = true;
+</script>

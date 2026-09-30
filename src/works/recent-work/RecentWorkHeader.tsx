@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useScrollRoll } from '../../components/navigation/useScrollRoll';
 import CloseRing from '../../components/navigation/CloseRing';
-import ProgressiveBlur from '../../components/navigation/ProgressiveBlur';
+import HeaderFade from '../../components/navigation/HeaderFade';
 import homeIcon from '../../assets/icons/logo.svg';
 import contactIcon from '../../assets/icons/nav-contact.svg';
 import { CONTACT_MAILTO } from '../../data/portfolio';
@@ -15,7 +15,7 @@ export default function RecentWorkHeader({ title }: { title: string }) {
   useScrollRoll(logo);
   return (
     <header className="recent-work-header" data-project-part="actions">
-      <ProgressiveBlur />
+      <HeaderFade />
       <span className="recent-work-header-spacer" aria-hidden="true" />
       <nav className="recent-work-header-center" aria-label="Project navigation">
         <a className="nav-link" href="/" aria-label="Back to introduction">

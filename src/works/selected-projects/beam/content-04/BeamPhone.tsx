@@ -9,7 +9,7 @@ import rowMenu from './assets/row-menu.svg';
 // "9:41" as Inter Bold outlines: four characters don't justify loading an 876 KB font.
 import time from './assets/time-9-41.svg';
 import wifi from './assets/wifi.svg';
-import { createOutlined } from '../Outlined';
+import { createOutlined } from '../../../../components/outlined/Outlined';
 import { GLYPHS, TEXT } from './glyphs';
 import './BeamPhone.css';
 

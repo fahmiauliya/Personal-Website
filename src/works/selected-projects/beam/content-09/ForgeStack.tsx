@@ -107,7 +107,7 @@ function useFolderShuffle(ref: RefObject<HTMLElement | null>, playing: boolean) 
 // writing it into the page is safe.
 export default function ForgeStack() {
   const ref = useRef<HTMLDivElement>(null);
-  const playing = useNearView(ref);
+  const playing = useNearView(ref, false, 'screen');
   useFolderShuffle(ref, playing);
   return (
     <div className="beam-forge" ref={ref} aria-hidden="true">

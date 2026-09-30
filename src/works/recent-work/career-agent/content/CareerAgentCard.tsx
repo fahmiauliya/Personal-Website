@@ -14,7 +14,15 @@ import rho from './assets/logos/rho.svg';
 import ycMark from './assets/logos/yc-mark.svg';
 import ycWordmark from './assets/logos/yc-wordmark.svg';
 import play from './assets/icons/play.svg';
+import { createOutlined } from '../../../../components/outlined/Outlined';
+import { GLYPHS, TEXT } from './glyphs';
 import styles from './CareerAgentCard.module.css';
+
+// The card's text is outlines (./glyphs, traced from TikTok Sans and Inter where the browser set
+// it), so the card loads no font. Each piece keeps its parent's wrapping (the live text, before
+// tracing, is measured laid out as the card lays it out).
+const Outlined = createOutlined(GLYPHS, TEXT);
+const T = ({ k, children }: { k: string; children: string }) => <Outlined k={k} style={{ whiteSpace: 'inherit' }}>{children}</Outlined>;
 
 // Figma: Portfolio-2026, "Hero - Career Agent" 285:19188 (536 × 410.204071). A Pluto landing
 // page in code, one element per Figma layer (node ids kept), over the halftone dots. Photos
@@ -78,7 +86,7 @@ const navLinks = [
   { label: 'For companies' },
 ];
 
-function StoryCard({ story, node, left }: { story: Story; node?: string; left: number }) {
+function StoryCard({ story, index, node, left }: { story: Story; index: number; node?: string; left: number }) {
   const { person } = story;
   return <div className={styles.story} style={{ left }} data-node-id={node}>
     <img className={styles.gradient} src={story.gradient.src} alt="" style={story.gradient.style} />
@@ -89,22 +97,22 @@ function StoryCard({ story, node, left }: { story: Story; node?: string; left: n
       style={{ ...person.style, transform: person.flip ? 'scaleX(-1)' : undefined, opacity: person.opacity }}
     />
     <div className={styles.storyBox}>
-      {story.quote && <p className={styles.quote}>{story.quote.map(line => <span key={line}>{line}</span>)}</p>}
+      {story.quote && <p className={styles.quote}>{story.quote.map((line, n) => <span key={line}><T k={`s${index}:quote:${n}`}>{line}</T></span>)}</p>}
       {story.stats && <div className={styles.stats}>
         {story.stats.items.map(stat => <div key={stat.value} className={styles.stat} style={{ gap: story.stats!.gap }}>
-          <p className={styles.statValue}>{stat.value}</p>
-          <p className={styles.statLabel}>{stat.label}</p>
+          <p className={styles.statValue}><T k={`s${index}:value:${stat.value}`}>{stat.value}</T></p>
+          <p className={styles.statLabel}><T k={`s${index}:label:${stat.value}`}>{stat.label}</T></p>
         </div>)}
       </div>}
     </div>
     <div className={styles.storyFooter}>
       <div className={styles.personName}>
-        <p>Devonaire Ortiz</p>
-        <p>VP of people &amp; talent</p>
+        <p><T k="personName">Devonaire Ortiz</T></p>
+        <p><T k="personRole">VP of people &amp; talent</T></p>
       </div>
       <div className={styles.watch}>
         <span className={styles.playButton}><img src={play} alt="" /></span>
-        <span className={styles.watchLabel}>Watch</span>
+        <span className={styles.watchLabel}><T k="watch">Watch</T></span>
       </div>
     </div>
     <img className={styles.storyLogo} src={story.logo.src} alt="" style={story.logo.style} />
@@ -125,39 +133,39 @@ export default function CareerAgentCard({ position = 0 }: { position?: number })
       <nav className={styles.nav} data-node-id="285:19232">
         <img className={styles.logomark} src={plutoLogomark} alt="" data-node-id="289:56610" />
         <div className={styles.links} data-node-id="285:19240">
-          {navLinks.map(link => <span key={link.label} className={styles.link} style={{ width: link.width }}>{link.label}</span>)}
+          {navLinks.map(link => <span key={link.label} className={styles.link} style={{ width: link.width }}><T k={`nav:${link.label}`}>{link.label}</T></span>)}
         </div>
         <div className={styles.navActions} data-node-id="285:19235">
-          <span className={styles.signIn} data-node-id="285:19236">Sign in</span>
-          <span className={styles.talk} data-node-id="285:19238">Talk to pluto</span>
+          <span className={styles.signIn} data-node-id="285:19236"><T k="signIn">Sign in</T></span>
+          <span className={styles.talk} data-node-id="285:19238"><T k="talk">Talk to pluto</T></span>
         </div>
       </nav>
 
       <div className={styles.hero} data-node-id="285:19249">
         <div className={styles.heroText} data-node-id="285:19250">
           <div className={styles.backed} data-node-id="285:19251">
-            <span>Backed by</span>
+            <span><T k="backed">Backed by</T></span>
             <span className={styles.yc} data-node-id="285:19253">
               <img className={styles.ycMark} src={ycMark} alt="" />
               <img className={styles.ycWordmark} src={ycWordmark} alt="Y Combinator" />
             </span>
           </div>
           <div className={styles.headline} data-node-id="285:19268">
-            <h1>Your career needs an agent.</h1>
-            <p>Pluto is your AI career agent. It understands your background, helps the right opportunities find you, and represents you when there is a strong match.</p>
+            <h1><T k="headline">Your career needs an agent.</T></h1>
+            <p><T k="lede">Pluto is your AI career agent. It understands your background, helps the right opportunities find you, and represents you when there is a strong match.</T></p>
           </div>
         </div>
         <div className={styles.phone} data-node-id="285:19271">
           <div className={styles.phoneField} data-node-id="285:19273">
-            <span className={styles.placeholder} data-node-id="285:19274">Enter your phone</span>
-            <span className={styles.callMe} data-node-id="285:19276">Call Me</span>
+            <span className={styles.placeholder} data-node-id="285:19274"><T k="phone">Enter your phone</T></span>
+            <span className={styles.callMe} data-node-id="285:19276"><T k="callMe">Call Me</T></span>
           </div>
         </div>
       </div>
 
       <div className={styles.stories} data-node-id="285:19278">
         <div className={styles.track} style={{ transform: `translate3d(${-shift}px, 0, 0)` }}>
-          {TRACK.map(index => <StoryCard key={index} story={stories[index % STORY_STEPS]} node={FIGMA_NODES[index]} left={FIRST_X + index * PITCH} />)}
+          {TRACK.map(index => <StoryCard key={index} story={stories[index % STORY_STEPS]} index={index % STORY_STEPS} node={FIGMA_NODES[index]} left={FIRST_X + index * PITCH} />)}
         </div>
       </div>
     </div>

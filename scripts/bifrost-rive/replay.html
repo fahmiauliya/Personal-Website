@@ -1,0 +1,45 @@
+<!doctype html><meta charset="utf-8"><title>Replay</title>
+<style>body{margin:0;background:#fff}</style>
+<canvas id="c"></canvas>
+<script>
+// Draws a recorded Rive frame (rec2-<name>.json) exactly as recorded, at 2x, and the SVG version
+// under it at the same moment: a check with no player timing involved.
+function frameAt(d, k) {
+  let prev = null;
+  for (let i = 0; i <= k; i++) {
+    const f = d.frames[i];
+    if (f.full) prev = f.full;
+    else if (f.diff) { const cur = prev.slice(); for (const [j, o, partial] of f.diff) cur[j] = partial ? { ...cur[j], ...o } : o; prev = cur; }
+  }
+  return prev;
+}
+function pathOf(cmds) { const p = new Path2D(); for (const c of cmds) { if (c[0] === 'M') p.moveTo(c[1], c[2]); else if (c[0] === 'L') p.lineTo(c[1], c[2]); else if (c[0] === 'C') p.bezierCurveTo(...c.slice(1)); else if (c[0] === 'Q') p.quadraticCurveTo(...c.slice(1)); else if (c[0] === 'Z') p.closePath(); } return p; }
+function paintOf(ctx, s) {
+  if (typeof s === 'string') return s;
+  const g = s.type === 'linear' ? ctx.createLinearGradient(...s.args) : ctx.createRadialGradient(...s.args);
+  for (const [o, c] of s.stops) g.addColorStop(o, c); return g;
+}
+window.show = async (name, k, K = 2) => {
+  const d = await (await fetch(`rec2-${name}.json`)).json();
+  const imgs = await Promise.all((d.images || []).map(u => new Promise(r => { const im = new Image(); im.onload = () => r(im); im.src = u; })));
+  const ops = frameAt(d, k); const W = d.info.w, H = d.info.h;
+  const c = document.getElementById('c'); c.width = W * K; c.height = H * K; c.style.width = W + 'px'; c.style.height = H + 'px';
+  const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+  for (const o of ops) {
+    if (o.op === 'save') { ctx.save(); continue; } if (o.op === 'restore') { ctx.restore(); continue; }
+    const t = o.t; ctx.setTransform(t[0] * K, t[1] * K, t[2] * K, t[3] * K, t[4] * K, t[5] * K);
+    ctx.globalAlpha = o.alpha ?? 1; ctx.globalCompositeOperation = o.comp || 'source-over';
+    if (o.op === 'clip') ctx.clip(pathOf(o.path), o.rule || 'nonzero');
+    else if (o.op === 'fill') { ctx.fillStyle = paintOf(ctx, o.style); ctx.fill(pathOf(o.path), o.rule || 'nonzero'); }
+    else if (o.op === 'stroke') { ctx.strokeStyle = paintOf(ctx, o.style); ctx.lineWidth = o.width; ctx.lineCap = o.cap; ctx.lineJoin = o.join; ctx.stroke(pathOf(o.path)); }
+    else if (o.op === 'drawImage') ctx.drawImage(imgs[o.image], ...o.args);
+  }
+  const box = document.createElement('div'); box.style.cssText = `position:absolute;left:0;top:${H + 20}px;width:${W}px;height:${H}px;background:#fff`;
+  box.innerHTML = await (await fetch(`rv/${name}.svg?v=` + Date.now())).text();
+  const svg = box.querySelector('svg'); svg.setAttribute('width', W); svg.setAttribute('height', H);
+  document.body.append(box); await new Promise(r => setTimeout(r, 100));
+  svg.pauseAnimations(); svg.setCurrentTime((k + (window.__offset || 0)) / 60); await new Promise(r => setTimeout(r, 100));
+  return [W, H];
+};
+window.ready = true;
+</script>

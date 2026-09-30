@@ -1,0 +1,5 @@
+/* A Bifrost motion ported from Motion Lab: the lab drew each in a page of its own (the motion
+   bundle, in a shadow root with the page's styles reset), so inside one the site's inherited
+   text styles and border-box sizing are reset to the browser's defaults. */
+.bifrost-lab-frame, .bifrost-lab-frame * { box-sizing: content-box; }
+.bifrost-lab-frame { font-weight: 400; font-size: 16px; line-height: normal; letter-spacing: normal; color: #000; text-align: left; }

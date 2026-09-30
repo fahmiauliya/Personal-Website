@@ -43,11 +43,11 @@ function PortedMotion({ width, height, children }: { width: number; height: numb
   );
 }
 
-// Motion 14 runs its loop only while near the screen; far away it holds its frame, so a
-// visitor scrolling elsewhere pays nothing for it.
+// Motion 14 runs its loop only while on screen; elsewhere it holds its frame, so a visitor
+// scrolling elsewhere pays nothing for it.
 function Motion14({ visual }: { visual: BeamVisual }) {
   const ref = useRef<HTMLDivElement>(null);
-  const near = useNearView(ref);
+  const near = useNearView(ref, false, 'screen');
   return (
     <div className="beam-motion-14" ref={ref}>
       <SceneFit width={visual.width} height={visual.height}><div className="beam-motion-14-frame"><UploadProgressLoop className="beam-motion-14-bar" playing={near} /></div></SceneFit>
