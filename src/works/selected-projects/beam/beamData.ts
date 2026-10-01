@@ -2,6 +2,7 @@
 // Geometry from Figma frame 142:95. The summary (left) and story (right) are final copy;
 // replace the gallery's empty media areas here when final assets are ready.
 export const beamProject = {
+  url: 'https://beam.host/',
   title: 'Beam',
   category: 'Product Design · Web App · Website · Implementation',
   details: [

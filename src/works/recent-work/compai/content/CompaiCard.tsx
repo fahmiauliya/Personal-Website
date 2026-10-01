@@ -1,4 +1,5 @@
-import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import SvgCanvas, { type SvgDrive } from '../../../../components/motion/SvgCanvas';
 import { subscribeCardClock } from '../../useCardClock';
 import styles from './CompaiCard.module.css';
 
@@ -7,8 +8,8 @@ import styles from './CompaiCard.module.css';
 // card. It was a Rive file (compai_hero_animation.riv, patched so its gray background stays
 // transparent and the card's #979797 shows through); it is that timeline's own drawing here,
 // without the Rive player: recorded from the Rive runtime at each of its 900 frames and rebuilt as
-// an SVG keyframed over its 15s (scripts/bifrost-rive, `timeline` mode). As with Rive, nothing
-// runs on its own: the SVG subscribes directly to the shared Recent Work clock,
+// an SVG keyframed over its 15s (scripts/bifrost-rive, `timeline` mode), drawn on a canvas
+// (SvgCanvas). As with Rive, nothing runs on its own: it follows the shared Recent Work clock,
 // with `position` retained for explicit timeline previews. Hidden copies stay paused.
 
 /** Dial defaults. Scale 1 fits the artboard to the card; below 1 shrinks it, centred. */
@@ -21,40 +22,27 @@ export const TIMELINE_SECONDS = 15;
 let source: string | undefined;
 const loadSource = () => import('./assets/compai-hero.svg?raw').then(module => (source = module.default));
 
-/** Draws Timeline 1 at `time` seconds (without a time, its first frame). */
+/** Draws Timeline 1: at `time` seconds, or, given `playing`, following the Recent Work clock. */
 function HeroAnimation({ time, playing }: { time?: number; playing?: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [markupSource, setMarkupSource] = useState(source);
-  useEffect(() => { if (!markupSource) void loadSource().then(setMarkupSource); }, [markupSource]);
-  // Ids made unique to this copy (the grid card and the detail view can both be mounted).
-  const prefix = useId().replace(/[^a-zA-Z0-9]/g, '');
-  const markup = useMemo(() => markupSource
-    ?.replace(/(id="|url\(#|href="#)rv/g, `$1${prefix}`)
-    .replace('<svg ', '<svg width="100%" height="100%" preserveAspectRatio="xMidYMid meet" '), [markupSource, prefix]);
-  // Paused from the start; each new time is drawn by setting the SVG's clock.
-  useLayoutEffect(() => {
-    const svg = ref.current?.querySelector('svg');
-    if (!svg) return;
-    svg.pauseAnimations();
-    svg.setCurrentTime(Math.min(TIMELINE_SECONDS, Math.max(0, time ?? 0)));
-  }, [markup, time]);
-  useEffect(() => {
-    const svg = ref.current?.querySelector('svg');
-    if (!svg || playing === undefined) return;
+  const [markup, setMarkup] = useState(source);
+  useEffect(() => { if (!markup) void loadSource().then(setMarkup); }, [markup]);
+  const drive = useCallback<SvgDrive>(show => {
+    if (playing === undefined) { show(Math.min(TIMELINE_SECONDS, Math.max(0, time ?? 0))); return () => {}; }
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     let unsubscribe = () => {};
     const update = () => {
       unsubscribe();
-      svg.pauseAnimations();
       unsubscribe = subscribeCardClock('compai', playing && !reduced.matches, elapsed => {
-        svg.setCurrentTime(reduced.matches ? TIMELINE_SECONDS : (elapsed % 12.01) / 12.01 * TIMELINE_SECONDS);
+        show(reduced.matches ? TIMELINE_SECONDS : (elapsed % 12.01) / 12.01 * TIMELINE_SECONDS);
       });
     };
     update();
     reduced.addEventListener('change', update);
     return () => { unsubscribe(); reduced.removeEventListener('change', update); };
-  }, [markup, playing]);
-  return <div ref={ref} className={styles.riveCanvas} aria-hidden="true" data-cover-ready={markup ? 'ready' : 'pending'} dangerouslySetInnerHTML={markup ? { __html: markup } : undefined} />;
+  }, [playing, time]);
+  return <div className={styles.riveCanvas} aria-hidden="true" data-cover-ready={markup ? 'ready' : 'pending'}>
+    {markup && <SvgCanvas source={markup} drive={drive} />}
+  </div>;
 }
 
 /** `position` is the time in Timeline 1, in seconds. */

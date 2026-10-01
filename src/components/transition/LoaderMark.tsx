@@ -10,7 +10,10 @@ export const loaderMarkDefaults = {
   /** How long 100% holds before anything leaves. */
   HoldMs: 120,
   /** The ring drawing itself away. */
-  RetractMs: 420,
+  RetractMs: 320,
+  /** The logo coming back whole, then scaling out: quicker here than in the page transition. */
+  GatherMs: 200,
+  ExitMs: 240,
   /** The space between the ring and the texts beside it. */
   TextGap: 40,
 };

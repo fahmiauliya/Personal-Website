@@ -606,6 +606,137 @@
   text-underline-offset: 4px;
 }
 
+/* The skills board's hover (SkillsFocus.tsx): a frame drawn by hand round the hovered cell from
+   where the cursor came in, the skill's drawing under its title, and the board's memory of
+   visited cells. */
+.skills-focus { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+.skills-focus:not([data-enabled]) { display: none; }
+.skills-cell { position: absolute; }
+/* The plate: the frame over the cell. */
+.skills-card { position: absolute; inset: 0; animation: skills-in 160ms ease; }
+@keyframes skills-in { from { opacity: 0; } }
+.skills-plate { position: absolute; inset: 0; }
+.skills-plate > * { position: absolute; }
+/* The pressed, lit plate: a shade over the cell, lightest where the cursor is. */
+.skills-plate__shade {
+  inset: 0;
+  background: radial-gradient(170px circle at var(--light-x, 50%) var(--light-y, 50%), rgb(0 0 0 / 0%), rgb(0 0 0 / 2.5%) 78%);
+  box-shadow: inset 0 1.5px 3px rgb(0 0 0 / 6%), inset 0 0 0 0.5px rgb(0 0 0 / 4%), inset 0 -1px 0 rgb(255 255 255 / 90%);
+  opacity: 0;
+  animation: skills-fade 360ms ease var(--line-ms) both;
+}
+.skills-plate__grid {
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, rgb(0 0 0 / 3.5%) 0 0.5px, transparent 0.5px 11px),
+    repeating-linear-gradient(90deg, rgb(0 0 0 / 3.5%) 0 0.5px, transparent 0.5px 11px);
+}
+.skills-plate__grid {
+  -webkit-mask-image: linear-gradient(180deg, transparent 0 34px, #000 62px);
+  mask-image: linear-gradient(180deg, transparent 0 34px, #000 62px);
+  opacity: 0;
+  animation: skills-fade 420ms ease calc(var(--line-ms) + 80ms) both;
+}
+@keyframes skills-fade { to { opacity: 1; } }
+.skills-plate__lines { top: -10px; left: -10px; overflow: visible; }
+/* Two pens run the edge from where the cursor came in, one each way (SkillsFocus.tsx animates
+   their dash offsets); what sits on the edge appears as a pen reaches it (--at: when, 0–1). */
+.skills-plate__edge { stroke: #5c5c5c; stroke-width: 0.5; stroke-dasharray: 1; stroke-dashoffset: 1; }
+.skills-plate__over path { stroke: #5c5c5c; stroke-width: 0.5; opacity: 0; animation: skills-fade 120ms ease calc(var(--line-ms) * var(--at) + 40ms) both; }
+.skills-plate__marks path {
+  stroke: #141414;
+  stroke-width: 0.75;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: skills-mark 260ms cubic-bezier(0.2, 0.9, 0.3, 1.3) calc(var(--line-ms) * var(--at) + 60ms) both;
+}
+@keyframes skills-mark { from { opacity: 0; transform: scale(0.4); } to { opacity: 1; transform: none; } }
+.skills-plate__ticks path { stroke: #8a8a8a; stroke-width: 0.5; opacity: 0; animation: skills-fade 90ms ease calc(var(--line-ms) * var(--at) + 90ms) both; }
+.skills-plate__dims path { stroke: #9a9a9a; stroke-width: 0.5; stroke-dasharray: 1; stroke-dashoffset: 1; animation: skills-draw 300ms ease calc(var(--line-ms) + 120ms) both; }
+@keyframes skills-draw { to { stroke-dashoffset: 0; } }
+.skills-plate__dim,
+.skills-plate__note,
+.skills-plate__trace {
+  font: 400 9px/1 var(--font-family);
+  letter-spacing: 0.02em;
+  color: rgb(0 0 0 / 46%);
+  white-space: nowrap;
+}
+.skills-plate__dim { opacity: 0; animation: skills-fade 240ms ease calc(var(--line-ms) + 300ms) both; }
+.skills-plate__dim--width { top: -26px; left: 50%; transform: translateX(-50%); }
+.skills-plate__dim--height { top: 50%; left: -26px; transform: translate(-50%, -50%) rotate(-90deg); }
+.skills-plate__note { bottom: 9px; left: 12px; opacity: 0; animation: skills-fade 240ms ease calc(var(--line-ms) + 200ms) both; }
+/* The skill's drawing, stroke by stroke, under the title. */
+.skills-plate__drawing { top: 46px; left: 12px; overflow: visible; }
+.skills-stroke { stroke-dasharray: 1; stroke-dashoffset: 1; stroke-linecap: round; stroke-linejoin: round; animation: skills-draw 170ms cubic-bezier(0.4, 0, 0.3, 1) var(--delay) both; }
+.skills-stroke--hair { stroke: #b4b4b4; stroke-width: 0.5; }
+.skills-stroke--line { stroke: #6a6a6a; stroke-width: 0.6; }
+.skills-stroke--ink { stroke: #141414; stroke-width: 0.9; }
+.skills-stroke--dashed { stroke-dasharray: 0.03 0.02; stroke-dashoffset: 0; opacity: 0; animation: skills-fade 200ms ease var(--delay) both; }
+.skills-live { opacity: 0; animation: skills-fade 600ms ease var(--done-ms) both; }
+/* The memory: a visited cell keeps its index, faint, in its corner. */
+.skills-plate__trace { position: absolute; bottom: 9px; left: 12px; color: rgb(0 0 0 / 18%); }
+/* Leaving a cell. 'quick' (left before the frame was drawn): the plate fades. 'draw': the
+   drawing's strokes retract in reverse, the plate and its notes fade, then the pen runs back to
+   where it started, the ticks and crosshairs going as it passes. */
+.skills-cell[data-leaving='quick'] .skills-card { animation: skills-out var(--quick-ms) ease both; }
+.skills-cell[data-leaving='quick'] .skills-plate * { animation: none; }
+@keyframes skills-out { from { opacity: 1; } to { opacity: 0; } }
+.skills-cell[data-leaving='draw'] .skills-card { animation: none; }
+.skills-cell[data-leaving='draw'] .skills-stroke { stroke-dashoffset: 0; animation: skills-undraw var(--stroke-back-ms) cubic-bezier(0.4, 0, 0.3, 1) var(--back-delay) both; }
+@keyframes skills-undraw { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 1; } }
+.skills-cell[data-leaving='draw'] .skills-stroke--dashed { stroke-dashoffset: 0; animation: skills-out 140ms ease var(--back-delay) both; }
+.skills-cell[data-leaving='draw'] .skills-live { animation: skills-out 200ms ease both; }
+.skills-cell[data-leaving='draw'] .skills-plate__shade,
+.skills-cell[data-leaving='draw'] .skills-plate__grid,
+.skills-cell[data-leaving='draw'] .skills-plate__dim,
+.skills-cell[data-leaving='draw'] .skills-plate__note,
+.skills-cell[data-leaving='draw'] .skills-plate__dims path { animation: skills-out 220ms ease calc(var(--back-start) - 140ms) both; }
+.skills-cell[data-leaving='draw'] .skills-plate__dims path { stroke-dashoffset: 0; }
+.skills-cell[data-leaving='draw'] .skills-plate__over path,
+.skills-cell[data-leaving='draw'] .skills-plate__ticks path { animation: skills-out 80ms ease calc(var(--back-start) + var(--line-back-ms) * (1 - var(--at)) - 40ms) both; }
+.skills-cell[data-leaving='draw'] .skills-plate__marks path { animation: skills-mark-out 200ms ease calc(var(--back-start) + var(--line-back-ms) * (1 - var(--at)) - 120ms) both; }
+@keyframes skills-mark-out { from { opacity: 1; transform: none; } to { opacity: 0; transform: scale(0.4); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .skills-card *, .skills-card { animation-duration: 1ms !important; animation-delay: 0ms !important; }
+}
+@media (max-width: 900px) { .skills-focus { display: none; } }
+
+/* The studio's logo in a small tooltip above its name, on hover or keyboard focus. */
+.about-copy .about-studio-link { position: relative; white-space: nowrap; }
+.about-studio-tip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: 2;
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  /* The navigation's dark surface (global.css, .nav-surface): its fill, shadow and rim. */
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.2)),
+    var(--color-control);
+  box-shadow:
+    0 4px 5px 1px rgba(0, 0, 0, 0.1),
+    0 2px 2px rgba(0, 0, 0, 0.25),
+    0 0 0 0.5px rgba(0, 0, 0, 0.55),
+    inset 0 2px 1px rgba(255, 255, 255, 0.15),
+    inset 0 -1.5px 1px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 3px) scale(0.96);
+  transform-origin: 50% 100%;
+  transition: opacity 160ms ease, transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.about-studio-tip img { display: block; width: 18px; height: 18px; }
+.about-studio-link:hover .about-studio-tip,
+.about-studio-link:focus-visible .about-studio-tip { opacity: 1; transform: translate(-50%, 0) scale(1); }
+@media (prefers-reduced-motion: reduce) { .about-studio-tip { transition: none; } }
+
 .about-copy .about-studio-link:focus-visible {
   outline: 1px dashed currentColor;
   outline-offset: 4px;

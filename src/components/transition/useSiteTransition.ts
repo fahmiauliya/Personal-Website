@@ -23,9 +23,11 @@ export const isSitePath = (path: string) => SITE_PATHS.has(path);
 
 // Motion Lab's saved dial values (motion-page-transition/settings.json, "Puzzle" group);
 // the loader uses the same settings, so the two transitions read as one system.
+// A phone is too narrow for all 32 pieces (they come out as slivers): it gets a third as many.
+const NARROW = typeof window !== 'undefined' && window.matchMedia('(max-width: 767px)').matches;
 const PUZZLE_SETTINGS = {
-  columns: 8,
-  pieces: 4,
+  columns: NARROW ? 4 : 8,
+  pieces: NARROW ? 3 : 4,
   pieceMs: 820,
   columnStaggerMs: 55,
   pieceStaggerMs: 70,

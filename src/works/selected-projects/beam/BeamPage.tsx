@@ -31,7 +31,7 @@ export default function BeamPage() {
             <div>{beamProject.description.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div>
             <div className="beam-closing">
               <span className="beam-visit-frame">
-                <button className="beam-visit skeuo-button tap-target" type="button"><span>Visit site</span><img src={attachmentIcon} alt="" width="14" height="14" /></button>
+                <a className="beam-visit skeuo-button tap-target" href={beamProject.url} target="_blank" rel="noopener noreferrer" aria-label="Visit the Beam site (opens in a new tab)"><span>Visit site</span><img src={attachmentIcon} alt="" width="14" height="14" /></a>
               </span>
             </div>
           </div>

@@ -1,9 +1,10 @@
 import timeline from './assets/experience-timeline.svg';
+import studioLogo from './assets/blissful-studio-logo.svg';
 import ContactFooter from '../../components/contact/ContactFooter';
 import Header from '../../components/navigation/Header';
 import { capabilities, experience } from './aboutData';
-import CapabilityCard from './CapabilityCard';
 import CapabilityGuides from './CapabilityGuides';
+import SkillsFocus from './SkillsFocus';
 import './about.css';
 
 export default function AboutPage() {
@@ -33,7 +34,11 @@ export default function AboutPage() {
               </p>
               <p>
                 Previously, I worked at{' '}
-                <a className="about-studio-link" href="https://blissful-studio.com/" target="_blank" rel="noopener noreferrer">Blissful Studio</a>,{' '}
+                <a className="about-studio-link" href="https://blissful-studio.com/" target="_blank" rel="noopener noreferrer">
+                  Blissful Studio
+                  {/* Shown above the name on hover or keyboard focus (about.css). */}
+                  <span className="about-studio-tip" aria-hidden="true"><img src={studioLogo} alt="" width="18" height="18" /></span>
+                </a>,{' '}
                 <br className="about-copy-break" />
                 where I worked across websites, web apps, mobile products, brand identity, and other digital experiences.
               </p>
@@ -73,9 +78,9 @@ export default function AboutPage() {
           <h2 id="skills-title" className="visually-hidden">Skills</h2>
           <div className="capabilities-board">
             <ul className="capabilities-grid">
-              {capabilities.map((capability, index) => index === 0 ? (
-                <CapabilityCard key={capability} title={capability} />
-              ) : (
+              {/* Every skill is a plain card. The first, Product Design, had a hover foil effect
+                  (CapabilityCard.tsx, kept but no longer used). */}
+              {capabilities.map(capability => (
                 <li key={capability}>
                   {capability.endsWith('Implementation') ? (
                     <>{capability.split(' ')[0]}<br />Implementation</>
@@ -84,6 +89,7 @@ export default function AboutPage() {
               ))}
             </ul>
             <CapabilityGuides />
+            <SkillsFocus titles={capabilities} />
           </div>
         </section>
       </main>

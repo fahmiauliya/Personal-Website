@@ -10,9 +10,14 @@ import { drawSvg, parseSvg, untilNextChange } from './svgScene';
 // only steps (the gauges) is redrawn exactly when it changes. Otherwise it holds its frame. The
 // canvas is as sharp as the screen at the size it is actually shown (any scaling by its
 // ancestors included), up to MAX_PIXELS.
+//
+// With `drive`, the canvas keeps no clock of its own: `drive` is handed a function that shows a
+// given time, and returns its cleanup (the Compai card, which follows the Recent Work clock).
 const MAX_PIXELS = 6_000_000;
 
-export default function SvgCanvas({ source, live, cover = false, className, style }: { source: string; live: boolean; cover?: boolean; className?: string; style?: CSSProperties }) {
+export type SvgDrive = (show: (seconds: number) => void) => () => void;
+
+export default function SvgCanvas({ source, live = false, drive, cover = false, className, style }: { source: string; live?: boolean; drive?: SvgDrive; cover?: boolean; className?: string; style?: CSSProperties }) {
   const ref = useRef<HTMLCanvasElement>(null);
   /** Seconds into the timeline, kept while paused. */
   const time = useRef(0);
@@ -58,9 +63,14 @@ export default function SvgCanvas({ source, live, cover = false, className, styl
     };
   }, [source, cover]);
 
+  useEffect(() => {
+    if (!drive || !source) return;
+    return drive(seconds => { time.current = seconds; redraw.current(); });
+  }, [drive, source]);
+
   // The clock, running only while live.
   useEffect(() => {
-    if (!live || !source) return;
+    if (!live || !source || drive) return;
     const scene = parseSvg(source);
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
     let last = 0, drawn = 0, frame = 0, timer = 0;
@@ -103,7 +113,7 @@ export default function SvgCanvas({ source, live, cover = false, className, styl
       document.removeEventListener('visibilitychange', update);
       reduced.removeEventListener('change', update);
     };
-  }, [live, source]);
+  }, [live, source, drive]);
 
   return <canvas ref={ref} aria-hidden="true" className={className} style={{ position: 'absolute', inset: 0, display: 'block', width: '100%', height: '100%', ...style }} />;
 }

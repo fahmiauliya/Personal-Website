@@ -7,8 +7,8 @@
 //
 // It covers what those files use, not SVG at large: g, path, use (of a path or a group), image,
 // clipPath (one path), linearGradient (userSpaceOnUse); fill, stroke and its width, join, cap and
-// dashes, fill-rule, visibility; and SMIL animate (d, fill, stroke, visibility,
-// stroke-dashoffset) and animateTransform (translate, scale, rotate; replacing or additive="sum"),
+// dashes, fill-rule, visibility, opacity (as each shape's own); and SMIL animate (d, fill, stroke,
+// visibility, stroke-width, stroke-dashoffset, opacity) and animateTransform (translate, scale, rotate; replacing or additive="sum"),
 // discrete or linear, looping or frozen at their end, all beginning at 0.
 
 type Matrix = [number, number, number, number, number, number];
@@ -108,7 +108,8 @@ type Node = {
   styled: boolean;
   hidden: boolean;
   d: string;
-  tracks: { d?: Track; fill?: Track; stroke?: Track; visibility?: Track; dashOffset?: Track };
+  opacity: number;
+  tracks: { d?: Track; fill?: Track; stroke?: Track; visibility?: Track; dashOffset?: Track; strokeWidth?: Track; opacity?: Track };
   children: Node[];
   /** A `use`'s target, resolved after parsing. */
   href: string;
@@ -172,6 +173,7 @@ export function parseSvg(source: string): SvgScene {
       styled: Object.keys(style).length > 0,
       evenOdd: element.getAttribute('fill-rule') === 'evenodd',
       hidden: element.getAttribute('visibility') === 'hidden',
+      opacity: Number(element.getAttribute('opacity') ?? 1),
       d: element.getAttribute('d') ?? '',
       tracks: {},
       children: [],
@@ -202,6 +204,8 @@ export function parseSvg(source: string): SvgScene {
         else if (animated === 'stroke') node.tracks.stroke = track(child, 'none');
         else if (animated === 'visibility') node.tracks.visibility = track(child, 'none');
         else if (animated === 'stroke-dashoffset') node.tracks.dashOffset = track(child, 'numbers');
+        else if (animated === 'stroke-width') node.tracks.strokeWidth = track(child, 'numbers');
+        else if (animated === 'opacity') node.tracks.opacity = track(child, 'numbers');
       } else if (name === 'defs') {
         for (const defined of child.children) define(defined);
       } else {
@@ -310,16 +314,21 @@ export function drawSvg(context: CanvasRenderingContext2D, scene: SvgScene, time
     return made ?? 'transparent';
   };
 
-  const draw = (node: Node, parent: Matrix, inherited: Style) => {
+  const draw = (node: Node, parent: Matrix, inherited: Style, alpha: number) => {
     const { tracks } = node;
     if (tracks.visibility ? textAt(tracks.visibility, time) === 'hidden' : node.hidden) return;
     const matrix = matrixAt(node, parent, time);
     let style = inherited;
-    if (node.styled || tracks.fill || tracks.stroke || tracks.dashOffset) {
+    // Opacity multiplies down to each shape: right for a shape or image, and for a group whose
+    // shapes don't overlap (a true group opacity would need a layer of its own).
+    alpha *= tracks.opacity ? vectorAt(tracks.opacity, time)[0] : node.opacity;
+    if (alpha <= 0) return;
+    if (node.styled || tracks.fill || tracks.stroke || tracks.dashOffset || tracks.strokeWidth) {
       style = { ...inherited, ...node.style };
       if (tracks.fill) style.fill = paintOf(textAt(tracks.fill, time));
       if (tracks.stroke) style.stroke = paintOf(textAt(tracks.stroke, time));
       if (tracks.dashOffset) style.dashOffset = vectorAt(tracks.dashOffset, time)[0];
+      if (tracks.strokeWidth) style.strokeWidth = vectorAt(tracks.strokeWidth, time)[0];
     }
     const clip = node.clip;
     if (clip) {
@@ -332,6 +341,7 @@ export function drawSvg(context: CanvasRenderingContext2D, scene: SvgScene, time
     if (node.kind === 'path') {
       const path = shapeAt(scene, node, time);
       context.setTransform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+      context.globalAlpha = alpha;
       if (style.fill) { context.fillStyle = paintStyle(style.fill); context.fill(path, node.evenOdd ? 'evenodd' : 'nonzero'); }
       if (style.stroke && style.strokeWidth > 0) {
         context.strokeStyle = paintStyle(style.stroke);
@@ -346,14 +356,16 @@ export function drawSvg(context: CanvasRenderingContext2D, scene: SvgScene, time
       const image = node.image!;
       if (image.complete && image.naturalWidth) {
         context.setTransform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
+        context.globalAlpha = alpha;
         context.drawImage(image, node.x, node.y, node.width || image.naturalWidth, node.height || image.naturalHeight);
       }
     } else if (node.kind === 'use') {
-      if (node.target) draw(node.target, matrix, style);
+      if (node.target) draw(node.target, matrix, style, alpha);
     } else {
-      for (const child of node.children) draw(child, matrix, style);
+      for (const child of node.children) draw(child, matrix, style, alpha);
     }
     if (clip) context.restore();
   };
-  draw(scene.root, view, INITIAL);
+  draw(scene.root, view, INITIAL, 1);
+  context.globalAlpha = 1;
 }
