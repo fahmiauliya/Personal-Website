@@ -59,7 +59,7 @@ function FeatureCard({ card, renderVisual, live }: { card: typeof cards[number];
 export default function Carousel() {
   const ref = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
-  const live = useNearView(ref, false, 'screen');
+  const live = useNearView(ref, false, 'focus');
   const [near, setNear] = useState(() => nearCopies(0));
   const clock = useRef({ elapsed: 0 });
   // The timeline runs while the motion is near the screen; far away it holds where it is.

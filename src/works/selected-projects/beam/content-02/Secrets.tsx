@@ -26,7 +26,7 @@ const at = ([left, top]: number[]) => ({ left, top });
 
 export default function Secrets() {
   const stage = useRef<HTMLDivElement>(null);
-  const near = useNearView(stage, false, 'screen');
+  const near = useNearView(stage, false, 'focus');
 
   useEffect(() => {
     const svg = stage.current?.querySelector('svg.secret-svg');

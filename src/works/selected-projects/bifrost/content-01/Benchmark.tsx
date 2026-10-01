@@ -189,7 +189,7 @@ function BenchmarkVisual({ live }: { live: boolean }) {
 
 export default function Benchmark() {
   const ref = useRef<HTMLDivElement>(null);
-  const live = useNearView(ref, false, 'screen');
+  const live = useNearView(ref, false, 'focus');
   return (
     <div ref={ref} className={styles.frame}>
       <div className={`${styles.strip} ${styles.stripLeft}`} style={stripStyle('left', 55, 0)} />

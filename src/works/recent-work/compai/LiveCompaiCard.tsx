@@ -1,7 +1,6 @@
 import { lazy, Suspense, useRef } from 'react';
 import SceneFit from '../../../components/motion/SceneFit';
 import { useRetainedPreview } from '../../../components/motion/useRetainedPreview';
-import { useLoopClock } from '../useCardClock';
 
 // The card (and its animation) live in this lazy chunk, loaded only when the card mounts.
 const CompaiCard = lazy(() => import('./content/CompaiCard'));
@@ -13,13 +12,12 @@ const CompaiCard = lazy(() => import('./content/CompaiCard'));
 export default function LiveCompaiCard({ eager = false }: { eager?: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
   const { mounted, playing: live } = useRetainedPreview(ref, eager);
-  const position = useLoopClock(12.01, live, 0, 15, 'compai');
   return (
     <div className="recent-work-card-viewport" ref={ref}>
       <SceneFit width={536} height={410.2040710449219}>
         {mounted && (
           <Suspense fallback={<span data-cover-ready="pending" />}>
-            <CompaiCard position={position} values={{ Rive: { Scale: 0.89 } }} />
+            <CompaiCard playing={live} values={{ Rive: { Scale: 0.89 } }} />
           </Suspense>
         )}
       </SceneFit>

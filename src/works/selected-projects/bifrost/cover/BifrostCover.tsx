@@ -53,7 +53,7 @@ function Reading({ name, value, mint }: { name: string; value: string; mint?: bo
 
 export function BifrostCoverScene() {
   const ref = useRef<HTMLDivElement>(null);
-  const live = useNearView(ref, false, 'screen');
+  const live = useNearView(ref, false, 'focus');
   return (
     <div ref={ref} className={styles.frame}>
       <img className={styles.image} src={frame} alt="" decoding="async" />

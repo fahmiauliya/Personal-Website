@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import SceneFit from '../../../../components/motion/SceneFit';
+import { frameDue } from '../../../../components/motion/frameRate';
 import { useNearView } from '../../../../components/motion/useNearView';
 import { BeamMark } from '../BeamMark';
 import { buildDotField, FIELD_DECAY_MS, FIELD_PROPAGATION_MS, FIELD_REACH, laserReactionAt, receptionResponse } from '../dotField';
@@ -61,7 +62,7 @@ function firstAtLeast(distance: number) {
 function DotField() {
   const wrapper = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
-  const live = useNearView(wrapper, false, 'screen');
+  const live = useNearView(wrapper, false, 'focus');
   const drawRef = useRef<{ resize: () => void; rest: () => void; ripple: (clock: number) => boolean } | null>(null);
 
   useEffect(() => {
@@ -82,8 +83,8 @@ function DotField() {
       return [Math.round(dot.x * unit) - side / 2, Math.round(dot.y * unit) - side / 2, side] as const;
     };
     const resize = () => {
-      const size = Math.round(element.clientWidth * Math.max(2, window.devicePixelRatio || 1));
-      if (!size || size === bitmap) return;
+      const size = Math.ceil(element.getBoundingClientRect().width * Math.max(2, window.devicePixelRatio || 1));
+      if (!size || size === bitmap) return false;
       bitmap = size;
       element.width = element.height = resting.width = resting.height = size;
       unit = size / FIELD_PX;
@@ -96,6 +97,7 @@ function DotField() {
         restingContext.fillStyle = `rgba(10, 10, 10, ${restAlpha[index].toFixed(3)})`;
         restingContext.fillRect(x, y, side, side);
       });
+      return true;
     };
     const rest = () => {
       context.clearRect(0, 0, bitmap, bitmap);
@@ -128,11 +130,26 @@ function DotField() {
       return true;
     };
     drawRef.current = { resize, rest, ripple };
-    resize();
-    rest();
-    const sizes = new ResizeObserver(() => { resize(); rest(); });
+    const refresh = () => {
+      // A page-class change with unchanged geometry must not reset the ripple.
+      if (resize() && !ripple(clock.current)) rest();
+    };
+    // SceneFit changes a parent transform, which does not resize the canvas's CSS box.
+    let resizeFrame = 0;
+    const scheduleRefresh = () => {
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(refresh);
+    };
+    const pageState = new MutationObserver(scheduleRefresh);
+    pageState.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    const stage = element.closest('.scene-fit-stage');
+    const fit = new MutationObserver(refresh);
+    if (stage) fit.observe(stage, { attributes: true, attributeFilter: ['style'] });
+    refresh();
+    window.addEventListener('resize', refresh);
+    const sizes = new ResizeObserver(refresh);
     sizes.observe(element);
-    return () => { sizes.disconnect(); drawRef.current = null; };
+    return () => { sizes.disconnect(); fit.disconnect(); pageState.disconnect(); cancelAnimationFrame(resizeFrame); window.removeEventListener('resize', refresh); drawRef.current = null; };
   }, []);
 
   // The laser clock, advanced only while the cover is live.
@@ -142,9 +159,12 @@ function DotField() {
     if (!draw || !live || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     let last = 0;
     let rippling = false;
+    let lastDrawn = 0;
     let frame = requestAnimationFrame(function tick(now) {
       if (last) clock.current += (now - last) * PLAYBACK_RATE;
       last = now;
+      if (!frameDue(now, lastDrawn)) { frame = requestAnimationFrame(tick); return; }
+      lastDrawn = now;
       const drawn = draw.ripple(clock.current);
       if (!drawn && rippling) draw.rest();
       rippling = drawn;

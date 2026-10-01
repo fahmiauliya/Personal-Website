@@ -1,4 +1,5 @@
 import { useEffect, useId, useMemo, useRef, type CSSProperties } from 'react';
+import { playSvg } from '../../../../components/motion/frameRate';
 import still from './static.svg';
 import moving from './animated.svg?raw';
 
@@ -23,8 +24,7 @@ export default function HeroBackground({ live, style }: { live: boolean; style: 
   useEffect(() => {
     const svg = movingRef.current?.querySelector('svg');
     if (!svg) return;
-    if (live && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) svg.unpauseAnimations();
-    else svg.pauseAnimations();
+    return playSvg(svg, live);
   }, [live]);
   const layer: CSSProperties = { position: 'absolute', inset: 0, display: 'block', width: '100%', height: '100%', objectFit: 'contain' };
   return <div aria-hidden="true" style={{ position: 'absolute', pointerEvents: 'none', ...style }}>

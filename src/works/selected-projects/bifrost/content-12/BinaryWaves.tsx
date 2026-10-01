@@ -32,7 +32,7 @@ function Band({ top, reflect, playing }: { top: number; reflect?: boolean; playi
 
 export default function BinaryWaves() {
   const ref = useRef<HTMLDivElement>(null);
-  const live = useNearView(ref, false, 'screen');
+  const live = useNearView(ref, false, 'focus');
   return (
     <div ref={ref} style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#00251a' }}>
       <Grid top={0} />

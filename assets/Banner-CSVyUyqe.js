@@ -1,0 +1,1 @@
+import{j as s}from"./index-DecNv1Lq.js";const e="/assets/frame-CT94JrEy.webp";function i(){return s.jsx("div",{style:{position:"absolute",inset:0,overflow:"hidden",background:"#1f1f1f"},children:s.jsx("img",{src:e,alt:"",decoding:"async",style:{position:"absolute",inset:0,display:"block",width:"100%",height:"100%"}})})}export{i as default};

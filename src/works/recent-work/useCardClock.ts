@@ -1,4 +1,5 @@
-import { useCallback, useSyncExternalStore } from 'react';
+import { useCallback, useMemo, useSyncExternalStore } from 'react';
+import { frameDue } from '../../components/motion/frameRate';
 
 // Drives the `position` prop of a Recent Work card the way Motion Lab's timeline dock
 // does (BifrostWorkspace.tsx), for the two shapes its cards use. Values match each
@@ -31,31 +32,42 @@ function cubicBezier(p: number, [x1, y1, x2, y2]: [number, number, number, numbe
   return axis(t, y1, y2);
 }
 
-// Grid and detail use the same clock. Hidden subscribers retain the exact frame;
-// only visible subscribers drive time. During a handoff both scenes hold that frame.
-type Clock = { elapsed: number; last: number | null; raf: number; listeners: Map<() => void, boolean> };
+// Grid and detail share elapsed time. Hidden subscribers hold a stable rendered
+// snapshot; both copies synchronize once before a project handoff is captured.
+type Listener = { playing: boolean; elapsed: number; notify: () => void };
+type Clock = { elapsed: number; pending: number; drawn: number; last: number | null; raf: number; listeners: Set<Listener> };
 const clocks = new Map<string, Clock>();
 function getClock(key: string) {
   let clock = clocks.get(key);
   if (!clock) {
-    clock = { elapsed: 0, last: null, raf: 0, listeners: new Map() };
+    clock = { elapsed: 0, pending: 0, drawn: 0, last: null, raf: 0, listeners: new Set() };
     clocks.set(key, clock);
   }
   return clock;
 }
 function start(clock: Clock) {
-  if (clock.raf || ![...clock.listeners.values()].some(Boolean)) return;
+  if (clock.raf || ![...clock.listeners].some(listener => listener.playing)) return;
   const frame = (now: number) => {
     clock.raf = 0;
-    if (![...clock.listeners.values()].some(Boolean)) { clock.last = null; return; }
+    if (![...clock.listeners].some(listener => listener.playing)) { clock.last = null; return; }
     const root = document.documentElement.classList;
     const frozen = root.contains('project-preparing') || root.contains('project-vt-open') || root.contains('project-vt-close');
-    if (frozen || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (frozen || document.hidden || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       clock.last = null;
     } else {
-      if (clock.last !== null) clock.elapsed += (now - clock.last) / 1000;
+      // Time is kept every frame; visuals redraw at the desktop/touch frame budget.
+      if (clock.last !== null) clock.pending += (now - clock.last) / 1000;
       clock.last = now;
-      clock.listeners.forEach((_, notify) => notify());
+      if (frameDue(now, clock.drawn)) {
+        clock.drawn = now;
+        clock.elapsed += clock.pending;
+        clock.pending = 0;
+        clock.listeners.forEach(listener => {
+          if (!listener.playing) return;
+          listener.elapsed = clock.elapsed;
+          listener.notify();
+        });
+      }
     }
     clock.raf = requestAnimationFrame(frame);
   };
@@ -69,21 +81,44 @@ const subscribeReduced = (notify: () => void) => {
 };
 const useReduced = () => useSyncExternalStore(subscribeReduced, reducedSnapshot, () => false);
 
+// Inactive subscribers keep a stable snapshot, even if another copy drives time.
+function attach(clock: Clock, listener: Listener) {
+  clock.listeners.add(listener);
+  start(clock);
+  return () => {
+    clock.listeners.delete(listener);
+    if (![...clock.listeners].some(item => item.playing)) {
+      cancelAnimationFrame(clock.raf);
+      clock.raf = 0;
+      clock.last = null;
+    }
+  };
+}
+
+/** One synchronized frame before the browser captures a project handoff. */
+export function syncCardClocks() {
+  clocks.forEach(clock => clock.listeners.forEach(listener => {
+    listener.elapsed = clock.elapsed;
+    listener.notify();
+  }));
+}
+
+/** Imperative SVG/canvas consumers don't need a React render for each frame. */
+export function subscribeCardClock(key: string, playing: boolean, draw: (elapsed: number) => void) {
+  const clock = getClock(key);
+  const listener: Listener = { playing, elapsed: clock.elapsed, notify: () => draw(listener.elapsed) };
+  listener.notify();
+  return attach(clock, listener);
+}
+
 function useElapsed(key: string, playing: boolean) {
   const clock = getClock(key);
+  const listener = useMemo<Listener>(() => ({ playing, elapsed: clock.elapsed, notify: () => {} }), [clock, playing]);
   const subscribe = useCallback((notify: () => void) => {
-    clock.listeners.set(notify, playing);
-    start(clock);
-    return () => {
-      clock.listeners.delete(notify);
-      if (![...clock.listeners.values()].some(Boolean)) {
-        cancelAnimationFrame(clock.raf);
-        clock.raf = 0;
-        clock.last = null;
-      }
-    };
-  }, [clock, playing]);
-  return useSyncExternalStore(subscribe, () => clock.elapsed, () => 0);
+    listener.notify = notify;
+    return attach(clock, listener);
+  }, [clock, listener]);
+  return useSyncExternalStore(subscribe, () => listener.elapsed, () => 0);
 }
 
 export function useLoopClock(seconds: number, playing: boolean, from = 0, to = seconds, key = `loop-${seconds}-${from}-${to}`): number {

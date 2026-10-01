@@ -1,4 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { playSvg } from '../../../../components/motion/frameRate';
 
 // The four benchmark gauges (Motion Lab's /rive/gauge-1…4.riv), without the Rive player: each
 // SVG is its Rive artboard's own drawing (382 × 129), recorded from the Rive runtime a frame at
@@ -40,8 +41,7 @@ export default function Gauge({ gauge, live }: { gauge: GaugeNumber; live: boole
   useEffect(() => {
     const svg = ref.current?.querySelector('svg');
     if (!svg) return;
-    if (live && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) svg.unpauseAnimations();
-    else svg.pauseAnimations();
+    return playSvg(svg, live);
   }, [live, markup]);
 
   return <div ref={ref} aria-hidden="true" style={{ position: 'absolute', inset: 0 }} dangerouslySetInnerHTML={{ __html: markup }} />;

@@ -8,7 +8,7 @@ import HeroBackground from '../hero-background/HeroBackground';
 // drew its Rive canvas. The frame image was a plain #f9f9f9 fill, the frame's own colour.
 export default function HeroBackdrop() {
   const ref = useRef<HTMLDivElement>(null);
-  const live = useNearView(ref, false, 'screen');
+  const live = useNearView(ref, false, 'focus');
   return (
     <div ref={ref} style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#f9f9f9' }}>
       <div style={{ position: 'absolute', left: 295.03, top: 74.72, width: 817.95, height: 450.55 }}>

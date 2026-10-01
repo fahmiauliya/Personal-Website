@@ -76,7 +76,7 @@ export default function SocialPosts() {
   const ref = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const clock = useRef({ elapsed: 0 });
-  const live = useNearView(ref, false, 'screen');
+  const live = useNearView(ref, false, 'focus');
   // The timeline's position counts panels advanced. Cards repeat every `posts.length`, so
   // position 0 and 4 land on the same picture and the loop restart is seamless.
   useEffect(() => runTimeline(STEPS, live, clock.current, position => {

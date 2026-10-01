@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { flushSync } from 'react-dom';
+import { syncCardClocks } from '../../works/recent-work/useCardClock';
 
 // Shared-element project open/close. The detail page opens as a layer over the home
 // page in the same document (history.pushState), so the home page, and its scroll
@@ -170,6 +171,7 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
       // The card's image is "lifted" into the detail page while it is open, so the grid
       // shows its empty slot as the cover flies out and back.
       const apply = () => {
+        flushSync(syncCardClocks);
         pathRef.current = next;
         flushSync(() => { setPath(next); setPreparedPath(null); });
         history.scrollRestoration = 'manual';
@@ -209,6 +211,7 @@ export function useProjectTransitions(path: string, setPath: (path: string) => v
         const rect = cover.getBoundingClientRect();
         setCoverGeometry(from, opening ? cover : card, rect.width / rect.height);
       }
+      flushSync(syncCardClocks);
       setDirection(opening ? 'open' : 'close');
       setName(from, true);
       if (!opening) nameLayers(true);

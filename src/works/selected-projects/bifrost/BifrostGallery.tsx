@@ -1,5 +1,6 @@
-import { lazy, Suspense, useEffect, useRef, useState, type ComponentType, type CSSProperties, type LazyExoticComponent } from 'react';
+import { lazy, Suspense, useRef, type ComponentType, type CSSProperties, type LazyExoticComponent } from 'react';
 import SceneFit from '../../../components/motion/SceneFit';
+import { useIdleMount } from '../../../components/motion/useIdleMount';
 import { useNearView } from '../../../components/motion/useNearView';
 import { motionLayout, motionSlots, type MotionId, type MotionSlot } from './bifrostMotions';
 
@@ -25,8 +26,7 @@ const coded: Record<MotionId, LazyExoticComponent<ComponentType>> = {
 function CodedMotion({ slot, Motion }: { slot: MotionSlot; Motion: LazyExoticComponent<ComponentType> }) {
   const ref = useRef<HTMLDivElement>(null);
   const near = useNearView(ref);
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => { if (near) setLoaded(true); }, [near]);
+  const loaded = useIdleMount(near);
   return (
     <div className="bifrost-motion-stage" ref={ref} role="img" aria-label={slot.motion.title}>
       {loaded && <Suspense fallback={null}><SceneFit width={slot.motion.width} height={slot.motion.height} fill><Motion /></SceneFit></Suspense>}

@@ -177,7 +177,7 @@ function HeroContent({ live }: { live: boolean }) {
 /** The motion's frame (698 × 557): its image, and the hero in its content box. */
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
-  const live = useNearView(ref, false, 'screen');
+  const live = useNearView(ref, false, 'focus');
   return (
     <div ref={ref} className="bifrost-lab-frame" style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#00281e' }}>
       <img src={frame} alt="" decoding="async" style={{ position: 'absolute', inset: 0, display: 'block', width: '100%', height: '100%' }} />

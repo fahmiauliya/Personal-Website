@@ -333,7 +333,7 @@ function DropInCard({ position }: { position: number }) {
 export default function DropIn() {
   const ref = useRef<HTMLDivElement>(null);
   const clock = useRef({ elapsed: 0 });
-  const live = useNearView(ref, false, 'screen');
+  const live = useNearView(ref, false, 'focus');
   const [position, setPosition] = useState(0);
   useEffect(() => runTimeline(STEPS, live, clock.current, setPosition), [live]);
   return (

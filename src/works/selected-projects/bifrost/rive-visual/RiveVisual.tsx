@@ -1,4 +1,5 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { playSvg } from '../../../../components/motion/frameRate';
 
 // The Rive visuals of Bifrost motions 05, 08 and 09 (Motion Lab's /rive/m5-visual-1…3.riv and
 // /rive/motion-9-6th…9th_visual.riv), without the Rive player: each is its artboard's own drawing,
@@ -40,8 +41,7 @@ export default function RiveVisual({ name, fit, live, className }: { name: RiveV
   useEffect(() => {
     const svg = ref.current?.querySelector('svg');
     if (!svg) return;
-    if (live && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) svg.unpauseAnimations();
-    else svg.pauseAnimations();
+    return playSvg(svg, live);
   }, [live, markup]);
   return <div ref={ref} aria-hidden="true" className={className} style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }} dangerouslySetInnerHTML={{ __html: markup }} />;
 }

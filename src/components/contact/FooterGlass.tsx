@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import saved from './footerGlass.settings.json';
+import { frameDue } from '../motion/frameRate';
 import { LogoMark, logoPetals } from '../transition/LogoMark';
 
 // The footer's glass: a clear octahedron (a diamond) floating in front of the logo, drawn
@@ -487,6 +488,7 @@ export default function FooterGlass({ anchor, settings, playing = true }: { anch
     if (reducedMotion) { draw(); return () => { observer.disconnect(); redraw.current = () => undefined; }; }
 
     const tick = (now: number) => {
+      if (!frameDue(now, last)) { frame = requestAnimationFrame(tick); return; }
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
       last = now;
       phase += live.current.Motion.Speed * dt;

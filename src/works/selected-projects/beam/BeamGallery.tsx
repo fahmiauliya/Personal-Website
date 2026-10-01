@@ -1,10 +1,11 @@
-import { lazy, Suspense, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { lazy, Suspense, useRef, type CSSProperties, type ReactNode } from 'react';
 import darkHorizontal from './assets/guide-dark-horizontal.svg';
 import darkVertical from './assets/guide-dark-vertical.svg';
 import lightHorizontal from './assets/guide-light-horizontal.svg';
 import lightVertical from './assets/guide-light-vertical.svg';
 import { beamVisuals, type BeamVisual } from './beamData';
 import SceneFit from '../../../components/motion/SceneFit';
+import { useIdleMount } from '../../../components/motion/useIdleMount';
 import { useNearView } from '../../../components/motion/useNearView';
 // Motion 14 (upload progress loop), copied as source from Motion Lab beam-content/motion-14.
 import UploadProgressLoop from './motion-14';
@@ -34,8 +35,7 @@ const OnDemand = lazy(() => import('./content-06/OnDemand'));
 function PortedMotion({ width, height, children }: { width: number; height: number; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const near = useNearView(ref);
-  const [loaded, setLoaded] = useState(false);
-  useEffect(() => { if (near) setLoaded(true); }, [near]);
+  const loaded = useIdleMount(near);
   return (
     <div className="beam-content-coded" ref={ref}>
       {loaded && <Suspense fallback={null}><SceneFit width={width} height={height} contain>{children}</SceneFit></Suspense>}
@@ -47,7 +47,7 @@ function PortedMotion({ width, height, children }: { width: number; height: numb
 // scrolling elsewhere pays nothing for it.
 function Motion14({ visual }: { visual: BeamVisual }) {
   const ref = useRef<HTMLDivElement>(null);
-  const near = useNearView(ref, false, 'screen');
+  const near = useNearView(ref, false, 'focus');
   return (
     <div className="beam-motion-14" ref={ref}>
       <SceneFit width={visual.width} height={visual.height}><div className="beam-motion-14-frame"><UploadProgressLoop className="beam-motion-14-bar" playing={near} /></div></SceneFit>

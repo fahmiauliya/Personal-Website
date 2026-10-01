@@ -68,7 +68,7 @@ const SHIELD_SVG = `<svg width="17.5" height="17.5" viewBox="0 0 17.5 17.5" fill
 // Layer order matches Figma: frame strips, frame lines, then the inset on top.
 export default function Guardrails() {
   const ref = useRef<HTMLDivElement>(null);
-  const live = useNearView(ref, false, 'screen');
+  const live = useNearView(ref, false, 'focus');
   const rightColumnX = INSET.width - COLUMN_W;
   return (
     <div ref={ref} className="bifrost-lab-frame" style={{ position: 'absolute', inset: 0, overflow: 'hidden', background: '#00251a' }}>
