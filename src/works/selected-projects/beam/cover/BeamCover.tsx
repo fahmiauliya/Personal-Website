@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import SceneFit from '../../../../components/motion/SceneFit';
-import { frameDue } from '../../../../components/motion/frameRate';
+import { cancelMotionFrame, frameDue, requestMotionFrame } from '../../../../components/motion/frameRate';
 import { useNearView } from '../../../../components/motion/useNearView';
 import { BeamMark } from '../BeamMark';
 import { buildDotField, FIELD_DECAY_MS, FIELD_PROPAGATION_MS, FIELD_REACH, laserReactionAt, receptionResponse } from '../dotField';
@@ -160,17 +160,17 @@ function DotField() {
     let last = 0;
     let rippling = false;
     let lastDrawn = 0;
-    let frame = requestAnimationFrame(function tick(now) {
+    let frame = requestMotionFrame(function tick(now) {
       if (last) clock.current += (now - last) * PLAYBACK_RATE;
       last = now;
-      if (!frameDue(now, lastDrawn)) { frame = requestAnimationFrame(tick); return; }
+      if (!frameDue(now, lastDrawn)) { frame = requestMotionFrame(tick); return; }
       lastDrawn = now;
       const drawn = draw.ripple(clock.current);
       if (!drawn && rippling) draw.rest();
       rippling = drawn;
-      frame = requestAnimationFrame(tick);
+      frame = requestMotionFrame(tick);
     });
-    return () => cancelAnimationFrame(frame);
+    return () => cancelMotionFrame(frame);
   }, [live]);
 
   return <div ref={wrapper} className={styles.dotField} aria-hidden="true"><canvas ref={canvas} className={styles.dotCanvas} width={FIELD_PX} height={FIELD_PX} /></div>;

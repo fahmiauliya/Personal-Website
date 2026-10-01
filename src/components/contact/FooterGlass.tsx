@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import saved from './footerGlass.settings.json';
-import { frameDue } from '../motion/frameRate';
+import { cancelMotionFrame, frameDue, requestMotionFrame } from '../motion/frameRate';
 import { LogoMark, logoPetals } from '../transition/LogoMark';
 
 // The footer's glass: a clear octahedron (a diamond) floating in front of the logo, drawn
@@ -488,7 +488,7 @@ export default function FooterGlass({ anchor, settings, playing = true }: { anch
     if (reducedMotion) { draw(); return () => { observer.disconnect(); redraw.current = () => undefined; }; }
 
     const tick = (now: number) => {
-      if (!frameDue(now, last)) { frame = requestAnimationFrame(tick); return; }
+      if (!frameDue(now, last)) { frame = requestMotionFrame(tick); return; }
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 0;
       last = now;
       phase += live.current.Motion.Speed * dt;
@@ -498,10 +498,10 @@ export default function FooterGlass({ anchor, settings, playing = true }: { anch
       pitch += (pitchTarget - pitch) * (1 - Math.exp(-dt / 0.18));
       roll += (rollTarget - roll) * (1 - Math.exp(-dt / 0.18));
       draw();
-      frame = requestAnimationFrame(tick);
+      frame = requestMotionFrame(tick);
     };
-    const start = () => { if (!frame && !document.hidden && playingRef.current) { last = 0; frame = requestAnimationFrame(tick); } };
-    const stop = () => { cancelAnimationFrame(frame); frame = 0; };
+    const start = () => { if (!frame && !document.hidden && playingRef.current) { last = 0; frame = requestMotionFrame(tick); } };
+    const stop = () => { cancelMotionFrame(frame); frame = 0; };
     loop.current = { start, stop };
     const onScroll = () => {
       const y = scrollTop();

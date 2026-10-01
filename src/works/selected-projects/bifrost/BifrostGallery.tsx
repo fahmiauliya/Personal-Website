@@ -1,12 +1,14 @@
 import { lazy, Suspense, useRef, type ComponentType, type CSSProperties, type LazyExoticComponent } from 'react';
 import SceneFit from '../../../components/motion/SceneFit';
-import { useIdleMount } from '../../../components/motion/useIdleMount';
 import { useNearView } from '../../../components/motion/useNearView';
 import { motionLayout, motionSlots, type MotionId, type MotionSlot } from './bifrostMotions';
 
 // Every motion is code, ported from Motion Lab (no Rive player, no font). Each is its own chunk,
-// fetched once its slot comes near the screen and kept after that; each pauses its own animation
-// when it's far away.
+// fetched once its slot first comes within a screen of the viewport. A motion is in the page
+// only while it is that near: further away it is unmounted, because a motion that is merely
+// paused still makes every frame of whatever is playing more expensive (the browser's rendering
+// pass covers all that is on the page). It is rebuilt a screen before it scrolls back in, from
+// its start; until then its slot shows its background.
 const coded: Record<MotionId, LazyExoticComponent<ComponentType>> = {
   'motion-01': lazy(() => import('./content-01/Benchmark')),
   'motion-02': lazy(() => import('./content-02/Hero')),
@@ -26,10 +28,9 @@ const coded: Record<MotionId, LazyExoticComponent<ComponentType>> = {
 function CodedMotion({ slot, Motion }: { slot: MotionSlot; Motion: LazyExoticComponent<ComponentType> }) {
   const ref = useRef<HTMLDivElement>(null);
   const near = useNearView(ref);
-  const loaded = useIdleMount(near);
   return (
     <div className="bifrost-motion-stage" ref={ref} role="img" aria-label={slot.motion.title}>
-      {loaded && <Suspense fallback={null}><SceneFit width={slot.motion.width} height={slot.motion.height} fill><Motion /></SceneFit></Suspense>}
+      {near && <Suspense fallback={null}><SceneFit width={slot.motion.width} height={slot.motion.height} fill><Motion /></SceneFit></Suspense>}
     </div>
   );
 }

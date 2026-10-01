@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
-import { frameDue } from '../../components/motion/frameRate';
+import { cancelMotionFrame, frameDue, requestMotionFrame } from '../../components/motion/frameRate';
 
 // Drives the `position` prop of a Recent Work card the way Motion Lab's timeline dock
 // does (BifrostWorkspace.tsx), for the two shapes its cards use. Values match each
@@ -69,9 +69,9 @@ function start(clock: Clock) {
         });
       }
     }
-    clock.raf = requestAnimationFrame(frame);
+    clock.raf = requestMotionFrame(frame);
   };
-  clock.raf = requestAnimationFrame(frame);
+  clock.raf = requestMotionFrame(frame);
 }
 const reducedSnapshot = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const subscribeReduced = (notify: () => void) => {
@@ -88,7 +88,7 @@ function attach(clock: Clock, listener: Listener) {
   return () => {
     clock.listeners.delete(listener);
     if (![...clock.listeners].some(item => item.playing)) {
-      cancelAnimationFrame(clock.raf);
+      cancelMotionFrame(clock.raf);
       clock.raf = 0;
       clock.last = null;
     }

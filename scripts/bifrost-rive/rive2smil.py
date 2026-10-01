@@ -285,7 +285,9 @@ def path_el(paths, span, mode, paint_attrs, extra='', vis=(None, 'visible'), alp
             it = iter(vec); return d_of([[c[0]] + [next(it) for _ in c[1:]] for c in tmpl])
         a, d0 = anim('d', flat, render, span, mode, 0.02)
     else:
-        a, d0 = anim('d', [d_of(p) for p in paths], None, span, mode, None)
+        # A frame with nothing to draw is a lone moveto: an empty entry isn't a valid path in a
+        # values list, and the browser then drops the whole animation.
+        a, d0 = anim('d', [d_of(p) or 'M0 0' for p in paths], None, span, mode, None)
     attrs = paint_attrs + ('' if alpha[1] == '1' else f' opacity="{alpha[1]}"') + ('' if vis[1] == 'visible' else f' visibility="{vis[1]}"')
     kids = (a or '') + extra + (alpha[0] or '') + (vis[0] or '')
     return f'<path {attrs} d="{d0}">{kids}</path>' if kids else f'<path {attrs} d="{d0}"/>'

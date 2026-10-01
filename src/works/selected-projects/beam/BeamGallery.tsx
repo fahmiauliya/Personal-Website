@@ -1,11 +1,10 @@
-import { lazy, Suspense, useRef, type CSSProperties, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import darkHorizontal from './assets/guide-dark-horizontal.svg';
 import darkVertical from './assets/guide-dark-vertical.svg';
 import lightHorizontal from './assets/guide-light-horizontal.svg';
 import lightVertical from './assets/guide-light-vertical.svg';
 import { beamVisuals, type BeamVisual } from './beamData';
 import SceneFit from '../../../components/motion/SceneFit';
-import { useIdleMount } from '../../../components/motion/useIdleMount';
 import { useNearView } from '../../../components/motion/useNearView';
 // Motion 14 (upload progress loop), copied as source from Motion Lab beam-content/motion-14.
 import UploadProgressLoop from './motion-14';
@@ -25,7 +24,9 @@ import AccountMenu from './content-13/AccountMenu';
 // Content 01 (Problem → Solution), 02 (Secrets), 03 (the hero), 05 (the footer) and 06 (on
 // demand), ported from Motion Lab beam-content/motion-01 to -06 into code (no iframe, no font). Each is its own chunk, fetched once
 // its tile comes near the screen and kept after that; each pauses its own loop when it's far
-// away. They fill the preview box whole from its top left, as the iframes did.
+// away. (Bifrost's gallery unmounts its far motions, which are large SVGs; these are small, and
+// rebuilding them on every pass measured as more work than keeping them.) They fill the preview
+// box whole from its top left, as the iframes did.
 const ProblemSolution = lazy(() => import('./content-01/ProblemSolution'));
 const Secrets = lazy(() => import('./content-02/Secrets'));
 const BeamHero = lazy(() => import('./content-03/BeamHero'));
@@ -35,7 +36,8 @@ const OnDemand = lazy(() => import('./content-06/OnDemand'));
 function PortedMotion({ width, height, children }: { width: number; height: number; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
   const near = useNearView(ref);
-  const loaded = useIdleMount(near);
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => { if (near) setLoaded(true); }, [near]);
   return (
     <div className="beam-content-coded" ref={ref}>
       {loaded && <Suspense fallback={null}><SceneFit width={width} height={height} contain>{children}</SceneFit></Suspense>}
