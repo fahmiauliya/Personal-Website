@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { isProjectPath, normalizePath } from './projectTransition';
 import { firstViewportReady } from './firstViewportReady';
 import { worksReady } from './worksReady';
@@ -50,6 +50,14 @@ const seenBefore = (() => {
     return false; // storage unavailable (private mode, etc.): show the loader anyway
   }
 })();
+
+// Whether the first screen is ready (always, on a visit without the loader). While it isn't, a
+// project page's gallery holds its motions back (useFirstScreenReady): on a slow connection their
+// files would otherwise download alongside the cover the loader is waiting for, and delay it.
+let firstScreenReady = seenBefore || (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+const readyListeners = new Set<() => void>();
+const subscribeReady = (notify: () => void) => { readyListeners.add(notify); return () => { readyListeners.delete(notify); }; };
+export const useFirstScreenReady = () => useSyncExternalStore(subscribeReady, () => firstScreenReady, () => true);
 
 export function useSiteTransition(path: string, setPath: (path: string) => void) {
   const stage = useRef<HTMLDivElement>(null);
@@ -107,6 +115,8 @@ export function useSiteTransition(path: string, setPath: (path: string) => void)
     const viewport = stage.current;
     if (!viewport) return;
     firstViewportReady(viewport, { extra: [worksReady(), lazyPagesReady()], capMs: 12500, onProgress: share => { progress.current = share; } }).then(() => {
+      firstScreenReady = true;
+      readyListeners.forEach(notify => notify());
       if (!cancelled) setReady(true);
     });
     return () => { cancelled = true; };

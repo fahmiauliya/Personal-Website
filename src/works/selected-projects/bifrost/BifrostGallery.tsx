@@ -1,6 +1,7 @@
 import { lazy, Suspense, useRef, type ComponentType, type CSSProperties, type LazyExoticComponent } from 'react';
 import SceneFit from '../../../components/motion/SceneFit';
 import { useNearView } from '../../../components/motion/useNearView';
+import { useFirstScreenReady } from '../../../components/transition/useSiteTransition';
 import { motionLayout, motionSlots, type MotionId, type MotionSlot } from './bifrostMotions';
 
 // Every motion is code, ported from Motion Lab (no Rive player, no font). Each is its own chunk,
@@ -27,7 +28,9 @@ const coded: Record<MotionId, LazyExoticComponent<ComponentType>> = {
 
 function CodedMotion({ slot, Motion }: { slot: MotionSlot; Motion: LazyExoticComponent<ComponentType> }) {
   const ref = useRef<HTMLDivElement>(null);
-  const near = useNearView(ref);
+  // Not while the first-visit loader is still waiting for the first screen (see useFirstScreenReady).
+  const firstScreenReady = useFirstScreenReady();
+  const near = useNearView(ref) && firstScreenReady;
   return (
     <div className="bifrost-motion-stage" ref={ref} role="img" aria-label={slot.motion.title}>
       {near && <Suspense fallback={null}><SceneFit width={slot.motion.width} height={slot.motion.height} fill><Motion /></SceneFit></Suspense>}

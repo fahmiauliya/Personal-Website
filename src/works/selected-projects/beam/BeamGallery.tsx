@@ -6,6 +6,7 @@ import lightVertical from './assets/guide-light-vertical.svg';
 import { beamVisuals, type BeamVisual } from './beamData';
 import SceneFit from '../../../components/motion/SceneFit';
 import { useNearView } from '../../../components/motion/useNearView';
+import { useFirstScreenReady } from '../../../components/transition/useSiteTransition';
 // Motion 14 (upload progress loop), copied as source from Motion Lab beam-content/motion-14.
 import UploadProgressLoop from './motion-14';
 // Content 04 (the Beam website on an iPhone), built in code from Figma 339:4983.
@@ -35,7 +36,9 @@ const OnDemand = lazy(() => import('./content-06/OnDemand'));
 
 function PortedMotion({ width, height, children }: { width: number; height: number; children: ReactNode }) {
   const ref = useRef<HTMLDivElement>(null);
-  const near = useNearView(ref);
+  // Not while the first-visit loader is still waiting for the first screen (see useFirstScreenReady).
+  const firstScreenReady = useFirstScreenReady();
+  const near = useNearView(ref) && firstScreenReady;
   const [loaded, setLoaded] = useState(false);
   useEffect(() => { if (near) setLoaded(true); }, [near]);
   return (

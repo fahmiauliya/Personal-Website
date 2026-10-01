@@ -8,7 +8,7 @@ export const loaderMarkDefaults = {
   /** The ring's outer diameter (3× the logo). */
   RingSize: 120,
   /** How long 100% holds before anything leaves. */
-  HoldMs: 240,
+  HoldMs: 120,
   /** The ring drawing itself away. */
   RetractMs: 420,
   /** The space between the ring and the texts beside it. */
@@ -78,17 +78,18 @@ export function LoaderMark({ label, initials, progress, complete, settings, onFi
 
       // Progress: ease toward the real value (a ~0.28 s time constant) plus a slow creep capped
       // just past it; once ready, finish briskly so the last few percent never linger. Never
-      // faster than 5% per 50 ms, so a big real jump still becomes a smooth climb.
+      // faster than 10% per 50 ms, so a big real jump still becomes a smooth climb (half a second
+      // at the least, when everything is ready at once).
       if (!fullAt) {
         let next: number;
         if (completeRef.current) {
-          next = shown + (1 - shown) * (1 - Math.exp(-dt / 260)) + dt * 0.00025;
+          next = shown + (1 - shown) * (1 - Math.exp(-dt / 160)) + dt * 0.0005;
         } else {
           const target = Math.min(0.99, progress.current);
           next = shown + (target - shown) * (1 - Math.exp(-dt / 280));
           next = Math.min(Math.max(next, shown + dt * 0.00004), target + 0.08, 0.99);
         }
-        shown = Math.max(shown, Math.min(next, shown + dt * 0.001));
+        shown = Math.max(shown, Math.min(next, shown + dt * 0.002));
         if (completeRef.current && 1 - shown < 0.004) shown = 1;
         shown = Math.min(1, shown);
         if (shown >= 1) fullAt = now;
