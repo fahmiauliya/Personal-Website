@@ -208,6 +208,8 @@
   background: var(--about-surface);
 }
 
+.capability-mobile-guides { display: none; }
+
 .capability-guides {
   position: absolute;
   inset: 0;
@@ -529,7 +531,7 @@
   .about-copy-break { display: none; }
   .introduction-content { gap: 64px; }
   .experience-content { padding-inline: 0; }
-  .experience-content > h2 { padding-inline: 20px; }
+  .experience-content > h2 { padding-inline: 0; }
   .experience-track { display: none; }
 
   .experience-row,
@@ -564,6 +566,22 @@
 
   .capability-guides { display: none; }
 
+  .capability-mobile-guides {
+    display: block;
+    position: absolute;
+    top: -24px;
+    left: -24px;
+    max-width: none;
+    pointer-events: none;
+    /* Fade the construction grid into the page just like the desktop board. */
+    mask-image: linear-gradient(to right, transparent, #000 20px, #000 calc(100% - 20px), transparent),
+      linear-gradient(to bottom, transparent, #000 20px, #000 calc(100% - 20px), transparent);
+    mask-composite: intersect;
+  }
+
+  .capability-mobile-grid { z-index: 0; }
+  .capability-mobile-outlines { z-index: 3; }
+
   .capabilities-grid {
     position: relative;
     top: auto;
@@ -576,7 +594,7 @@
 
   .capabilities-grid li {
     aspect-ratio: 190 / 165;
-    border-color: rgb(204 204 204 / 25%);
+    border-color: transparent;
   }
 }
 

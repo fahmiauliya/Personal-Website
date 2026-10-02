@@ -52,7 +52,7 @@ export const projects: Project[] = Array.from({ length: 8 }, (_, index) => {
     id: projectNumber,
     title: projectNumber === 1 ? 'Beam' : projectNumber === 2 ? 'Bifrost' : projectNumber === 3 ? 'Lasting Learn' : projectNumber === 4 ? 'TalentPluto' : projectNumber === 5 ? 'Avea Robotics' : projectNumber === 6 ? 'Almanac Market' : projectNumber === 7 ? 'Eden AI' : 'Tika Security',
     description: projectNumber === 1 ? beamProject.category : projectNumber === 2 ? bifrostProject.category : projectNumber === 3 ? 'Web App Design' : projectNumber === 4 ? 'Website Design + Implementation' : projectNumber === 5 ? 'Website Design, Deck, VR Interface' : projectNumber === 6 ? 'Web App Design' : projectNumber === 7 ? 'Website Design + Implementation' : `Description ${projectNumber}`,
-    date: projectNumber === 1 || projectNumber === 2 ? '2026' : '00/00',
+    date: projectNumber === 1 ? '2026' : projectNumber === 2 ? '2025' : '00/00',
     imageLabel: projectNumber === 1 ? 'Cover' : `IMG-${projectNumber}`,
     href: projectNumber === 1 ? '/projects/beam/' : projectNumber === 2 ? '/projects/bifrost/' : undefined,
     coverScene: projectNumber === 1 ? BeamCover : projectNumber === 2 ? BifrostCover : undefined,

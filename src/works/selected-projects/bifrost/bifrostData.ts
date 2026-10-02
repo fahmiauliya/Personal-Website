@@ -3,9 +3,9 @@ export const bifrostProject = {
   title: 'Bifrost',
   // The live site, opened by Visit site.
   url: 'https://www.getmaxim.ai/',
-  category: 'Website Design · Motion · Framer Implementation',
+  category: 'Website Design · Framer Implementation',
   details: [
-    { label: 'Year', lines: ['2026'] },
+    { label: 'Year', lines: ['2025'] },
     { label: 'Type', lines: ['AI Infrastructure · Marketing Website'] },
     { label: 'Role', lines: ['Product Designer + Framer Implementation'] },
     { label: 'Deliverables', lines: ['Website Design · Responsive Design · Framer Implementation'] },

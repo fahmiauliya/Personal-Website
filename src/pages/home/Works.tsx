@@ -100,7 +100,7 @@ function ProjectImage({ project }: { project: Project }) {
         ? <project.coverScene />
         : project.coverImage
         ? <>
-            {shown && <img className={`project-cover-image${project.coverImageFit === 'width' ? ' project-cover-image--fill-width' : ''}`} src={project.coverImage} alt="" decoding="async" />}
+            {shown && <img className={`project-cover-image${!project.href ? ' project-cover-image--locked' : ''}${project.coverImageFit === 'width' ? ' project-cover-image--fill-width' : ''}`} src={project.coverImage} alt="" decoding="async" />}
             {!project.href && <>
               <span className="project-colour-reveal" aria-hidden="true" />
               <LockedGrid className="project-locked-grid" />
