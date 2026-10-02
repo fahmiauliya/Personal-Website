@@ -36,6 +36,8 @@
   top: 49.64px;
   width: 474px;
   height: 311.72px;
+  transform: scale(var(--recent-work-artwork-scale, 1));
+  transform-origin: center;
   overflow: hidden;
   background-color: #f5f5f6;
   box-shadow: inset 1.317px 0 2.304px 0.987px rgb(255 255 255 / 60%);

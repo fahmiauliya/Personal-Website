@@ -44,6 +44,9 @@
 .recent-work-cover { position: relative; overflow: hidden; aspect-ratio: 536 / 410.2040710449219; background: #fafafa; }
 /* Mounted only near the screen (useNearView); fills whatever box it's given. */
 .recent-work-card-viewport { position: absolute; inset: 0; overflow: hidden; }
+/* Match Compai's 0.89 artwork scale inside the cropped Works thumbnails.
+   Only Career Agent and Velocity's inner pages consume this variable. */
+.project-image .recent-work-card-viewport { --recent-work-artwork-scale: 0.89; }
 
 .recent-work-description { color: rgb(0 0 0 / 60%); letter-spacing: -0.24px; }
 .recent-work-description > div p + p { margin-top: 16.8px; }

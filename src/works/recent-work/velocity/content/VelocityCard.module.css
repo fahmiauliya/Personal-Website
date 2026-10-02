@@ -41,7 +41,7 @@
   height: 277.5px;
   overflow: hidden;
   background: #dadada;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(var(--recent-work-artwork-scale, 1));
 }
 
 /* 312:2225: top bar */

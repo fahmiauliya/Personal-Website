@@ -34,9 +34,8 @@ import lastingLearnCover from '../works/selected-projects/lasting-learn/cover.we
 import almanacMarketCover from '../works/selected-projects/almanac-market/cover.webp';
 // TalentPluto cover: a still of its former cover video (Motion Lab website-content/shared/assets).
 import talentPlutoCover from '../works/selected-projects/talentpluto/cover.webp';
-// Eden AI (7) and Tika Security (8) covers: Figma Portfolio-2026 nodes 271:309 and 272:488.
+// Eden AI cover: Figma Portfolio-2026 node 271:309.
 import edenAiCover from '../works/selected-projects/eden-ai/cover.webp';
-import tikaSecurityCover from '../works/selected-projects/tika-security/cover.webp';
 import githubIcon from '../assets/icons/social-github.svg';
 import linkedinIcon from '../assets/icons/social-linkedin.svg';
 import xIcon from '../assets/icons/social-x.svg';
@@ -45,18 +44,18 @@ import dribbbleIcon from '../assets/icons/social-dribbble.svg';
 export const CONTACT_EMAIL = 'fahmiauliyarohman@gmail.com';
 export const CONTACT_TELEGRAM = 'https://t.me/fahmiauliya';
 
-export const projects: Project[] = Array.from({ length: 8 }, (_, index) => {
+export const projects: Project[] = Array.from({ length: 7 }, (_, index) => {
   const projectNumber = index + 1;
 
   return {
     id: projectNumber,
-    title: projectNumber === 1 ? 'Beam' : projectNumber === 2 ? 'Bifrost' : projectNumber === 3 ? 'Lasting Learn' : projectNumber === 4 ? 'TalentPluto' : projectNumber === 5 ? 'Avea Robotics' : projectNumber === 6 ? 'Almanac Market' : projectNumber === 7 ? 'Eden AI' : 'Tika Security',
-    description: projectNumber === 1 ? beamProject.category : projectNumber === 2 ? bifrostProject.category : projectNumber === 3 ? 'Web App Design' : projectNumber === 4 ? 'Website Design + Implementation' : projectNumber === 5 ? 'Website Design, Deck, VR Interface' : projectNumber === 6 ? 'Web App Design' : projectNumber === 7 ? 'Website Design + Implementation' : `Description ${projectNumber}`,
+    title: projectNumber === 1 ? 'Beam' : projectNumber === 2 ? 'Bifrost' : projectNumber === 3 ? 'Lasting Learn' : projectNumber === 4 ? 'TalentPluto' : projectNumber === 5 ? 'Avea Robotics' : projectNumber === 6 ? 'Almanac Market' : 'Eden AI',
+    description: projectNumber === 1 ? beamProject.category : projectNumber === 2 ? bifrostProject.category : projectNumber === 3 ? 'Web App Design' : projectNumber === 4 ? 'Website Design + Implementation' : projectNumber === 5 ? 'Website Design, Deck, VR Interface' : projectNumber === 6 ? 'Web App Design' : 'Website Design + Implementation',
     date: projectNumber === 1 ? '2026' : projectNumber === 2 ? '2025' : '00/00',
     imageLabel: projectNumber === 1 ? 'Cover' : `IMG-${projectNumber}`,
     href: projectNumber === 1 ? '/projects/beam/' : projectNumber === 2 ? '/projects/bifrost/' : undefined,
     coverScene: projectNumber === 1 ? BeamCover : projectNumber === 2 ? BifrostCover : undefined,
-    coverImage: projectNumber === 3 ? lastingLearnCover : projectNumber === 4 ? talentPlutoCover : projectNumber === 5 ? aveaCover : projectNumber === 6 ? almanacMarketCover : projectNumber === 7 ? edenAiCover : projectNumber === 8 ? tikaSecurityCover : undefined,
+    coverImage: projectNumber === 3 ? lastingLearnCover : projectNumber === 4 ? talentPlutoCover : projectNumber === 5 ? aveaCover : projectNumber === 6 ? almanacMarketCover : projectNumber === 7 ? edenAiCover : undefined,
     coverImageFit: projectNumber === 3 || projectNumber === 6 ? 'width' : undefined,
   };
 });
